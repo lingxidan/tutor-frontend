@@ -61,6 +61,8 @@ import backPosts from '../pages/manager/tableInfo/posts.vue'
 Vue.use(Router)
 
 const router = new Router({
+    mode:"history",
+    base:"shizheFront",
     routes: [
         {
             // 主页
