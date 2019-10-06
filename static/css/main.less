@@ -1,0 +1,86 @@
+@mainColor:#ffe9c6;
+@secondColor:#fba400;
+@hoverColor:#fab83e;
+@mainFont:'Avenir', Helvetica, Arial, sans-serif;
+@secondFont:'tengxiangkai';
+@thirdFont:'liukai';
+// 首页搜索框
+.search:hover{
+  .el-input__inner{
+    border-color: @hoverColor;
+  }
+  .el-icon-arrow-up:before{
+    color:@secondColor;
+    // icon-remen
+  }
+}
+.search{
+  display: flex;
+
+  .el-input__inner, .el-checkbox__inner, .el-textarea__inner, .el-button {
+    border-radius: 0px;
+    border-color: @secondColor;
+    height: 40px;
+    
+    // display: inline;
+  }
+  .el-input__inner{
+    border-right: 1px @mainColor solid;
+  }
+  .el-icon-arrow-up:before{
+    color:@secondColor;
+  }
+  .el-button{
+    background-color: @secondColor;
+    width: 10%;
+    color:white;
+    padding-bottom: 13px;
+  }
+  .el-button:hover,.el-button:focus{
+    background-color: @hoverColor;
+  }
+  .searchInput{
+    .el-input__inner{
+      border-left: 0px;
+    }
+  }
+}
+.postCard{
+  .el-tab-pane{
+    transition: .5s;
+  }
+  .el-tabs__header{
+    margin: 0;
+    // border-bottom: 1px solid @mainColor;
+    border:none;
+  }
+  .el-tabs__content{
+    padding-bottom: 10px;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__nav{
+    border: none;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__item{
+    border:none;
+    border-top: 3px solid #fff;
+    border-bottom:1px solid @mainColor;
+    width: 50%;
+  }
+  .el-tabs__nav{
+    width: 100%;
+  }
+  .el-tabs__item:hover{
+    color:@hoverColor;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__item.is-active{
+    background-color: @mainColor;
+    border-top:3px solid @secondColor;
+  }
+  .el-menu-item{
+    font-family: @thirdFont;
+    font-size: 18px;
+  }
+  .el-menu-item.is-active{
+    background-color: @mainColor;
+  }
+}
