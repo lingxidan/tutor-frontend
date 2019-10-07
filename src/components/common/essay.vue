@@ -29,9 +29,9 @@ export default {
       default:function () {
         return {
           title:"记支教XX县XX小学的趣事",
-          img:"../../../static/img/panel_2.jpg",
+          img:"./../../../static/img/panel_2.jpg",
           autor:"XXX",
-          autor_img:"../../assets/logo_vue.png",
+          autor_img:"./../../assets/logo_vue.png",
         }
       }
     }
