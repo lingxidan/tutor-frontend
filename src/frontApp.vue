@@ -74,6 +74,7 @@ export default {
 div.top {
   width: 100%;
   background:  @mainColor;
+  height: 6vh;
 }
 
 .footer {
@@ -81,6 +82,7 @@ div.top {
   padding-top: 3px;
   padding-bottom: 3px;
   background-color: @mainColor;
+  color: antiquewhite;
   .main{
     width: 100%;
     display:flex;

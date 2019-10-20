@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="mainTopNav">
   	<img class="logo" src="../../../static/img/logo.png" />
     <nav class="mainNav">
       <a href="/" title="首页">首页</a>
@@ -68,7 +68,7 @@ export default {
 a{
   cursor: pointer;
 }
-.main{
+.mainTopNav{
   font-size: 16px;
   // background-color: rgba(255, 255, 255, 0.6);
   // background-color: rgba(252,233,199);
@@ -82,7 +82,8 @@ a{
   // height: 40px;
   img{
   	// width:80px;
-    height:26px;
+    height:4vh;
+    // height:auto;
     vertical-align:middle;
     margin-right: 80px;
   }
@@ -108,6 +109,8 @@ a{
     background: url("../../../static/img/nav_bc.png") no-repeat;
     border-radius: 5px;
     margin-right: 40px;
+    box-shadow: 0 0 8px 0 #fff;
+    font-size: 18px;
     a{
       color:whitesmoke;
       border: 1px solid transparent;
@@ -125,7 +128,7 @@ a{
       box-shadow: 0 0 3px 2px white;
       // background-color: rgba(240,240,240,0.3);
       border-radius: 20px 0 20px 0;
-      color:#472600;
+      color:#fff;
       font-weight: bold;
       
       font-size: 14px;
@@ -157,6 +160,7 @@ a{
       // font-family: @ssecondFont;
       // border-bottom: 1px solid #753e00;
       background-color: transparent;
+      color: #fff;
       // border-top: 0;
     }
     button:hover{

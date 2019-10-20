@@ -183,7 +183,7 @@ export default {
 }
 .teacher:hover{
   transform: translateZ(1px);
-  box-shadow: 0 0 10px 0 @mainColor;
+  box-shadow: 0 0 1px 0 @hoverColor;
   .mainInfo .name{
     color:@hoverColor;
   }

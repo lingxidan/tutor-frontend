@@ -53,6 +53,18 @@
         class="input-with-select searchInput">
         </el-input><el-button icon="el-icon-search" @click="searchByKeyword">搜索</el-button>
       </div>
+      <!-- 日志文章 -->
+      <div class="articles">
+        <div class="title">日志文章</div>
+        <el-row :gutter="10">
+          <!-- <el-col :span="6"  class="el-col"> -->
+            <!-- <essay v-for="(article, index) in articles" :key="index"
+            :essay="article"></essay> -->
+            <essay v-for="(article, index) in 9" :key="index" ></essay>
+          <!-- </el-col> -->
+          
+        </el-row>
+      </div>
       <!-- 招募职位、志愿者信息查看 -->
       <div class="info" ref="info">
         <div class="title">招募信息</div>
@@ -88,18 +100,6 @@
             </disguss>
           </el-tab-pane>
         </el-tabs> -->
-      </div>
-      <!-- 日志文章 -->
-      <div class="articles">
-        <div class="title">日志文章</div>
-        <el-row :gutter="10">
-          <!-- <el-col :span="6"  class="el-col"> -->
-            <!-- <essay v-for="(article, index) in articles" :key="index"
-            :essay="article"></essay> -->
-            <essay v-for="(article, index) in 9" :key="index" ></essay>
-          <!-- </el-col> -->
-          
-        </el-row>
       </div>
     </div>
     <div class="login" ref="login">
@@ -490,7 +490,8 @@ ul.registe{
     height: 30px;
     line-height: 30px;
     text-align: center;
-    background-color:@mainColor;
+    background-color:@secondColor;
+    color: #fff;
     cursor: pointer;
     border-radius: 10px 0 10px 0;
     margin-top: 5px;
@@ -506,7 +507,7 @@ ul.registe{
 }
 .index {
   display: flex;
-  flex-direction: column;
+  flex-direction: column !important;
   align-items: center;
   position: relative;
   width: 100%;
@@ -523,6 +524,8 @@ ul.registe{
   width: 70%;
   margin: 20px;
   margin-top: 0px;
+  display: flex;
+  flex-direction: column !important;
   // height: 1000px;
   .search{
     width: 100%;
@@ -578,7 +581,7 @@ ul.registe{
     line-height: 30px;
     background-color: #fff;
     font-size: 14px;
-    border-bottom: 1px solid @mainColor;
+    border: 1px solid #fbeedc;
     border-top: 0;
     padding: 5px;
     text-align: center;
@@ -589,7 +592,8 @@ ul.registe{
     border-top: 5px solid @secondColor;
   }
   li:hover{
-    background-color:@mainColor;
+    background-color:@hoverColor;
+    color: #fff;
   }
 }
 
@@ -617,7 +621,7 @@ ul.registe{
   display: inline-block;
   background-color: rgb(252, 252, 252);
   border:none;
-  border: 1px solid @mainColor;
+  border: 1px solid @secondColor;
   margin-bottom: 5px;
   padding: 5px;
   padding-bottom: 3px;
@@ -625,7 +629,8 @@ ul.registe{
 }
 .copyBtn{
   display: inline-block;
-  background-color: @mainColor;
+  background-color: @secondColor;
+  color: #f7f7f7;
   border: none;
   padding: 5px 10px;
   border-radius: 10px 0px 10px 0px;
@@ -671,7 +676,7 @@ ul.registe{
   background-color: #fff;
 }
 .single-teacher{
-  border: 1px solid @mainColor;
+  border: 1px solid #fbeedc;
 }
 
 </style>

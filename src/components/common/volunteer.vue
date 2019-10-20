@@ -75,7 +75,7 @@ export default {
 .volunteer{
   display: flex;
   width: 100%;
-  border: 1px solid @mainColor;
+  border: 1px solid #fbeedc;
   border-top:none;
   background-color: #fff;
   padding-top: 3px;
@@ -164,7 +164,7 @@ export default {
 }
 .volunteer:hover{
   transform: translateZ(1px);
-  box-shadow: 0 0 10px 0 @mainColor;
+  box-shadow: 0 0 1px 0 @hoverColor;
   .mainInfo .name{
     color:@hoverColor;
   }
