@@ -63,35 +63,25 @@ export default {
 @import url('../../../static/css/main');
 .main .inner{
   display: flex;
-  border-bottom: 1px solid @mainColor;
-  margin-left: 20px;
-  margin-right: 20px;
-  padding: 13px;
   cursor: pointer;
-  .num{
-    font-size: 35px;
-    width: 100px;
-    color:@secondColor;
-    font-family: @secondFont;
-    font-weight: bold;
-    transition: .2s;
-  }
+  padding: 1vw;
   .title{
     width: 60%;
-    margin-right: 30px;
+    margin-right: 2vw;
     display: flex;
     flex-direction: column;
     .name{
       text-align: left;
-      height: 30px;
-      font-size:18px;
+      height: 10%;
+      font-size: 2.5vh;
+      line-height: 2.5vh;
       font-weight: bold;
       margin-bottom: 15px;
     }
     .content{
       width: 100%;
-      height: 100px;
-      font-size: 14px;
+      height: 30%;
+      font-size: 1.6vh;
       text-align: left;
       overflow: hidden;
       text-overflow:ellipsis;
@@ -99,12 +89,12 @@ export default {
     }
     .bottom{
       width: 100%;
-      height: 20px;
+      height: 10%;
       padding-left:10%;
-      line-height: 20px;
+      line-height: 2vh;
       text-align: left;
       span{
-        font-size: 14px;
+        font-size: 1.8vh;
         color:rgb(192, 192, 192);
         display: inline-block;
         width: 30%;
@@ -112,24 +102,13 @@ export default {
     }
   }
   .image{ 
-     width: 40%;
+    flex: 1;
+    height: 17vh;
     img{
-      width: 100%;
-      // height: 100px;
-      // height: 100%;
-      border-radius: 5px;
+      height: 100%;
+      width: auto;
+      border-radius: 2px;
     }
-  }
-
-}
-.inner:hover{
-  .num{
-    font-size: 40px;
-    text-shadow: 0 0 3px @mainColor;
-    transform: translateY(5px); 
-  }
-  .name{
-    color:@hoverColor;
   }
 }
 </style>

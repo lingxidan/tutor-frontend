@@ -38,14 +38,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       ? { warnings: false, errors: true }
       : false,
     publicPath: config.dev.assetsPublicPath,
-    proxy: config.dev.proxyTable,
+    // proxy: config.dev.proxyTable,
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:8877/shizhe',
+        target: 'http://101.200.35.16:8080/shizhe',
         changeOrigin: true
       }
     }
@@ -70,7 +70,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         to: config.dev.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
   ]
 })
 

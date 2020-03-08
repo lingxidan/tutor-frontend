@@ -1,29 +1,25 @@
 <template>
   <div class="teacher" @click="showJob">
     <div class="mainInfo">
-      <div class="name">{{teacher.name}}</div>
+      <div class="name"><p>{{teacher.name}}</p></div>
       <div class="require">
-        <span>{{teacher.education}}</span>
+        <span>学历:{{teacher.education}}</span>
         <!-- <span>{{teacher.during}}</span>
         <span>{{teacher.teacherCert?"要求教资":"不要求教资"}}</span> -->
       </div>
     </div>
     <div class="schoolInfo">
-      <div class="name">{{teacher.schoolName}}</div>
+      <div class="name"><p>{{teacher.schoolName}}</p></div>
       <div class="require">
         <span>{{teacher.schoolAddr}}</span>
       </div>
     </div>
     <div class="contactInfo">
       <div class="change">
-        <span>
-          <img :src="teacher.contactImg" alt="" />
-          </span>
         <span>{{teacher.contactPerson}}</span>
         <span>{{teacher.contactJob}}</span>
       </div>
       <el-button class="btnChange" @click="addContact">立即沟通</el-button>
-      <el-button v-if="interest" class="btnChange" plain>取消关注</el-button>
     </div>
   </div>
 </template>
@@ -54,10 +50,6 @@ export default {
         }
       }
         
-    },
-    interest:{
-      type:Boolean,
-      default:false
     }
   },
   components:{
@@ -97,31 +89,26 @@ export default {
   width: 100%;
   border-top:none;
   background-color: #fff;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding: 0.2vh 0;
   cursor: pointer;
   .name{
     text-align: left;
-    font-size: 20px;
-    padding-left: 10px;
-    margin-bottom: 5px;
-    height: 50%;
-    line-height: 26px;
-    // font-family: @thirdFont;
+    padding-left: 0.8vw;
+    margin-top: 0.7vh;
+    height: 45%;
+    p{
+      font-size: 2.4vh;
+      position: relative;
+      bottom: 0;
+    }
   }
   .require{
     color: #aaa;
-    white-space: nowrap;
-    display:flex;
-    align-items: left;
-    margin-bottom: 5px;
-    font-size: 12px;
+    text-align: left;
+    font-size: 1.4vh;
     span{
       display: inline-block;
-      padding-right: 10px;
-      padding-left: 10px;
-      // width: 30%;
-      border-right: 1px solid @mainColor;
+      padding-left: 0.8vw;
       text-align: center;
     }
     span:last-of-type{
@@ -129,63 +116,71 @@ export default {
     }
   }
   .mainInfo{
-    width: 38%;
+    width: 29%;
     overflow: hidden;
-    padding: 10px;
-    .name{
+    padding: 1vh;
+    .name p{
+      font-weight: bold;
+      font-size: 2vh;
       color: @secondColor;
     }
   }
   .schoolInfo{
-    width: 32%;
-    padding: 10px;
+    width: 30%;
+    padding: 1vh;
     overflow: hidden;
-    .name{
-      font-size: 16px;
+    .name p{
+      font-size: 1.7vh;
+      // margin-top: 1vh;
     }
   }
   .contactInfo{
-    width: 30%;
-    padding: 10px;
-    overflow: hidden;
-    display:flex;
+    flex: 1;
+    padding: 1vh;
+    display: flex;
     align-items: center;
-    span{
-      display: inline-block;
-      text-align: center;
-      font-size: 12px;
-    }
-    span:first-of-type{
-      width: 20px;
-      height: 20px;
-      border-right: none;
-    }
-    span:last-of-type{
-      border-right: none;
-      border-left: 1px solid @mainColor;
-      padding-left: 5px;
-    }
-    span img{
-      width: 100%;
-      vertical-align: middle;
+    justify-content: left;
+    .change{
+      position: relative;
+      left: 0;
+      span{
+        display: inline-block;
+        text-align: center;
+        font-size: 1.5vh;
+      }
+      span:first-of-type{
+        width: 4vw;
+        height: 2vh;
+        text-align: right;
+        border-right: none;
+        font-weight: bold;
+        padding-right: 0.2vw;
+      }
+      span:last-of-type{
+        border-right: none;
+        border-left: 1px solid @fourthColor;
+        padding-left: 0.5vw;
+      }
     }
   }
   .btnChange{
     display: none;
-    width: 80%;
+    width: 65%;
     background-color: @secondColor;
-    border:none;
-    color:white;
+    color:@sixthColor;
+    font-size: 1.7vh;
+    letter-spacing: 1px;
+    margin-left: 2vw;
   }
   .btnChange:hover{
-    background-color: @hoverColor;
+    background-color: @thirthColor;
   }
 }
 .teacher:hover{
-  transform: translateZ(1px);
-  box-shadow: 0 0 1px 0 @hoverColor;
+  // box-shadow: 0 0 1px 0 @thirthColor;
+  background-color: @sixthColor;
   .mainInfo .name{
-    color:@hoverColor;
+    color:@thirthColor;
   }
   .contactInfo .change{
     display: none;

@@ -359,7 +359,7 @@ export default {
     padding-bottom: 0;
   }
   .el-button:hover,.el-button:focus,.el-input-group__append:hover,.el-input-group__append:focus{
-    background-color: @hoverColor;
+    background-color: @thirthColor;
     border: none;
   }
   .el-input__inner:hover,.el-input__inner:focus{
@@ -382,9 +382,9 @@ export default {
   position: relative;
   padding-left: 100px;
   // padding-right: 80px;
-  // background:  linear-gradient(60deg,#fff 30%,@hoverColor 30%, @secondColor 90%);
-  // background: linear-gradient(60deg, #fff 33.3%, @hoverColor 0, @hoverColor 66.6%,@secondColor 0); 
-  background: linear-gradient(60deg, @secondColor 33.3%, @hoverColor 0, @hoverColor 67%,#fff 0); 
+  // background:  linear-gradient(60deg,#fff 30%,@thirthColor 30%, @secondColor 90%);
+  // background: linear-gradient(60deg, #fff 33.3%, @thirthColor 0, @thirthColor 66.6%,@secondColor 0); 
+  background: linear-gradient(60deg, @secondColor 33.3%, @thirthColor 0, @thirthColor 67%,#fff 0); 
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -452,7 +452,7 @@ export default {
       text-decoration: underline;
       cursor: pointer;
       &:hover{
-        color: @hoverColor;
+        color: @thirthColor;
       }
     }
     // .login_bottom{

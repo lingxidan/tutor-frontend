@@ -1,7 +1,7 @@
 <template>
   <!-- <div class="main"> -->
-    <el-col :span="8" class="elCol" @click="showArticle">
-      <el-card :body-style="{ padding: '0px' }" class="card">
+    <el-col :span="6" class="elCol" @click="showArticle">
+      <el-card :body-style="{ padding: '0px' }" class="card" shadow="hover">
         <img :src="essay.img" class="image">
         <div class="bottom_text">
           {{essay.title}}
@@ -42,7 +42,6 @@ export default {
   },
   methods:{
     showArticle(){
-    console.log(this.essay)
       this.$router.push({path:'/article',query:{id:this.essay.id}})
 
     }
@@ -56,12 +55,12 @@ export default {
   cursor: pointer;
 }
 .bottom_text {
-  // margin-top: 13px;
-  line-height: 13px;
-  padding: 12px;
+  line-height: 2.2vh;
+  font-weight: 600;
+  padding: 1vh;
   text-align: left;
-  font-family: @thirdFont;
-  font-size: 18px;
+  font-size: 2vh;
+  letter-spacing: 1px;
 }
 
 .image {
@@ -70,7 +69,6 @@ export default {
 }
 .mask {
   position: absolute;
-  // top: -height;
   left: 0;
   width: 100%;
   color: #ffffff;
@@ -78,24 +76,29 @@ export default {
 }
 .card{
   position: relative;
-  margin-top:5px;
-  padding-bottom: 8px;
+  margin-top:1vh;
+  p{
+    font-size: 1.5vh;
+    text-align: right;
+  }
 }
 .card:hover{
-  // transform: translateZ(1px) scale(1.01,1.01);
   .mask{
-    // border-top:5px solid @secondColor;
     top:0;
     height: 100%;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 </style>
 <style lang="less">
 .elCol{
-  .el-card.is-always-shadow{
-    box-shadow: none;
-    border: none;
+  .el-card.is-hover-shadow{
+    border-radius: 0;
+    // border: none;
+    margin-bottom: 0.4vw;
+    .el-card__body{
+      margin: 0.7vw;
+    }
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="volunteer">
     <div class="mainInfo">
-      <div class="name">{{volunteer.name}}</div>
+      <div class="name"><p>{{volunteer.name}}</p></div>
       <div class="require">
         <span>{{volunteer.education}}</span>
         <span>{{volunteer.during}}</span>
@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="schoolInfo">
-      <div class="name">教授科目</div>
+      <div class="name"><p>教授科目</p></div>
       <div class="require">
         <span v-for="(pro, index) in volunteer.projects" :key="index">
           {{pro}}
@@ -75,34 +75,30 @@ export default {
 .volunteer{
   display: flex;
   width: 100%;
-  border: 1px solid #fbeedc;
   border-top:none;
   background-color: #fff;
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding: 0.2vh 0;
   cursor: pointer;
   .name{
     text-align: left;
-    font-size: 18px;
-    padding-left: 10px;
-    margin-bottom: 5px;
-    height: 50%;
-    line-height: 26px;
-    // font-family: @thirdFont;
+    padding-left: 0.6vw;
+    margin-top: 0.7vh;
+    height: 45%;
+    p{
+      text-align: left;
+      font-size: 2.4vh;
+      position: relative;
+      bottom: 0;
+    }
   }
   .require{
     color: #aaa;
-    white-space: nowrap;
-    display:flex;
-    align-items: left;
-    margin-bottom: 5px;
-    font-size: 12px;
+    text-align: left;
+    font-size: 1.4vh;
     span{
       display: inline-block;
-      // width: 30%;
-      padding-right: 10px;
-      padding-left: 10px;
-      border-right: 1px solid @mainColor;
+      padding: 0 0.6vw;
+      border-right: 1px solid @fifthColor;
       text-align: center;
     }
     span:last-of-type{
@@ -110,45 +106,50 @@ export default {
     }
   }
   .mainInfo{
-    width: 38%;
+    width: 29%;
     overflow: hidden;
-    padding: 10px;
-    .name{
+    padding: 1vh;
+    .name p{
+      font-weight: bold;
+      font-size: 2vh;
       color: @secondColor;
     }
   }
   .schoolInfo{
-    width: 32%;
-    padding: 10px;
+    width: 30%;
+    padding: 1vh;
     overflow: hidden;
-    .name{
-      font-size: 16px;
+    .name p{
+      font-size: 1.4vh;
     }
   }
   .contactInfo{
-    width: 30%;
-    padding: 10px;
-    overflow: hidden;
-    display:flex;
+    flex: 1;
+    padding: 1vh;
+    display: flex;
     align-items: center;
-    span{
-      display: inline-block;
-      text-align: center;
-      font-size: 12px;
-    }
-    span:first-of-type{
-      width: 20px;
-      height: 20px;
-      border-right: none;
-    }
-    span:last-of-type{
-      border-right: none;
-      border-left: 1px solid @mainColor;
-      padding-left: 5px;
-    }
-    span img{
-      width: 100%;
-      vertical-align: middle;
+    justify-content: left;
+    .change{
+      position: relative;
+      left: 0;
+      span{
+        display: inline-block;
+        text-align: center;
+        font-size: 1.5vh;
+      }
+      span:first-of-type{
+        width: 4vw;
+        height: 2vh;
+        text-align: right;
+        border-right: none;
+        font-weight: bold;
+        padding-right: 0.2vw;
+      }
+      span:last-of-type{
+        border-right: none;
+        border-left: 1px solid @fourthColor;
+        padding-left: 0.5vw;
+      }
     }
   }
   .btnChange{
@@ -159,14 +160,13 @@ export default {
     color:white;
   }
   .btnChange:hover{
-    background-color: @hoverColor;
+    background-color: @thirthColor;
   }
 }
 .volunteer:hover{
-  transform: translateZ(1px);
-  box-shadow: 0 0 1px 0 @hoverColor;
+  background-color: @sixthColor;
   .mainInfo .name{
-    color:@hoverColor;
+    color:@thirthColor;
   }
   .contactInfo .change{
     display: none;

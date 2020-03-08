@@ -57,6 +57,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2000;
   
   background: linear-gradient(60deg,#fba400 33.3%, #fce9c7 0, #fce9c7 67%,#fff 0); 
   .content{

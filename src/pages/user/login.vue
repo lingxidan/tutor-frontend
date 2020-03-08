@@ -136,8 +136,8 @@ export default {
     // left: 180px;
     color: @mainColor;
     &:hover{
-      color: @hoverColor;
-      // background-color:@hoverColor;
+      color: @thirthColor;
+      // background-color:@thirthColor;
     }
   }
   .title{
@@ -154,7 +154,7 @@ export default {
     color: white;
     letter-spacing: 5px;
     font-weight: bolder;
-    text-shadow: 3px 3px 2px @hoverColor;
+    text-shadow: 3px 3px 2px @thirthColor;
   }
   .form-out-cont {
     display:flex;
@@ -235,7 +235,7 @@ export default {
     text-decoration: underline;
     cursor: pointer;
     &:hover{
-      color: @hoverColor;
+      color: @thirthColor;
     }
   }
 }
@@ -304,16 +304,6 @@ export default {
 </style>
 <style lang="less">
 @import '../../../static/css/main';
-.el-message .el-message__content{
-  color:@secondColor;
-  display: inline-block;
-  margin-left:30px;
-}
-.el-self-message{
-  background-color: #fff;
-  border-color: @mainColor;
-}
-
 .el-input__inner:hover,.el-input__inner:focus{
   border-color: @secondColor;
 }

@@ -1,112 +1,98 @@
 <template>
-  <div class="index">
-    <!--导航栏以及轮播图-->
-    <div class="show" ref="top">
-      <!-- <carousel></carousel> -->
+<div class="index">
+  <!--左右导航-->
+  <div class="rightNav" ref="rightNav">
+    <ul>
+      <li @click="login">登录</li>
+      <el-popover placement="left" trigger="hover">
+        <ul class="registe">
+          <li @click="registe('school')">我想招募</li>
+          <li @click="registe('volunteer')">我想支教</li>
+        </ul>
+        <li slot="reference" style="border-top:none;">注册</li>
+        <!-- <li >传播分享</li> -->
+      </el-popover>
+      <!-- <li>我的信息</li> -->
+      <li>聊天室</li>
+      <el-popover placement="left" trigger="hover">
+        <input class="el-input__inner copy-input" type="text" id="copy_url" v-model="url" readonly />
+        <button ref="copyBtn" class="copyBtn" data-clipboard-target="#copy_url" @click="copy">
+          复制网址
+        </button>
+        <li slot="reference" style="border-top:none;">传播分享</li>
+      </el-popover>
+    </ul>
+  </div>
+  <div class="leftNav" ref="leftNav">
+    <ul>
+      <li>招募信息</li>
+      <li>文章</li>
+      <li>交流区</li>
+      <li class="top" @mouseenter.self="handleTopEnter" @mouseleave.self="handleTopLeave" @click="scrollTop">
+        <p class="arrow" v-if="moveArrow">&lt;</p>
+        <p v-else>返回顶部</p>
+      </li>
+    </ul>
+  </div>
+  <!-- 主板块显示 -->
+  <div class="main">
+    <!-- 搜索栏 -->
+    <div class="search" ref="search">
+      <el-select name="" id="" v-model="searchMsg.select.value" class="searchSel">
+        <el-option v-for="sel in searchSel" :key="sel.id" :value="sel.value" :label="sel.label"></el-option>
+      </el-select>
+      <el-input v-model="searchMsg.searchText" placeholder="请输入内容" class="input-with-select searchInput">
+      </el-input>
+      <el-button icon="el-icon-search" @click="searchByKeyword">搜索</el-button>
     </div>
-    <!--左右导航-->
-    <div class="rightNav" ref="rightNav">
-      <ul>
-        <li @click="login">登录</li>
-        <el-popover placement="left" trigger="hover">
-          <ul class="registe">
-            <li @click="registe('school')">我想招募</li>
-            <li @click="registe('volunteer')">我想支教</li>
-          </ul>
-          <li slot="reference" style="border-top:none;">注册</li>
-          <!-- <li >传播分享</li> -->
-        </el-popover>
-        <!-- <li>我的信息</li> -->
-        <li>聊天室</li>
-        <el-popover placement="left" trigger="hover">
-          <input type="text" id="copy_url" v-model="url" readonly/>
-          <button ref="copyBtn" class="copyBtn"
-          data-clipboard-target="#copy_url" @click="copy">
-            复制网址
-          </button>
-          <li slot="reference" style="border-top:none;">传播分享</li>
-        </el-popover>
-      </ul>
-    </div>
-    <div class="leftNav" ref="leftNav">
-      <ul>
-        <li>招募信息</li>
-        <li>文章</li>
-        <li>交流区</li>
-        <li class="top" @mouseenter.self="handleTopEnter" @mouseleave.self="handleTopLeave" @click="scrollTop">
-          <p class="arrow" v-if="moveArrow">&lt;</p>
-          <p v-else>返回顶部</p>
-        </li>
-      </ul>
-    </div>
-    <!-- 主板块显示 -->
-    <div class="main">
-      <!-- 搜索栏 -->
-      <div class="search" ref="search">
-        <el-select name="" id="" 
-        v-model="searchMsg.select.value"
-        class="searchSel">
-          <el-option v-for="sel in searchSel" 
-          :key="sel.id" :value="sel.value"
-          :label="sel.label"></el-option>
-        </el-select><el-input v-model="searchMsg.searchText"  placeholder="请输入内容" 
-        class="input-with-select searchInput">
-        </el-input><el-button icon="el-icon-search" @click="searchByKeyword">搜索</el-button>
+    <!-- 日志文章 -->
+    <div class="articles" ref="info">
+      <div class="title">
+        <div class="name">日志文章</div>
+        <div class="more">查看更多 >></div>
       </div>
-      <!-- 日志文章 -->
-      <div class="articles">
-        <div class="title">日志文章</div>
-        <el-row :gutter="10">
-          <!-- <el-col :span="6"  class="el-col"> -->
-            <!-- <essay v-for="(article, index) in articles" :key="index"
+      <el-row :gutter="10">
+        <!-- <el-col :span="6"  class="el-col"> -->
+        <!-- <essay v-for="(article, index) in articles" :key="index"
             :essay="article"></essay> -->
-            <essay v-for="(article, index) in 9" :key="index" ></essay>
-          <!-- </el-col> -->
-          
-        </el-row>
+        <essay v-for="(article, index) in 8" :key="index"></essay>
+        <!-- </el-col> -->
+
+      </el-row>
+    </div>
+    <!-- 招募职位、志愿者信息查看 -->
+    <div class="info">
+      <div class="title">
+        <div class="name">招募信息</div>
+        <div class="more">查看更多 >></div>
       </div>
-      <!-- 招募职位、志愿者信息查看 -->
-      <div class="info" ref="info">
-        <div class="title">招募信息</div>
-        <div class="teachers">
-          <teacher class="single-teacher" v-for="(teacher,index) in teachers" :key="index"
-          :teacher="teacher"></teacher>
-        </div>
-        <div class="volunteers">
-          <volunteer class="single-volunteers" v-for="(volunteer,index) in volunteers" :key="index"
-          :volunteer="volunteer"></volunteer>
-        </div>
+      <div class="teachers">
+        <teacher class="single-teacher" v-for="(teacher,index) in teachers" :key="index" :teacher="teacher"></teacher>
       </div>
-      <!-- 热门帖子 -->
-      <div class="postCard">
-        <div class="title">讨论交流区</div>
-        <!-- <disguss class="post-single" v-for="(post,index) in posts" :key="index" :disguss="post">
+      <div class="volunteers">
+        <volunteer class="single-volunteers" v-for="(volunteer,index) in volunteers" :key="index" :volunteer="volunteer"></volunteer>
+      </div>
+    </div>
+    <!-- 热门帖子 -->
+    <div class="postCard">
+      <div class="title">
+        <div class="name">讨论交流区</div>
+        <div class="more">查看更多 >></div>
+      </div>
+      <!-- <disguss class="post-single" v-for="(post,index) in posts" :key="index" :disguss="post">
           <div slot="num"><div class="num"></div></div>
         </disguss> -->
-        <disguss v-for="(index,o) in 4" :key="index" :disguss="disgussHot">
-              <div slot="num"><div class="num">{{index}}</div></div>
-            </disguss>
-        <!-- <el-tabs tab-position="top" type="card" class="elTabs">
-          <el-tab-pane>
-            <span slot="label"><i class="el-icon-self-hot"></i> 热榜</span>
-            <disguss v-for="(index,o) in 4" :key="index" :disguss="disgussHot">
-              <div slot="num"><div class="num">{{index}}</div></div>
-            </disguss>
-          </el-tab-pane>
-          <el-tab-pane>
-            <span slot="label"><i class="el-icon-star-on"></i> 关注</span>
-            <disguss v-for="(index,o) in 5" :key="index" :disguss="disgussStar">
-              <div slot="num"><div class="num"></div></div>
-            </disguss>
-          </el-tab-pane>
-        </el-tabs> -->
+      <div class="disgusses">
+        <disguss v-for="(index,o) in 4" :key="index" :disguss="disgussHot" class="post-single">
+        </disguss>
       </div>
     </div>
-    <div class="login" ref="login">
-        <login @cancel="cancel"></login>
-    </div>
-
   </div>
+  <div class="login" ref="login">
+    <login @cancel="cancel"></login>
+  </div>
+
+</div>
 </template>
 
 <script>
@@ -132,135 +118,135 @@ export default {
       url: "https://lingxidan.github.io/",
       panels: {},
       moveArrow: true,
-      searchSel:[
-        {
-          id:0,
-          field:"total",
-          label:"全部",
-          value:"全部"
+      searchSel: [{
+          id: 0,
+          field: "total",
+          label: "全部",
+          value: "全部"
         },
         {
-          id:1,
-          field:"school",
-          label:"学校",
-          value:"学校"
+          id: 1,
+          field: "school",
+          label: "学校",
+          value: "学校"
         },
         {
-          id:2,
-          field:"teacher",
-          label:"教职",
-          value:"教职"
+          id: 2,
+          field: "teacher",
+          label: "教职",
+          value: "教职"
         }
       ],
-      teachers:[
-        {
-          name:"数学教师",
-          during:"4-10年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"刘女士",
-          contactJob:"教育局代表人",
+      teachers: [{
+          name: "数学教师",
+          during: "4-10年",
+          education: "本科",
+          teacherCert: true,
+          schoolName: "XXX小学",
+          schoolAddr: "北京市 北京市 朝阳区",
+          contactImg: "/src/assets/logo_vue.png",
+          contactPerson: "刘女士",
+          contactJob: "教育局代表人",
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
+          name: "语文教师",
+          during: "1-5年",
+          education: "本科",
+          teacherCert: true,
+          schoolName: "XXX小学",
+          schoolAddr: "北京市 北京市 朝阳区",
+          contactImg: "/src/assets/logo_vue.png",
+          contactPerson: "张先生",
+          contactJob: "校长",
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
+          name: "语文教师",
+          during: "1-5年",
+          education: "本科",
+          teacherCert: true,
+          schoolName: "XXX小学",
+          schoolAddr: "北京市 北京市 朝阳区",
+          contactImg: "/src/assets/logo_vue.png",
+          contactPerson: "张先生",
+          contactJob: "校长",
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
+          name: "语文教师",
+          during: "1-5年",
+          education: "本科",
+          teacherCert: true,
+          schoolName: "XXX小学",
+          schoolAddr: "北京市 北京市 朝阳区",
+          contactImg: "/src/assets/logo_vue.png",
+          contactPerson: "张先生",
+          contactJob: "校长",
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
-        }],
-      volunteers:[{
-          name:"张老师",
-          during:"4-10年经验",
-          education:"本科",
-          projects:["数学","英语","语文"],
+          name: "语文教师",
+          during: "1-5年",
+          education: "本科",
+          teacherCert: true,
+          schoolName: "XXX小学",
+          schoolAddr: "北京市 北京市 朝阳区",
+          contactImg: "/src/assets/logo_vue.png",
+          contactPerson: "张先生",
+          contactJob: "校长",
+        }
+      ],
+      volunteers: [{
+          name: "张老师",
+          during: "4-10年经验",
+          education: "本科",
+          projects: ["数学", "英语", "语文"],
         },
         {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
+          name: "曾老师",
+          during: "3-5年经验",
+          education: "研究生",
+          projects: ["数学", "语文"],
         },
         {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
+          name: "曾老师",
+          during: "3-5年经验",
+          education: "研究生",
+          projects: ["数学", "语文"],
         },
         {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
+          name: "曾老师",
+          during: "3-5年经验",
+          education: "研究生",
+          projects: ["数学", "语文"],
         },
         {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
-        }],
-      searchMsg:{
+          name: "曾老师",
+          during: "3-5年经验",
+          education: "研究生",
+          projects: ["数学", "语文"],
+        }
+      ],
+      searchMsg: {
         select: "",
-        searchText:""
+        searchText: ""
       },
-      disgussHot:{
-        title:"志愿过程中的费用如何解决?",
-        content:"当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取",
-        img:"./../../../static/img/panel_3.jpg",
-        viewCnt:13000,
-        disCnt:300
+      disgussHot: {
+        title: "志愿过程中的费用如何解决?",
+        content: "当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取",
+        img: "./../../../static/img/panel_3.jpg",
+        viewCnt: 13000,
+        disCnt: 300
       },
-      disgussStar:{
-        title:"志愿过程中会遇到什么不可预计的事情?",
-        content:"志愿过程中，会有哪些需要预防的事情，有什么应急处理方法志愿过程中，会有哪些需要预防的事情，有什么应急处理方法志愿过程中，会有哪些需要预防的事情，有什么应急处理方法",
-        img:"./../../../static/img/panel_1.jpg",
-        viewCnt:13000,
-        disCnt:300
+      disgussStar: {
+        title: "志愿过程中会遇到什么不可预计的事情?",
+        content: "志愿过程中，会有哪些需要预防的事情，有什么应急处理方法志愿过程中，会有哪些需要预防的事情，有什么应急处理方法志愿过程中，会有哪些需要预防的事情，有什么应急处理方法",
+        img: "./../../../static/img/panel_1.jpg",
+        viewCnt: 13000,
+        disCnt: 300
       }
     }
   },
   mounted() {
-    let _this=this
-    this.panels.top = this.$refs.top
+    let _this = this
+    this.panels.top = this.$parent.$refs.top
     this.panels.search = this.$refs.search
     this.panels.rightNav = this.$refs.rightNav
     this.panels.leftNav = this.$refs.leftNav
@@ -272,32 +258,31 @@ export default {
     this.searchMsg.select = this.searchSel[0]
     // 复制按钮
     // console.log(this.$refs)
-    this.clipboard = new Clipboard(this.$refs.copyBtn)
     window.addEventListener('scroll', this.handleScroll, true); // 监听（绑定）滚轮滚动事件
     this.$request.selectJobByCondition({}).then(
-      res=>{
+      res => {
         console.log(res.data)
-        this.teachers=res.data.slice(0,6)
+        // this.teachers = res.data.slice(0, 6)
       }
     )
     this.$request.getUser().then(
-      res=>{
-        res.data=res.data.reverse()
-        let userList=[]
-        for(let i=0;i<res.data.length;i++){
-          _this.getUser(res.data[i].id,(res)=>{
-            if(userList.length<6){
+      res => {
+        res.data = res.data.reverse()
+        let userList = []
+        for (let i = 0; i < res.data.length; i++) {
+          _this.getUser(res.data[i].id, (res) => {
+            if (userList.length < 6) {
               userList.push(res.data)
               console.log(userList)
-              _this.volunteers=userList
+              // _this.volunteers = userList
             }
           })
         }
       }
     )
     this.$request.selectArticleByCondition({}).then(
-      res=>{
-        _this.articles=res.data
+      res => {
+        _this.articles = res.data
         // res.data=res.data.reverse()
         // let userList=[]
         // for(let i=0;i<res.data.length;i++){
@@ -312,8 +297,8 @@ export default {
       }
     )
     this.$request.selectPostByCondition({}).then(
-      res=>{
-        _this.posts=res.data
+      res => {
+        _this.posts = res.data
         // res.data=res.data.reverse()
         // let userList=[]
         // for(let i=0;i<res.data.length;i++){
@@ -329,16 +314,20 @@ export default {
     )
   },
   methods: {
-    getUser(userId,func){
-      let _this=this
-      _this.$request.getVolunteer({userId:userId}).then(
-        res=>{
+    getUser(userId, func) {
+      let _this = this
+      _this.$request.getVolunteer({
+        userId: userId
+      }).then(
+        res => {
           func(res)
         },
-        error=>{
-          _this.$request.getRecuriter({userId:userId}).then(res=>{
+        error => {
+          _this.$request.getRecuriter({
+            userId: userId
+          }).then(res => {
             func(res)
-          },)
+          }, )
         }
       )
     },
@@ -348,18 +337,18 @@ export default {
     // volunteer(){
     //   this.$router.push('/registe/volunteer')
     // },
-    registe(opt){
+    registe(opt) {
       console.log(opt)
-      this.$router.push('/registe/'+opt)
+      this.$router.push('/registe/' + opt)
     },
-    login(){
+    login() {
       // let _login = this.panels.login
       // _login.style.display ="block"
       this.$router.push('/login')
     },
-    cancel(){
+    cancel() {
       let _login = this.panels.login
-      _login.style.display ="none"
+      _login.style.display = "none"
       // this.$router.push('/login')
     },
     // 滚动条事件
@@ -371,7 +360,7 @@ export default {
       let _info = this.panels.info
 
       let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-      let topHeight = _top.clientHeight+80
+      let topHeight = _top.clientHeight + 80
       let searchHeight = _search.clientHeight
       let searchWidth = _search.clientWidth
 
@@ -381,7 +370,9 @@ export default {
         _search.style.top = "0px"
         _search.style.left = "0px"
         _search.style.right = "0px"
-        _search.style.backgroundColor = "#fce9c7"
+        _search.style.background = "linear-gradient(to bottom,rgb(105, 141, 116) 20%, transparent 80%)"
+        _search.style.width = "80%"
+        _search.style.padding = "1vh 10vw"
         _search.style.zIndex = "5"
         _rightNav.style.opacity = "1"
         _leftNav.style.opacity = "1"
@@ -390,7 +381,9 @@ export default {
         _info.style.marginTop = searchHeight + "px"
       } else {
         _search.style.position = "relative"
-        _search.style.backgroundColor = "inherit"
+        _search.style.background = "inherit"
+        _search.style.width = "100%"
+        _search.style.padding = "1vh 0"
         _rightNav.style.display = "none"
         _leftNav.style.display = "none"
         _rightNav.style.opacity = "0"
@@ -422,89 +415,81 @@ export default {
     // 复制网址分享
     copy() {
       let _this = this
-      let clipboard = _this.clipboard
+      let clipboard = new Clipboard(this.$refs.copyBtn)
       clipboard.on('success', e => {
-        // alert("复制成功")
-        
         this.$message({
           message: '复制成功！非常感谢您的分享~',
           type: 'success',
-          customClass:"el-self-message",
-          iconClass:"el-icon-self-success",
+          customClass: "el-self-message",
+          iconClass: "el-icon-self-success"
         });
         // 释放内存  
         clipboard.destroy()
-        _this.clipboard = new Clipboard(_this.$refs.copyBtn)
       })
       clipboard.on('error', e => {
-        // 不支持复制
         this.$message({
           message: '复制失败了T_T，请您手动复制',
           type: 'error',
-          customClass:"el-self-message",
+          customClass: "el-self-message",
         });
         // 释放内存  
         clipboard.destroy()
-        _this.clipboard = new Clipboard(_this.$refs.copyBtn)
       })
     },
-    searchByKeyword(){
-      this.$router.push({path:'/search',query:{keyword:this.searchMsg.searchText}})
+    searchByKeyword() {
+      this.$router.push({
+        path: '/search',
+        query: {
+          keyword: this.searchMsg.searchText
+        }
+      })
       // console.log()
 
     }
   }
 }
 </script>
-<style lang="less">
-@import '../../../static/css/main';
-.el-message .el-message__content{
-  color:@secondColor;
-  display: inline-block;
-  margin-left:30px;
-}
-.el-self-message{
-  background-color: #fff;
-  border-color: @mainColor;
-}
-</style>
-
 <style lang="less" scoped>
 @import '../../../static/css/main';
-.login{
+
+.login {
   position: absolute;
   position: fixed;
   width: 100%;
   height: 100%;
-  top:0;
-  left:0;
+  top: 0;
+  left: 0;
   z-index: 200;
-  background-color: rgba(252,233,199,0.6);
-  // background-color: rgba(250,184,62,0.5);
-  // background-color: rgba(251,164,0,0.6);
-  // background-color: rgba(255,255,255,.5);
-  // opacity: .7;
+  background-color: rgba(252, 233, 199, 0.6);
 }
-ul.registe{
-  li{
-    height: 30px;
-    line-height: 30px;
+
+ul.registe {
+  width: 8vw;
+  li {
+    // width: 8vw;
+    width: 100%;
+    height: 4vh;
+    line-height: 4vh;
     text-align: center;
-    background-color:@secondColor;
+    background-color: @secondColor;
     color: #fff;
     cursor: pointer;
-    border-radius: 10px 0 10px 0;
-    margin-top: 5px;
-    font-size: 13px;
-    &:first-of-type{
+    border-radius: 1vw 0 1vw 0;
+    margin-top: 0.5vh;
+    font-size: 1.6vh;
+    letter-spacing: 1px;
+
+    &:first-of-type {
       margin: 0px;
     }
-    &:hover{
-      color:white;
-      background-color: @hoverColor;
+
+    &:hover {
+      color: white;
+      background-color: @thirthColor;
     }
   }
 }
+
 .index {
   display: flex;
   flex-direction: column !important;
@@ -513,56 +498,45 @@ ul.registe{
   width: 100%;
   height: 100%;
   overflow: auto;
-  .show {
-    width: 100%;
-    margin: 10px 80px;
-  }
 }
+
 .index>.main {
   position: relative;
-  padding: 3px;
-  width: 70%;
-  margin: 20px;
-  margin-top: 0px;
+  padding: 1vh 2vw 4vh;
+  width: 75%;
+  // margin: 2vh;
+  // margin-top: 1vh;
   display: flex;
   flex-direction: column !important;
+  background-color: #fff;
+  box-shadow: 0 0 3px 0 #bbb;
+
   // height: 1000px;
-  .search{
+  .search {
     width: 100%;
-    padding: 10px;
+    padding: 1vh 0;
     transition: .3s;
-    // padding-bottom: 10px;
-    // background-color: rgba(255,255,255,.5);
-    // .searchSel{
-    //   width: 10%;
-    // }
-    // .searchInput{
-    //   width: 60%;
-    // }
   }
-  .info{
+
+  .info {
     position: relative;
-    margin-top: 10px;
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    .teachers{
-      border-top: 5px solid @secondColor;
-      display: inline-block;
-      width: 50%;
-      .single-teacher{
-        height: 70px;
 
-      }
-      
-    }
-    .volunteers{
-      border-top: 5px solid @secondColor;
+    .teachers,.volunteers {
+      border-top: 5px solid @thirthColor;
       display: inline-block;
       width: 50%;
-      .single-volunteers{
-        height: 70px;
+
+      .single-teacher,.single-volunteers {
+        height: 10vh;
+        border-bottom: 1px solid @sixthColor;
       }
+      .single-volunteers {
+        border-left: 1px solid @sixthColor;
+      }
+
     }
   }
 }
@@ -571,112 +545,137 @@ ul.registe{
 .rightNav {
   cursor: pointer;
   position: fixed;
-  width: 5%;
+  width: 6%;
   top: 50%;
-  transform: translate(0, -50%);
+  transform: translate(0, -80%);
   opacity: 0;
-  transition: opacity .5s ease;
-  li {
+  ul{
     width: 100%;
-    line-height: 30px;
-    background-color: #fff;
-    font-size: 14px;
-    border: 1px solid #fbeedc;
-    border-top: 0;
-    padding: 5px;
+  }
+  li {
+    position: relative;
+    width: 100%;
+    line-height: 6vh;
+    font-size: 1.8vh;
+    border: 1px solid @sixthColor;
+    border-top: none;
     text-align: center;
+    // padding: 0 0.4vw;
+    color: @mainColor;
     overflow: hidden;
   }
 
-  li:first-child {
-    border-top: 5px solid @secondColor;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -1vh;
+    width: 102%;
+    height: 1vh;
+    background-color: @thirthColor;
   }
-  li:hover{
-    background-color:@hoverColor;
+
+  li:hover {
+    background-color: @fourthColor;
     color: #fff;
   }
+  
 }
 
 .leftNav {
   left: 0;
+  li{
+    border-left: none;
+  }
   li.top {
-    background-color:@secondColor;
     p.arrow {
       display: block;
-      color: white;
+      color: @fifthColor;
       transform: rotate(90deg) scaleX(3) scaleY(8);
-      margin-left: -10px;
+      font-size: 2vh;
     }
   }
-  li.top:hover{
-    background-color:@hoverColor;
-    color:white;
+
+  li.top:hover {
+    background-color: @thirthColor;
+    color: white;
   }
 }
-.rightNav{
+
+.rightNav {
   right: 0;
+  li{
+    border-right: none;
+  }
 }
 
-#copy_url{
-  display: inline-block;
-  background-color: rgb(252, 252, 252);
-  border:none;
-  border: 1px solid @secondColor;
-  margin-bottom: 5px;
-  padding: 5px;
-  padding-bottom: 3px;
-  text-align: center;
+
+.el-popover {
+  font-size: 2vh;
+  padding: 2vh;
+  min-width: 5vw;
 }
-.copyBtn{
+.copyBtn {
   display: inline-block;
   background-color: @secondColor;
   color: #f7f7f7;
   border: none;
-  padding: 5px 10px;
-  border-radius: 10px 0px 10px 0px;
-}
-.copyBtn:hover{
-  background-color: @hoverColor;
-  color:white;
-}
-.info,.articles,.postCard{
-  .title{
-    position: relative;
-    width:100%;
-    margin-top:30px;
-    margin-bottom:20px;
-    letter-spacing: 20px;
-    font-size: 25px;
-    background: url('../../../static/img/nav_bc.png') no-repeat center;
-    // color: rgb(255,255,255,1);
-    font-family: @secondFont;
-    color:#f7f7f7;
-    // border-radius: 5px;
-  }
-  .post-single{
-    margin: 5px;
-  background-color: #fff;
-  }
-  // .title:before{
-  //   content: "";
-  //   position: absolute;
-  //   left:0;
-  //   width:100%;
-  //   height: 100%;
-  //   background-color: rgba(255,255,255,.2);
-  // }
-  // .title:hover{
-  //   color:@mainColor;
-  // }
-}
-.postCard{
-  // background-color: #fff;
-}
-.elTabs{
-  background-color: #fff;
-}
-.single-teacher{
-  border: 1px solid #fbeedc;
+  height: 4vh;
+  line-height: 4vh;
+  padding: 0 1vw;
+  font-size: 1.6vh;
+  letter-spacing: 1px;
 }
 
+.copyBtn:hover {
+  background-color: @thirthColor;
+  color: white;
+}
+
+.info,
+.articles,
+.postCard {
+  .title {
+    position: relative;
+    width: 100%;
+    margin: 2.5vh 0 1vh;
+    border-left: 0.5vw solid @mainColor;
+    padding: 0.8vh;
+    padding-left: 1.8vw;
+    background: linear-gradient(to right,@secondColor 5%, transparent 50%);
+    color: #f7f7f7;
+    display: flex;
+    .name{
+      width: 30%;
+      letter-spacing: 1.2vw;
+      font-size: 3vh;
+      font-weight: bold;
+      text-align: left;
+    }
+    .more{
+      cursor: pointer;
+      position: absolute;
+      text-decoration: underline;
+      bottom: 1vh;
+      left: 25%;
+      letter-spacing: 1px;
+      font-size: 1.5vh;
+      &:hover{
+        color: @mainColor;
+      }
+    }
+  }
+  .disgusses{
+    border-top: 5px solid @thirthColor;
+  }
+  .post-single {
+    margin: 0.6vw;
+    border-bottom: 1px solid @sixthColor;
+  }
+}
+.articles{
+  .title{
+    margin-top: 1.2vh;
+  }
+}
 </style>
