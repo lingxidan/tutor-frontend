@@ -671,6 +671,9 @@ ul.registe {
   .post-single {
     margin: 0.6vw;
     border-bottom: 1px solid @sixthColor;
+    &:hover{
+      background-color: @sixthColor;
+    }
   }
 }
 .articles{
