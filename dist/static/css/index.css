@@ -1,0 +1,12 @@
+#head{
+	/* background-color: #838383; */
+	height: 70px;
+	width: 1076px;
+}
+#head .logo{
+	margin-left: 20%;
+
+}
+#head .logo img{
+	height: 70px;
+}

@@ -1,139 +1,139 @@
 import http from './http.js'
 // 用户
 const USER_URL = {
-	REGISTERECRUITER:'/api/user/registeRecruiter',
-	REGISTEVOLUNTEER:'/api/user/registeVolunteer',
-	LOGIN:'/api/user/login',
-	GETVOLUNTEER:'/api/user/getVolunteer',
-	EDITVOLUNTEER:'/api/user/editVolunteer',
-	GETRECRUITER:'/api/user/getRecruiter',
-	EDITRECRUITER:'/api/user/editRecruiter',
-	GET_VOLS:'/api/user/getVols',
-	GET_RECRS:'/api/user/getRecrs',
-	GET_USER: '/api/user/getUser'
+	REGISTERECRUITER:'/shizhe/api/user/registeRecruiter',
+	REGISTEVOLUNTEER:'/shizhe/api/user/registeVolunteer',
+	LOGIN:'/shizhe/api/user/login',
+	GETVOLUNTEER:'/shizhe/api/user/getVolunteer',
+	EDITVOLUNTEER:'/shizhe/api/user/editVolunteer',
+	GETRECRUITER:'/shizhe/api/user/getRecruiter',
+	EDITRECRUITER:'/shizhe/api/user/editRecruiter',
+	GET_VOLS:'/shizhe/api/user/getVols',
+	GET_RECRS:'/shizhe/api/user/getRecrs',
+	GET_USER: '/shizhe/api/user/getUser'
 
-	// TEST: 'http://localhost:8081/api/get',
-	// EMAIL: 'http://localhost:8081/api/email',
+	// TEST: 'http://localhost:8081/shizhe/api/get',
+	// EMAIL: 'http://localhost:8081/shizhe/api/email',
 
-	// JOB_SELECTBYID:'/api/job/selectById',
+	// JOB_SELECTBYID:'/shizhe/api/job/selectById',
 
 	// // 简历文件
-	// FILE_UPLOAD:'/api/file/upload',
-	// FILE_SELECTBYID:'/api/file/selectById',
-	// FILE_SELECTBYCOND:'/api/file/selectByCondition'
+	// FILE_UPLOAD:'/shizhe/api/file/upload',
+	// FILE_SELECTBYID:'/shizhe/api/file/selectById',
+	// FILE_SELECTBYCOND:'/shizhe/api/file/selectByCondition'
 }
 const IDENTY_URL={
-	APPLY_RECR_IDENTY: '/api/identy/applyRecrIdenty',
-	LIST_RECR_IDENTY: '/api/identy/listRecrIdenty',
-	LIST_ALL_RECR_IDENTY: '/api/identy/listAllRecrIdenty',
-	UPDATE_RECR_IDENTY: '/api/identy/updateRecrIdenty',
-	LAST_RECR_IDENTY: '/api/identy/getLasrRecrIdenty',
+	APPLY_RECR_IDENTY: '/shizhe/api/identy/applyRecrIdenty',
+	LIST_RECR_IDENTY: '/shizhe/api/identy/listRecrIdenty',
+	LIST_ALL_RECR_IDENTY: '/shizhe/api/identy/listAllRecrIdenty',
+	UPDATE_RECR_IDENTY: '/shizhe/api/identy/updateRecrIdenty',
+	LAST_RECR_IDENTY: '/shizhe/api/identy/getLasrRecrIdenty',
 
-	APPLY_VOL_IDENTY: '/api/identy/applyVolIdenty',
-	LIST_VOL_IDENTY: '/api/identy/listVolIdenty',
-	LIST_ALL_VOL_IDENTY: '/api/identy/listAllVolIdenty',
-	UPDATE_VOL_IDENTY: '/api/identy/updateVolIdenty',
-	LAST_VOL_IDENTY: '/api/identy/getLasrVolIdenty'
+	APPLY_VOL_IDENTY: '/shizhe/api/identy/applyVolIdenty',
+	LIST_VOL_IDENTY: '/shizhe/api/identy/listVolIdenty',
+	LIST_ALL_VOL_IDENTY: '/shizhe/api/identy/listAllVolIdenty',
+	UPDATE_VOL_IDENTY: '/shizhe/api/identy/updateVolIdenty',
+	LAST_VOL_IDENTY: '/shizhe/api/identy/getLasrVolIdenty'
 
 }
 // 数据字典
 const DATADICT_URL={
-	SELECTADDRESS:'/api/datadict/selectAddress',
-	SELECTJOBTYPE:'/api/datadict/selectJobtype',
-	SELECTLICENSE:'/api/datadict/selectLicense',
-	SELECTTRADE:'/api/datadict/selectTrade',
-	SELECT_NAME_BY_CODE: '/api/datadict/selectAddressByCode'
+	SELECTADDRESS:'/shizhe/api/datadict/selectAddress',
+	SELECTJOBTYPE:'/shizhe/api/datadict/selectJobtype',
+	SELECTLICENSE:'/shizhe/api/datadict/selectLicense',
+	SELECTTRADE:'/shizhe/api/datadict/selectTrade',
+	SELECT_NAME_BY_CODE: '/shizhe/api/datadict/selectAddressByCode'
 }
 // 文章
 const ARTICLE_URL={
-	INSERT:'/api/article/insertArticle',
-	SELECTBYCONDITON:'/api/article/selectByCondition',
-	SELECTBYID:'/api/article/selectById',
-	UPDATE:'/api/article/updateArticle',
-	DELETE: '/api/article/deleteArticle'
+	INSERT:'/shizhe/api/article/insertArticle',
+	SELECTBYCONDITON:'/shizhe/api/article/selectByCondition',
+	SELECTBYID:'/shizhe/api/article/selectById',
+	UPDATE:'/shizhe/api/article/updateArticle',
+	DELETE: '/shizhe/api/article/deleteArticle'
 }
 // 资格证书
 const CERTIFICATE_URL={
-	INSERT:'/api/certificate/insertCertificate',
-	SELECTBYCONDITON:'/api/certificate/selectByCondition',
-	UPDATE:'/api/certificate/updateCertificate'
+	INSERT:'/shizhe/api/certificate/insertCertificate',
+	SELECTBYCONDITON:'/shizhe/api/certificate/selectByCondition',
+	UPDATE:'/shizhe/api/certificate/updateCertificate'
 }
 // 聊天
 const CHAT_URL={
-	INSERT:'/api/chat/insertChat',
-	SELECT_ALL:'/api/chat/selectAllChat',
-	SELECTBYFROMTO:'/api/chat/selectByFromTo'
+	INSERT:'/shizhe/api/chat/insertChat',
+	SELECT_ALL:'/shizhe/api/chat/selectAllChat',
+	SELECTBYFROMTO:'/shizhe/api/chat/selectByFromTo'
 }
 // 评论
 const COMMENT_URL={
-	INSERT_ARTICLE:'/api/comment/insertArticleComment',
-	INSERT_POST:'/api/comment/insertPostComment',
-	SELECTBYCONDITON:'/api/comment/selectByCondition',
-	SELECTBYID:'/api/comment/selectCommentById',
-	DELETE:'/api/comment/deleteComment'
+	INSERT_ARTICLE:'/shizhe/api/comment/insertArticleComment',
+	INSERT_POST:'/shizhe/api/comment/insertPostComment',
+	SELECTBYCONDITON:'/shizhe/api/comment/selectByCondition',
+	SELECTBYID:'/shizhe/api/comment/selectCommentById',
+	DELETE:'/shizhe/api/comment/deleteComment'
 }
 // 期望岗位
 const EXPECTJOB_URL={
-	INSERT:'/api/expectJob/insertExpectJob',
-	SELECTBYCONDITON:'/api/expectJob/selectByCondition',
-	UPDATE:'/api/expectJob/updateExpectJob',
-	DELETE:'/api/expectJob/deleteExpectJob'
+	INSERT:'/shizhe/api/expectJob/insertExpectJob',
+	SELECTBYCONDITON:'/shizhe/api/expectJob/selectByCondition',
+	UPDATE:'/shizhe/api/expectJob/updateExpectJob',
+	DELETE:'/shizhe/api/expectJob/deleteExpectJob'
 }
 // 工作经历
 const EXPERIENCE_URL={
-	INSERT:'/api/experience/insertExperience',
-	SELECTBYCONDITON:'/api/experience/selectByCondition',
-	UPDATE:'/api/experience/updateExperience',
-	DELETE:'/api/experience/deleteExperience'
+	INSERT:'/shizhe/api/experience/insertExperience',
+	SELECTBYCONDITON:'/shizhe/api/experience/selectByCondition',
+	UPDATE:'/shizhe/api/experience/updateExperience',
+	DELETE:'/shizhe/api/experience/deleteExperience'
 }
 // 文件
 const FILE_URL={
-	UPLOAD:'/api/file/upload',
-	SELECTBYCONDITON:'/api/file/selectByCondition',
-	SELECTBYID:'/api/file/selectById',
-	UPDATE:'/api/file/updateFile',
-	DELETE:'/api/file/deleteFile'
+	UPLOAD:'/shizhe/api/file/upload',
+	SELECTBYCONDITON:'/shizhe/api/file/selectByCondition',
+	SELECTBYID:'/shizhe/api/file/selectById',
+	UPDATE:'/shizhe/api/file/updateFile',
+	DELETE:'/shizhe/api/file/deleteFile'
 }
 // 收藏关注
 const INTEREST_URL={
-	INSERT_ATTENTION:'/api/interest/insertAttention',
-	INSERT_ACCUSE:'/api/interest/insertAccuse',
-	SELECTBYCONDITON_ATTENTION:'/api/interest/selectAttentionByCondition',
-	SELECTBYCONDITON_ACCUSE:'/api/interest/selectAccuseByCondition',
-	DELETE_ATTENTION:'/api/interest/deleteAttention',
-	UPDATE_ACCUSE:'/api/interest/updateAccuse',
-	DELETE_ACCUSE:'/api/interest/deleteAccuse'
+	INSERT_ATTENTION:'/shizhe/api/interest/insertAttention',
+	INSERT_ACCUSE:'/shizhe/api/interest/insertAccuse',
+	SELECTBYCONDITON_ATTENTION:'/shizhe/api/interest/selectAttentionByCondition',
+	SELECTBYCONDITON_ACCUSE:'/shizhe/api/interest/selectAccuseByCondition',
+	DELETE_ATTENTION:'/shizhe/api/interest/deleteAttention',
+	UPDATE_ACCUSE:'/shizhe/api/interest/updateAccuse',
+	DELETE_ACCUSE:'/shizhe/api/interest/deleteAccuse'
 }
 // 招募岗位
 const JOB_URL={
-	INSERT:'/api/job/insertJob',
-	SELECTBYCONDITON:'/api/job/selectByCondition',
-	SELECTBYID:'/api/job/selectById',
-	UPDATE:'/api/job/updateJob',
-	DELETE: '/api/job/deleteJob'
+	INSERT:'/shizhe/api/job/insertJob',
+	SELECTBYCONDITON:'/shizhe/api/job/selectByCondition',
+	SELECTBYID:'/shizhe/api/job/selectById',
+	UPDATE:'/shizhe/api/job/updateJob',
+	DELETE: '/shizhe/api/job/deleteJob'
 }
 // 帖子
 const POST_URL={
-	INSERT:'/api/post/insertPost',
-	SELECTBYCONDITON:'/api/post/selectByCondition',
-	SELECTBYID:'/api/post/selectById',
-	UPDATE:'/api/post/updatePost',
-	DELETE: '/api/post/deletePost'
+	INSERT:'/shizhe/api/post/insertPost',
+	SELECTBYCONDITON:'/shizhe/api/post/selectByCondition',
+	SELECTBYID:'/shizhe/api/post/selectById',
+	UPDATE:'/shizhe/api/post/updatePost',
+	DELETE: '/shizhe/api/post/deletePost'
 }
 // 学校
 const SCHOOL_URL={
-	INSERT:'/api/school/insertSchool',
-	SELECTBYCONDITON:'/api/school/selectByCondition',
-	SELECTBYID:'/api/school/selectById',
-	UPDATE:'/api/school/updateSchool',
-	DELETEBYID:'/api/school/deleteSchool',
+	INSERT:'/shizhe/api/school/insertSchool',
+	SELECTBYCONDITON:'/shizhe/api/school/selectByCondition',
+	SELECTBYID:'/shizhe/api/school/selectById',
+	UPDATE:'/shizhe/api/school/updateSchool',
+	DELETEBYID:'/shizhe/api/school/deleteSchool',
 }
 // 教育经历
 const VOLEDU_URL={
-	INSERT:'/api/volEducation/insertVolEducation',
-	SELECTBYCONDITON:'/api/volEducation/selectByCondition',
-	UPDATE:'/api/volEducation/updateVolEducation',
-	DELETE:'/api/volEducation/deleteVolEducation'
+	INSERT:'/shizhe/api/volEducation/insertVolEducation',
+	SELECTBYCONDITON:'/shizhe/api/volEducation/selectByCondition',
+	UPDATE:'/shizhe/api/volEducation/updateVolEducation',
+	DELETE:'/shizhe/api/volEducation/deleteVolEducation'
 }
 
 export default {

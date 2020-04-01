@@ -11,7 +11,8 @@ import '../static/icon/iconfont.css';
 // 引用API文件
 import request from './request/api.js'
 // 将API方法绑定到全局
-Vue.prototype.$rootPath = "D:\\code\\尹志杰\\tutor-frontend\\static\\upload\\"
+// Vue.prototype.$rootPath = "D:\\code\\尹志杰\\tutor-frontend\\static\\upload\\"
+Vue.prototype.$rootPath = "/usr/local/nginx/html/shizheFront/static/upload/"
 Vue.prototype.$request = request
 Vue.config.productionTip = false
 

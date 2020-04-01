@@ -44,9 +44,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       poll: config.dev.poll,
     },
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080/shizhe_war',
-        // target: 'http://101.200.35.16:8080/shizhe',
+      '/shizhe/api': {
+        // target: 'http://localhost:8080/shizhe_war',
+        target: 'http://101.200.35.16/',
         changeOrigin: true
       }
     }

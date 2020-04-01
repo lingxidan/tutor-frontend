@@ -294,13 +294,14 @@ export default {
       box-shadow: 0 0 5px 0 #eee;
       margin-top: 1vh;
       font-weight: 700;
+      font-size: 2vh;
       label{
         cursor: pointer;
       }
       i{
         cursor: pointer;
-        font-size: 18px;
-        margin-bottom: 10px;
+        margin-bottom: 1vh;
+        font-size: 3vh;
       }
       &:hover{
         color: coral;
@@ -334,6 +335,7 @@ export default {
       }
       p{
         width: 30%;
+        font-size: 2vh;
       }
     }
     .content-article{

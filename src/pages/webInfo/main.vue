@@ -59,7 +59,7 @@
     <div class="articles" id="articles" ref="info">
       <div class="title">
         <div class="name">日志文章</div>
-        <div class="more">查看更多 >></div>
+        <div class="more" @click="toArticlePost">查看更多 >></div>
       </div>
       <el-row :gutter="10">
         <!-- <el-col :span="6"  class="el-col"> -->
@@ -74,7 +74,7 @@
     <div class="info" id="info">
       <div class="title">
         <div class="name">招募信息</div>
-        <div class="more">查看更多 >></div>
+        <div class="more" @click="toZhaomu">查看更多 >></div>
       </div>
       <div class="teachers" v-if="user.id&&user.userType=='1'">
         <teacher class="single-teacher" v-for="(teacher,index) in teachers" :key="index" :teacher="teacher"></teacher>
@@ -93,7 +93,7 @@
     <div class="postCard" id="postCard">
       <div class="title">
         <div class="name">讨论交流</div>
-        <div class="more">查看更多 >></div>
+        <div class="more" @click="toPost">查看更多 >></div>
       </div>
       <!-- <disguss class="post-single" v-for="(post,index) in posts" :key="index" :disguss="post">
           <div slot="num"><div class="num"></div></div>
@@ -193,6 +193,7 @@ export default {
     this.$request.selectJobByCondition({}).then(
       res => {
         this.teachers = res.data.slice(0, 6)
+        console.log(this.teachers)
       }
     )
     this.$request.getVols({}).then(
@@ -201,18 +202,18 @@ export default {
         for (let i = 0; i < res.data.length; i++) {
           userList.push(res.data[i])
         }
-        _this.volunteers = userList
+        _this.volunteers = userList.slice(0, 6)
       }
     )
-    this.$request.getRecrs({}).then(
-      res => {
-        let userList = []
-        for (let i = 0; i < res.data.length; i++) {
-          userList.push(res.data[i])
-        }
-        // _this.teachers = userList
-      }
-    )
+    // this.$request.getRecrs({}).then(
+    //   res => {
+    //     let userList = []
+    //     for (let i = 0; i < res.data.length; i++) {
+    //       userList.push(res.data[i])
+    //     }
+    //     _this.teachers = userList.slice(0, 6)
+    //   }
+    // )
     this.$request.selectArticleByCondition({}).then(
       res => {
         _this.articles = res.data.slice(0, 8)
@@ -220,7 +221,7 @@ export default {
     )
     this.$request.selectPostByCondition({}).then(
       res => {
-        _this.posts = res.data
+        _this.posts = res.data.slice(0, 6)
       }
     )
   },
@@ -329,6 +330,49 @@ export default {
         }
       })
       // console.log()
+
+    },
+    
+    toArticlePost(){
+      this.$router.push({
+        path: '/search',
+        query: {
+          field: "article",
+          text: "",
+        }
+      })
+    },
+    toZhaomu(){
+      if(this.user.id){
+        if(this.user.userType=="1"){
+          this.$router.push({
+            path: '/search',
+            query: {
+              field: "job",
+              text: "",
+            }
+          })
+
+        }
+        if(this.user.userType=="2"){
+          this.$router.push({
+            path: '/search',
+            query: {
+              field: "vol",
+              text: "",
+            }
+          })
+        }
+      }
+    },
+    toPost(){
+      this.$router.push({
+        path: '/search',
+        query: {
+          field: "post",
+          text: "",
+        }
+      })
 
     }
   },
