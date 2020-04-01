@@ -1,5 +1,5 @@
 <template>
-  <div ref="login" class="login">
+  <div ref="login" class="managerLogin">
     <div class="content">
       <div class="title">
         师者教师志愿者招募平台后台管理
@@ -9,7 +9,7 @@
           <el-input v-model="loginForm.name"></el-input>
         </el-form-item>
         <el-form-item label="登录密码">
-          <el-input v-model="loginForm.pass"></el-input>
+          <el-input type="password" v-model="loginForm.pass"></el-input>
         </el-form-item>
         <div>
           <el-button type="primary" @click="onSubmit">登录</el-button>
@@ -38,7 +38,7 @@ export default {
   methods:{
     onSubmit(){
       if(this.loginForm.name=="admin"&&this.loginForm.pass=="admin"){
-        this.$router.push('/manager/school')
+        this.$router.push('/manager/volunteer')
 
       }
     },
@@ -51,7 +51,8 @@ export default {
 </script>
 
 <style lang="less">
-.login{
+@import "../../../static/css/main";
+.managerLogin{
   width: 100%;
   height: 100%;
   display: flex;
@@ -59,23 +60,48 @@ export default {
   justify-content: center;
   z-index: 2000;
   
-  background: linear-gradient(60deg,#fba400 33.3%, #fce9c7 0, #fce9c7 67%,#fff 0); 
+  background: linear-gradient(60deg,@mainColor 33.3%, #fce9c7 0, #fce9c7 67%,#fff 0); 
   .content{
-    background-color: #fff;
+    background-color: rgba(252, 252, 252, 0.8);
     width: 35%;
-    padding: 30px 0;
-    box-shadow: -10px 10px 10px 0px #fba400;
+    padding: 6vh 0;
+    // box-shadow: -10px 10px 10px 0px #fba400;
     .title{
       width: 100%;
-      font-size: 24px;
+      font-size: 4vh;
       font-weight: bold;
-      margin-bottom: 30px;
-      background-color: rgba(252, 252, 252, 0.9);
+      margin-bottom: 3vh;
+      // background-color: rgba(252, 252, 252, 0.5);
       // padding: 5px 20px;
     }
     .form{
-      margin-left: 30px;
-      margin-right: 30px;
+      margin-left: 3vw;
+      margin-right: 3vw;
+      width: 80%;
+    }
+  }
+  .el-form-item .el-form-item__content .el-input .el-input__inner{
+    background-color: rgba(0, 0, 0, .1);
+    border: none;
+    border-radius: 0;
+    color: @mainColor;
+  }
+  .el-button{
+    border-radius: 0;
+    padding: 2vh 3vw;
+    font-size: 2vh;
+    line-height: 2vh;
+    border: none;
+    letter-spacing: 2px;
+    &:hover{
+      background-color: @thirthColor;
+    }
+  }
+  .el-button+.el-button{
+    background-color: @sixthColor;
+    color: @mainColor;
+    &:hover{
+      background-color: @fifthColor;
     }
   }
 }

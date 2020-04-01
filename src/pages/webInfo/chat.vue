@@ -1,77 +1,70 @@
 <template>
   <div class="chat">
-    <div class="chatList">
-      <div class="top">
-        <div class="name">{{user.name}}</div>
-        <div class="search">
-          <el-input placeholder="查找联系人" v-model="findText">
-            <i slot="prefix" class="el-input__icon el-icon-search"></i>
-          </el-input>
-        </div>
-      </div>
-      <ul>
-        <li v-for="(chatId,idx) in Object.keys(chatList)" :key="idx" @click="chatCurrent(chatId)">
-          <template v-if="chatList[chatId].person">
-            <!-- {{user.userId}} -->
-            <!-- asdf{{chat.from.userId}}{{user.userId}}{{chat.to}} -->
-            <template v-if="chatList[chatId].from.userId==user.userId">
-              <div class="info">
-                <p class="name">{{chatList[chatId].to.name}}</p>
-                <p class="last">{{chatList[chatId].dt}}</p>
-              </div>
-              <div class="msg">
-                <!-- <p class="last">{{chatList[chatId].content}}</p> -->
-              </div>
-            </template>
-            <template v-if="chatList[chatId].to.userId==user.userId">
-              <div class="info">
-                <p class="name">{{chatList[chatId].from.name}}</p>
-                <p class="last">{{chatList[chatId].dt}}</p>
-              </div>
-              <div class="msg">
-                <!-- <p class="last">{{chatList[chatId].content}}</p> -->
-              </div>
-            </template>
-          </template>
-          <!-- {{user.userId&&chat.from&&chat.from.userId!=user.UserId}} -->
-        </li>
-      </ul>
-    </div>
-    <div class="chatInfo">
-      <template v-if="!current.name">
-        <p class="notCurrent">
-          您还未选中或发起聊天，快去聊一聊吧
-        </p>
-      </template>
-      <template v-else>
+    <div class="chat-main">
+      <div class="chatList">
         <div class="top">
-          <p class="name">{{current.name}}</p>
-        </div>
-        <div class="messages" id="messageList" ref="messageList">
-          <div v-for="(chatInfo,idx) in currentChatList">
-            <!-- {{chatInfo.fromId==chat.fromId}}
-            {{chatInfo}} -->
-            <div class="to" v-if="chatInfo.fromId==chat.fromId">
-              {{chatInfo.content}}
-            </div>
-            <div class="from" v-else>
-              {{chatInfo.content}}
-            </div>
+          <div class="name">{{user.name}}</div>
+          <div class="search">
+            <el-input placeholder="查找联系人" v-model="findText">
+              <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            </el-input>
           </div>
+        </div>
+        <ul>
+          <li v-for="(chatContent,idx) in chatContentList" 
+          :style="(current.person||{}).id==chatContent.person.id?'background-color: rgb(29, 29, 29);':''"
+          :key="idx" @click="current = chatContent">
+            <div class="info">
+              <p class="name">{{chatContent.person.name}}</p>
+              <p class="last">{{chatContent.contentList[chatContent.contentList.length-1].dt}}</p>
+            </div>
+            <div class="msg">
+              <p class="last">{{chatContent.contentList[chatContent.contentList.length-1].content}}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="chatInfo">
+        <template v-if="!current.person">
+          <p class="notCurrent">
+            您还未选中或发起聊天，快去聊一聊吧
+          </p>
+        </template>
+        <template v-else>
+          <div class="top">
+            <p class="name">{{current.person.name}}</p>
+          </div>
+          <div class="messages" id="messageList" ref="messageList">
+            <div class="message-info" v-for="(chatInfo,idx) in current.contentList">
+              <!-- {{chatInfo.fromId==chat.fromId}}
+              {{chatInfo}} -->
+              <div class="to" v-if="chatInfo.fromId==user.id">
+                <label for="">{{chatInfo.dt}}</label>
+                <span>{{chatInfo.content}}</span>
+              </div>
+              <div class="from" v-else>
+                <label for="">{{chatInfo.dt}}</label>
+                <span>{{chatInfo.content}}</span>
+              </div>
+            </div>
 
-        </div>
-        <div class="input">
-          <div class="emojis">
-            <ul>
-              <li v-for="(item,idx) in emojijs" :key="idx" @click="addEmoji(item)">{{item.char}}</li>
-            </ul>
           </div>
-          <textarea class="msgInput" type="textarea" placeholder="输入聊天内容" v-model="chat.content" 
-          @keyup.ctrl.enter="onEnter" 
-          @keyup.enter.exact="onSubmit"></textarea>
-          <!-- <el-button type="primary" @click="submit">提交</el-button> -->
-        </div>
-      </template>
+          <div class="input-emojis">
+            <div class="submit-input">
+              <i class="el-icon-magic-stick" @click="showEmojijs = !showEmojijs"></i>
+              <el-button type="primary" @click="onSubmit">发送</el-button>
+            </div>
+            <div class="emojis" v-if="showEmojijs" @mouseleave="showEmojijs = false">
+              <ul>
+                <li v-for="(item,idx) in emojijs" :key="idx" @click="addEmoji(item)">{{item.char}}</li>
+              </ul>
+            </div>
+            <textarea class="msgInput" type="textarea" placeholder="输入聊天内容" v-model="chat.content" 
+            @keyup.ctrl.enter="onEnter" @keyup.enter="onSubmit"></textarea>
+            <!-- <el-button type="primary" @click="submit">提交</el-button> -->
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -88,20 +81,23 @@ export default {
       user:{
         name:"张XX"
       },
-      current:{},
       chatList:{},
       emojijs:emojijs,
-      chat:{
-        fromId:32,
-        toId:0,
-        content:""
-      },
       currentChatList:[],
       user:{
         // userId:""
       },
       personList:[],
-      currentChatTimer:null
+
+      chatTimer:[],
+      chatContentList: [],
+      current:{},
+      showEmojijs:false,
+      chat:{
+        fromId:0,
+        toId:0,
+        content:""
+      },
     }
   },
   props: {
@@ -114,106 +110,88 @@ export default {
     let _this=this
     _this.chatList={}
     this.user = JSON.parse(sessionStorage.getItem('user')); 
-    this.$request.selectLastChats({userId:this.user.userId}).then(
-      res=>{
-        let personList={}
-        // _this.chatList=res.data
-        res.data.forEach(data=>{
-          _this.getUser(data.fromId,(res)=>{
-            data.from=res.data
-            if(data.fromId==_this.user.userId){
-              personList[data.toId]=data
-              data.person = data.to
+    this.$request.selectAllChat({uesrId:this.user.id}).then(res=>{
+      let chatList = res.data
+      let personIdList = []
+      chatList.forEach(chat=>{
+        if(chat.fromId == this.user.id){
+          if(personIdList.indexOf(chat.toId)<0){
+            personIdList.push(chat.toId)
+          }
+        }
+        if(chat.toId == this.user.id){
+          if(personIdList.indexOf(chat.fromId)<0){
+            personIdList.push(chat.fromId)
+          }
+        }
+      })
+      let chatContentList = []
+      // 志愿者
+      if(this.user.userType == 1){
+        personIdList.forEach((id,idx)=>{
+          let contentList = []
+          chatList.forEach(chat=>{
+            if(chat.fromId==id||chat.toId==id){
+              contentList.push(chat)
             }
-            if(data.toId==_this.user.userId){
-              personList[data.fromId]=data
-              data.person = data.from
+          })
+          this.$request.getRecuriter({userId:id}).then(res=>{
+            this.personList.push(res.data)
+            chatContentList.push({
+              person: res.data,
+              contentList:contentList
+            })
+            let timer = setInterval(()=>{
+              this.$request.selectByFromTo({
+                userId:this.user.id,
+                dt:this.chatContentList[idx].contentList[this.chatContentList[idx].contentList.length-1].dt}).then(
+                  res=>{
+                    if(res.data.length>0){
+                      this.chatContentList[idx].contentList=[
+                        ...this.chatContentList[idx].contentList,
+                        ...res.data
+                      ]
+                    }
+                  }
+                )
+            },1000)
+            this.chatTimer.push(timer)
+          })
+        })
+      }
+      // 招募者
+      if(this.user.userType == 2){
+        personIdList.forEach(id=>{
+          let contentList = []
+          chatList.forEach(chat=>{
+            if(chat.fromId==id||chat.toId==id){
+              contentList.push(chat)
             }
-            _this.getUser(data.toId,(res)=>{
-              data.to=res.data
-              if(data.fromId==_this.user.userId){
-                personList[data.toId]=data
-                data.person = data.to
-              }
-              if(data.toId==_this.user.userId){
-                personList[data.fromId]=data
-                data.person = data.from
-              }
-              _this.chatList={...personList}
+          })
+          this.$request.getVolunteer({userId:id}).then(res=>{
+            this.personList.push(res.data)
+            chatContentList.push({
+              person: res.data,
+              contentList:contentList
             })
           })
         })
-        _this.chatList={...personList}
-        // _this.chatList=[..._this.chatList]
-        console.log(_this.chatList)
       }
-    )
+      this.chatContentList = chatContentList
+    })
   },
   mounted() {
-    // setInterval(()=>{
-    //   console.log(new Date())
-    // },1000)
-    let _this=this
-    // this.chat.fromId=this.$store.state.user.userId
-    console.log(this.chat)
-    // this.chat.fromId=this.from.userId
-    // if(this.chat.fromId==24){
-    //   this.chatList[1].id=32
-    // }
-    // if(this.chat.fromId==32){
-    //   this.chatList[1].id=24
-    // }
-    
   },
   methods:{
-    getUser(userId,func){
-      let _this=this
-      _this.$request.getVolunteer({userId:userId}).then(
-        res=>{
-          func(res)
-        },
-        error=>{
-          _this.$request.getRecuriter({userId:userId}).then(res=>{
-            func(res)
-          },)
-        }
-      )
-    },
-    getChat(){
-    },
-    chatCurrent(chatIdx){
-      clearInterval(this.currentChatTimer)
-      this.current=this.chatList[chatIdx].person
-      console.log(this.current)
-      this.chat.fromId=this.user.userId
-      this.chat.toId=chatIdx
-      this.getChat()
-      this.currentChatTimer=setInterval(()=>{
-        let lastCnt = this.currentChatList.length
-        this.$request.selectChatByFromTo(this.chat).then(
-          res=>{
-            let cnt=res.data.length
-            if(lastCnt!=cnt){
-            this.currentChatList=res.data
-
-            }
-            // console.log(res.data)
-            // let ele = document.getElementById('messageList');
-            // console.log(ele)
-            // ele.scrollTop = ele.scro;
-            // console.log(this.currentChatList)
-          }
-        )
-      },1000)
-    },
     addEmoji(emoji){
       this.chat.content+=emoji.char
+      this.showEmojijs = false
     },
     onSubmit(){
-      console.log(this.chat)
+      this.chat.fromId=this.user.id
+      this.chat.toId=this.current.person.userId
       this.$request.insertChat(this.chat).then(
         res=>{
-          console.log(res)
           this.chat.content=""
         }
       )
@@ -223,56 +201,66 @@ export default {
     }
   },
   updated(){
-    let ele = document.getElementById('messageList');
-    console.log(this.$refs.messageList)
-    ele.scrollTop = ele.scrollHeight;
+    // let ele = document.getElementById('messageList');
+    // console.log(this.$refs.messageList)
+    if(this.$refs.messageList){
+      this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
+    }
   },
 }
 </script>
 
 <style lang="less">
-.chat{
+@import '../../../static/css/main';
+.chat-main{
   display: flex;
   width: 90%;
-  height: 900px;
+  height: 90vh;
+  box-shadow: 0 0 6px 0 @fifthColor;
+  margin-top: 1vh;
+  margin-bottom: 2vh;
   .chatList{
-    width: 22%;
+    width: 20%;
     background-color: rgb(59, 59, 59);
+    overflow-y: auto;
     .top{
       background-color: inherit;
       .name{
-        height: 50px;
-        line-height: 50px;
+        height: 5vh;
+        line-height: 5vh;
         color:#f7f7f7;
         text-align: left;
-        padding-left: 20px;
+        padding-left: 2vw;
       }
       .search{
         .el-input__inner{
           background-color: #2e2e2e;
           border: none;
+          color: @sixthColor;
         }
       }
     }
     li{
       cursor: pointer;
       display: block;
-      line-height: 30px;
+      line-height: 2;
       // padding-bottom: 30px;
-      padding-top: 10px;
-      border-bottom: 1px solid rgb(75, 75, 75);
+      padding: 1vh;
+      border-bottom: 0.1vh solid rgb(75, 75, 75);
       color:#f7f7f7;
       .info{
         display: flex;
       }
       p.name{
         width: 50%;
-        font-size: 16px;
+        font-size: 2vh;
         font-weight: bold;
+        text-align: left;
+        padding-left: 2vw;
       }
       p.last{
         width: 46%;
-        font-size: 4px;
+        font-size: 1vh;
         text-align: right;
         color: #7a7a7a;
       }
@@ -281,11 +269,13 @@ export default {
       }
       
       .msg{
-        height: 40px;
+        height: 4vh;
+        line-height: 4vh;
+        overflow: hidden;
         .last{
           margin: 0 auto;
           width:70%;
-          font-size: 4px;
+          font-size: 1.3vh;
           text-align: left;
           color: #b6b6b6;
         }
@@ -293,63 +283,116 @@ export default {
     }
   }
   .chatInfo{
-    width: 78%;
+    // width: 78%;
+    flex: 1;
     height: 100%;
     border: 1px solid #f9f9f9;
     background-color: #f9f9f9;
     .top{
-      height: 5%;
       background-color: #f9f9f9;
+      border-bottom:0.1vh solid @sixthColor;
       display: flex;
       p.name{
         text-align: center;
-        padding-left: 50px;
+        // padding-left: 50px;
         width: 100%;
         height: 100%;
-        font-size: 18px;
-        font-weight: bold;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        // line-height: 100%;
+        font-size: 3vh;
+        line-height: 5vh;
       }
     }
     .messages{
       height: 55%;
       background-color: white;
-      padding: 20px;
+      padding: 1vw;
       overflow: auto;
       // border: 1px solid #fcfcfc;
+      background-color: #f9f9f9;
+      &::-webkit-scrollbar-track {
+        background-color: @sixthColor;
+      }
+      &::-webkit-scrollbar {
+        width: 0.2vw;
+        height: 0.2vw;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: @thirthColor;
+      }
       .from,.to{
-        padding: 5px 30px;
-        margin: 20px;
-        border: 1px solid #333;
-        min-height: 50px;
+        position: relative;
+        margin: 0.5vh;
+        label{
+          display: block;
+          color: #aaa;
+          font-size: 1.2vh;
+        }
+        span{
+          display: inline-block;
+          min-height: 3vh;
+          padding: 1vh 1vw 1vh 1vw;
+          margin-top: 0;
+          // border: 1px solid #333;
+          // min-width: 2vw;
+          max-width: 60%;
+          font-size: 2vh;
+        }
       }
       .from{
+        right: 0;
+        // margin-right: 50%;
         text-align: left;
-        background-color: lightblue;
-        margin-right: 40%;
-        border-radius: 40px 40px 40px 0;
+        span{
+          text-align: left;
+          background-color: lightblue;
+          border-radius: 4vh 4vh 4vh 0;
+        }
       }
       .to{
-        text-align: left;
-        background-color: lightgoldenrodyellow;
-        margin-left: 40%;
-        border-radius: 40px 40px 0 40px;
-
+        // margin-left: 50%;
+        text-align: right;
+        span{
+          text-align: left;
+          background-color: lightsalmon;
+          color: @sixthColor;
+          border-radius: 4vh 4vh 0 4vh;
+        }
       }
     }
-    .input{
+    .input-emojis{
+      position: relative;
       height: 35%;
-      background-color: #f9f9f9;
+      background-color: #fff;
       display: flex;
       flex-direction: column;
+      border-top:0.1vh solid @sixthColor;
       // padding-top: 30px;
+      .submit-input{
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4vh;
+        i{
+          margin-top: 0.3vw;
+          margin-left: 0.3vw;
+        }
+        .el-button{
+          padding: 0 2vw;
+          border-radius: 1px;
+          border-width: 0.1vh;
+          font-size: 1.6vh;
+          line-height: 2.4;
+          letter-spacing: 1px;
+          &:hover{
+            background: none;
+            color: @mainColor;
+          }
+        }
+      }
       .emojis{
+        position: absolute;
+        background-color: #fff;
         width: 100%;
-        height: 50px;
-        margin: 10px;
+        border: 1px solid @sixthColor;
+        transform: translateY(-100%);
         ul{
           display: flex;
           flex-wrap: wrap;
@@ -365,8 +408,14 @@ export default {
       }
       .msgInput{
         height: 100%;
+        border: none;
+        &:focus{
+          border: none;
+          outline: none;
+        }
         .el-textarea__inner{
           height: 100%;
+          border: none;
         }
       }
     }

@@ -1,15 +1,15 @@
 <template>
   <div class="table">
-    <editSchool class="edit-school" v-if="addSchoolFlag" @cancel="cancel" @onSubmit="onSubmit"
-    :typeIdx="typeIdx"></editSchool>
-    <div class="table-school" v-else>
-      <h1>学校信息</h1>
+    <el-dialog title="学校管理" :visible.sync="editVisible" top="2vh" width="50%" :destroy-on-close="true">
+      <editSchool class="edit-school" @cancel="editVisible = false" @onSubmit="onSubmit"
+      :typeIdx="typeIdx"></editSchool>
+    </el-dialog>
+    <div class="table-school">
       <div class="schoolTop">
+          <h1>学校信息</h1>
         <div class="feature">
-          <el-button type="primary" @click="addSchool">添加学校</el-button>
+          <el-button type="primary" @click="addSchool" class="add-btn">添加学校</el-button>
         </div>
-        <!-- <input-select ref="totalSel" :inputs="inputData" :selects="selectData" :searchBtn="true" @search="search"></input-select> -->
-
       </div>
       <tablePage ref="tbMain" :tableTitles="tableTitles"
         :tableData="tableData"
@@ -30,82 +30,44 @@ export default {
   data() { 
     return {
       typeIdx:-1,
-      addSchoolFlag:false,
-      tableData:[{
-        schoolName:"光明小学",
-        schoolAddr:"XX省XX市XX区XX镇XX村",
-        schoolScale:"80人",
-        schoolDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        schoolEstablish:"2000年10月10日",
-        },{
-        schoolName:"希望小学",
-        schoolAddr:"XX省XX市XX区",
-        schoolScale:"80人",
-        schoolDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        schoolEstablish:"2000年10月10日",
-        },{
-        schoolName:"光明小学",
-        schoolAddr:"XX省XX市XX县XX镇XX村",
-        schoolScale:"80人",
-        schoolDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        schoolEstablish:"2000年10月10日",
-        }],
+      editVisible: false,
+      tableData:[],
       tableTitles:[{
           prop: "name",
           label: "学校名称",
-          width: "170",
-          fixed: true,
         },{
           prop: "addressName",
           label: "学校地址",
-          width: "170"
         },{
-          prop: "scale",
-          label: "学校规模",
-          width: "100"
+          prop: "education",
+          label: "学校教育",
         },{
           prop: "establishDt",
           label: "创建时间",
-          width: "180"
-        },{
-          prop: "descr",
-          label: "学校简介",
-          width: "230"
         }],
       tableConf:{
         // 表格按钮操作列(是否需要，列头，操作按钮列表)
         operation:true,
-        // operaHeader:{
-        //   id:"edit",
-        //   text:"修改信息",
-        //   size:"medium",
-        //   type:"primary",
-        //   click:()=>{
-        //     console.log(this.$refs.tbMain.$refs.elTb.tableData)
-        //   }
-        // },
         btns:[{
           id:"edit",
           text:"修改信息",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
             this.typeIdx=val.id
-            this.addSchoolFlag=true
+            this.editVisible = true
           }
         },{
           id:"delete",
           text:"删除学校",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
             val.status=-1
             let _this=this
             this.$request.deleteSchoolById({schoolId:val.id}).then(
               res=>{
-                _this.getUserInfo(_this.recruiter.userId)
+                _this.getSchoolList(_this.recruiter.userId)
               }
             )
           }
@@ -232,65 +194,54 @@ export default {
   mounted() {
     this.selectData=this.selectDataAddr
     this.recruiter = JSON.parse(sessionStorage.getItem('user'));
-    this.getUserInfo(this.recruiter.userId)
-    
+    this.getSchoolList()
   },
   methods:{
-    getUserInfo(dataId){
+    getSchoolList(){
       let _this=this
-      _this.$request.getRecuriter({userId:dataId}).then(
+      // 学校
+      _this.$request.selectSchoolByCondition({userId:this.recruiter.id}).then(
         res=>{
-          _this.recruiter=res.data
-          // _this.recruiter.province=res.data.address.substring(0,2)
-          // _this.recruiter.city=res.data.address.substring(0,4)
-          // _this.recruiter.county=res.data.address
-          // _this.recruiter.status=_this.recruiter.identify.substring(0,1)
-          // let identyName=_this.recruiter.identify.substring(1,_this.recruiter.identify.length)
-          // _this.recruiter.identyName=identyName
-
-          // 学校
-          _this.$request.selectSchoolByCondition({userId:dataId}).then(
-            res=>{
-              console.log("getSchool",res.data)
-              _this.tableData=res.data
-              // _this.tableData.forEach(data=>{
-              //   let province=data.address.substring(0,2)
-              //   let city=data.address.substring(0,4)
-              //   let county=data.address.substring(0,6)
-
-              // })
-            }
-          )
+          _this.tableData=res.data
         }
       )
     },
     addSchool(){
       this.typeIdx=-1
-      this.addSchoolFlag=true
-    },
-    cancel(){
-      this.addSchoolFlag=false
+      this.editVisible = true
     },
     onSubmit(school){
-      this.addSchoolFlag=false
       let _this=this
-      console.log(school)
-      // let _this=this
+      let formData = new FormData();
+      let image = (school.image||[]).map(item=>item.raw)
+      image.forEach(item=>{formData.append('image', item)})
+      formData.append("image", image)
+      formData.append("name", school.name)
+      formData.append("address", school.address)
+      formData.append("establishDt", school.establishDt.replace(/-/g, ""))
+      formData.append("education", school.education)
+      formData.append("userId", this.recruiter.id)
+      formData.append("descr", school.descr)
+      formData.append("frontPath", this.$rootPath)
       if(_this.typeIdx==-1){
         // 添加学校
-        school.userId=this.recruiter.userId
-        this.$request.insertSChool(school).then(
+        this.$request.insertSchool(formData).then(
           res=>{
-            console.log(res)
-            _this.getUserInfo(_this.recruiter.userId)
+            _this.getSchoolList()
+            _this.editVisible = false
           }
         )
       }
       else{
+        formData.append("imgs", school.imgs)
+        formData.append("id", school.id)
+        formData.append("addressName", school.addressName)
+        formData.append("status", school.status)
         // school.userId=this.recruiter.userId
-        this.$request.updateSchool(school).then(
+        this.$request.updateSchool(formData).then(
           res=>{
-            _this.getUserInfo(_this.recruiter.userId)
+            _this.getSchoolList()
+            _this.editVisible = false
           }
         )
       }
@@ -300,6 +251,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../../../static/css/main';
 .table{
   display: flex;
   flex-direction: column;
@@ -307,21 +259,39 @@ export default {
   h1{
     font-weight: bold;
     letter-spacing: 2px;
-    font-size: 20px;
+    font-size: 3vh;
+    padding-left: 3.5vw;
+    line-height: 1.4;
   }
   .schoolTop{
     width: 100%;
     display: flex;
+    align-items: center;
+    // justify-content: center;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
     .feature{
-      margin-left: 30px;
-      width: 10%;
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
+      margin-left: 5vw;
+      padding: 1vh;
+      .add-btn{
+        background-color: @thirthColor;
+        border-color: @sixthColor;
+        padding: 1.4vh 1vw;
+        font-size: 1.6vh;
+        border-radius: 4px;
+        &:hover{
+          background: none;
+          color: @secondColor;
+          border-color: @sixthColor;
+        }
+      }
     }
   }
   .tablepage{
     width: 100%;
+    max-height: 90vh;
+    overflow: auto;
+    // margin-bottom: 2vh;
   }
   .table-school{
     width: 100%;
@@ -335,5 +305,21 @@ export default {
     z-index: 100;
   }
 
+}
+</style>
+<style lang="less">
+.table{
+  .el-dialog__title {
+    line-height: 1;
+    font-size: 3vh;
+    font-weight: bolder;
+  }
+  .el-dialog__body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1vw;
+  }
 }
 </style>

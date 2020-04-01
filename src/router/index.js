@@ -72,8 +72,8 @@ const router = new Router({
             children:[
 				{
                     // 主页
-                    path: '/',
-                    name: 'main',
+                    path: '',
+                    name: 'frontMain',
                     component: main,
                 },
                 {
@@ -279,24 +279,6 @@ const router = new Router({
                 },
             ]
         },
-        // {
-        //     // 搜索页面
-        //     path: '/search',
-        //     name: 'search',
-        //     component: search
-        // },
-        // {
-        //     // 聊天室
-        //     path: '/chat',
-        //     name: 'chat',
-        //     component: chat
-        // },
-        // {
-        //     // 轮播页面
-        //     path: '/lunbo',
-        //     name: 'lunbo',
-        //     component: lunbo
-        // }
     ]
 });
 export default router;

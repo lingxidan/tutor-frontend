@@ -1,52 +1,62 @@
 <template>
-  <div class="info-article">
-    <div class="name">
-      {{article.title}}
-    </div>
-    <div class="base">
-      <p><label for="">发布者:</label>{{article.author}}</p>
-      <p><label for="">发布时间:</label>{{article.establishDt}}</p>
-    </div>
-    <div class="content-article">
-      <p>{{article.content}}</p>
-    </div>
-    <div class="comment">
-      <div class="comment-info" v-for="comment,idx in commentList" :key="idx">
-        <div class="author">{{comment.author}}</div>
-        <div class="comment-single">
-          <p>{{comment.dt}}</p>
-          <p class="content">{{comment.msg}}</p>
-        </div>
-      </div>
-    </div>
+  <div class="article">
     <div class="menu">
       <ul>
-        <li @click="addComment">
-          <i class="el-icon-chat-round"></i>
+        <li @click="addComment" style="color:green">
+          <i class="el-icon-chat-line-round"></i>
           评论
         </li>
-        <li v-if="!interest.id" @click="addInterest">
-          <!-- {{interestList.indexOf(comment.mainId)>=0}} -->
+        <li v-if="!attention" @click="addAttention">
           <i class="el-icon-star-off"></i>
           收藏
         </li>
-        <li v-else @click="deleteInterest">
-          <!-- {{interestList.indexOf(comment.mainId)>=0}} -->
+        <li v-else @click="deleteAttention" style="color:coral">
           <i class="el-icon-star-on"></i>
           取消收藏
         </li>
-        <li @click="jubao">
+        <li v-if="!accuse" @click="addAccuse">
           <i class="el-icon-s-release"></i>
-          <label v-if="article.status==-2">已被举报</label>
-          <label v-if="article.status==0">举报</label>
-          <label v-if="article.status==-1">已被删除</label>
+          <label>举报</label>
+        </li>
+        <li v-else @click="deleteAccuse" style="color:red">
+          <i class="el-icon-s-order"></i>
+          <label>取消举报</label>
         </li>
       </ul>
     </div>
-    <div class="commentInput" v-if="addCommentFlag">
-      <el-input type="textarea" v-model="comment.msg"></el-input>
-      <el-button type="primary" plain @click="fabu">发表评论</el-button>
-      <el-button @click="cancel">取消</el-button>
+    <div class="info-article" ref="infoArticle">
+      <div class="name">
+        {{article.title}}
+      </div>
+      <div class="base">
+        <p><label for="">发布者:</label>{{author.name||""}}</p>
+        <p><label for="">发布时间:</label>{{article.establishDt}}</p>
+      </div>
+      <div class="content-article">
+        <div class="content-content">{{article.content}}</div>
+        <div class="content-img" v-if="article.imgs&&article.imgs.length>0">
+          <div class="image" v-for="img in article.imgs" :key="img" :style="'background-image:url('+img+')'">
+            <img :src="img" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="commentInput" v-if="addCommentFlag">
+        <el-input type="textarea" v-model="comment.msg"></el-input>
+        <el-button type="primary" @click="fabu">发表评论</el-button>
+        <el-button @click="addCommentFlag=false">取消</el-button>
+      </div>
+    </div>
+    <div class="comment">
+      <template v-if="commentList.length>0">
+        <div class="comment-info" v-for="comment,idx in commentList" :key="idx">
+          <div class="author">{{comment.author.name||""}}</div>
+          <div class="comment-single">
+            <p>{{comment.dt}}</p>
+            <p class="comment-content">{{comment.msg}}</p>
+          </div>
+        </div>
+      </template>
+      <label v-else>暂无评论</label>
     </div>
   </div>
 </template>
@@ -58,30 +68,17 @@ export default {
     return {
       addCommentFlag:false,
       comment:{
-        type:2,
-        userId:32,
-        mainId:3,
-        msg:this.msg
+        msg:""
       },
-      article:{
-          title:"记支教XX县XX小学的趣事",
-          img:"../../../static/img/panel_2.jpg",
-          autor:"XXX",
-          establishDt:"2018年1月1日",
-          content:"成立于XX年，已有20年历史，由XXX捐资建立"
-        },
-      commentList:[{
-          author:"王老师",
-          dt:"2019-08-20 20:30:22",
-          content:"再来看一遍"
-        },{
-          author:"陈先生",
-          dt:"2019-09-01 08:00:30",
-          content:"很赞"
-        }],
-        user:{},
-        interestList:[],
-        interest:{}
+      article:{},
+      author:{name:""},
+      commentList:[],
+      user:{},
+      interest:{},
+      attention: false,
+      attentionRes: {},
+      accuse: false,
+      accuseRes: {},
     }
   },
   props: {
@@ -93,174 +90,215 @@ export default {
     let articleId=this.$route.query.id
     let _this=this
     this.user = JSON.parse(sessionStorage.getItem('user'))||{}
-    this.comment={
-        type:1,
-        userId:this.user.userId||0,
-        mainId:articleId,
-        msg:this.msg
+    this.$request.selectArticleById({articleId}).then(
+      res=>{
+        this.article=res.data
+        this.getCommentList()
+        this.getAttention()
+        this.getAccuse()
+        if(this.article.imgs!="[]"){
+          this.article.imgs = this.article.imgs
+            .substr(1, this.article.imgs.length - 2)
+            .split(",")
+            .map(url => {
+              return (
+                "/" +
+                url
+                  .substr(
+                    url.indexOf("static"),
+                    url.length - url.indexOf("static")
+                  )
+                  .replace(/\\/g, "/")
+              );
+            });
+        }else{
+          this.article.imgs=[]
+        }
+        _this.$request.getUser({userId:this.article.authorId}).then(res=>{
+          if(res.data.userType == 1){
+            _this.$request.getVolunteer({userId:this.article.authorId}).then(res=>{
+              _this.author=res.data
+            })
+          }
+          if(res.data.userType == 2){
+            _this.$request.getRecuriter({userId:this.article.authorId}).then(res=>{
+              _this.author=res.data
+            })
+          }
+        })
       }
-    // this.$request.selectArticleById({articleId}).then(
-    //   res=>{
-    //     this.article=res.data
-    //     _this.getUser(this.article.authorId,(res)=>{
-    //       console.log(res)
-    //       _this.article.author=res.data.name
-    //       _this.article={..._this.article}
-    //     })
-    //   }
-    // )
+    )
   },
   mounted() {
-    this.getUserInfo()
   },
   methods:{
-    getUser(userId,func){
-      let _this=this
-      _this.$request.getVolunteer({userId:userId}).then(
-        res=>{
-          func(res)
-        },
-        error=>{
-          _this.$request.getRecuriter({userId:userId}).then(res=>{
-            func(res)
-          },)
-        }
-      )
-    },
-    
-    getUserInfo(){
-      let _this=this
-      _this.interest={}
-      this.$request.selectArticleById({articleId:_this.comment.mainId}).then(res=>{
-        console.log(res)
-        _this.article=res.data
-        _this.getUser(_this.article.authorId,(res)=>{
-          console.log("author")
-          _this.article.authorName=res.data.name
-        })
-        if(_this.user.userId!=0){
-          _this.$request.selectInterestByCondition({userId:_this.user.userId,type:3}).then(
-            res=>{
-              // let interestList=[]
-              res.data.forEach(data=>{
-                // interestList.push(data.collectId)
-                if(data.collectId == _this.comment.mainId){
-                  _this.interest=data
-                }
-              })
-              // _this.interestList=interestList
-            }
-          )
-        }
-        _this.$request.selectCommentByCondition({postId:_this.comment.mainId,type:1}).then(
-          res=>{
-            console.log("comment",res.data)
-            _this.commentList=res.data
-            _this.commentList.forEach(data=>{
-              data.author=""
-              let userId = data.userId
-              _this.getUser(userId,(res)=>{
-                data.author = res.data.name
-                data={...data}
-                _this.commentList=[..._this.commentList]
-              })
+    getCommentList(){
+      this.$request.selectCommentByCondition({mainId:this.article.id,type:1}).then(res=>{
+        if(res.data.length>0){
+          res.data.forEach(data=>{
+            data.author = {}
+            this.$request.getUser({userId:data.userId}).then(userRes=>{
+              data.author = userRes.data
             })
-            _this.commentList=[..._this.commentList]
-          }
-        )
+          })
+        }
+        this.commentList=res.data
       })
     },
-    
     addComment(){
-      if(this.comment.userId!=0)
+      if(this.user.id)
       {
         this.addCommentFlag=true
       }else{
         this.$message.warning("请登录")
       }
     },
-    cancel(){
-      this.addCommentFlag=false
-    },
 
     fabu(){
       let _this=this
-      this.$request.insertComment(this.comment).then(res=>{
-        _this.getUserInfo()
+      this.comment.userId = this.user.id
+      this.comment.articleId = this.article.id
+      this.$request.insertArticleComment(this.comment).then(res=>{
+        _this.getCommentList()
         _this.comment.msg=""
+        this.$refs.infoArticle.scrollTop = this.$refs.infoArticle.scrollHeight
       })
     },
-    addInterest(){
+    getAttention(){
       let _this=this
-      if(_this.comment.userId!=0){
+      if(_this.user.id){
         let param={
-          userId:this.comment.userId,
-          collectId:this.comment.mainId,
-          type:4,
+          userId:this.user.id,
+          collectId:this.article.id,
+          collectType:1,
         }
-        _this.$request.insertInterest(param).then(
+        _this.$request.selectAttentionByCondition(param).then(
+          res=>{
+            if(res.data.length>0){
+              this.attention = true
+              this.attentionRes = res.data[0]
+            }else{
+              this.attention = false
+            }
+          }
+        )
+      }else{
+        // this.$message.warning("请登录")
+      }
+    },
+    addAttention(){
+      let _this=this
+      if(_this.user.id){
+        let param={
+          userId:this.user.id,
+          collectId:this.article.id,
+          collectType:1,
+        }
+        _this.$request.insertAttention(param).then(
           res=>{
             _this.$message.success("收藏成功")
-            _this.getUserInfo()
+            _this.getAttention()
           }
         )
       }else{
         this.$message.warning("请登录")
       }
     },
-    deleteInterest(){
+    deleteAttention(){
       let _this=this
-      _this.$request.deleteInterest({interestId:_this.interest.id}).then(
+      _this.$request.deleteAttention({id:_this.attentionRes.id}).then(
         res=>{
           _this.$message.success("已取消收藏")
-          _this.getUserInfo()
+          _this.getAttention()
 
         }
       )
     },
-    jubao(){
+    getAccuse(){
       let _this=this
-      if(_this.comment.userId!=0){
-        _this.article.status=-2
-        _this.$request.updateArticle(_this.article).then(res=>{
-            _this.$message.success("已举报")
-            _this.getUserInfo()
-          
-        })
+      if(_this.user.id){
+        let param={
+          userId:this.user.id,
+          accuseId:this.article.id,
+          accuseType:1,
+        }
+        _this.$request.selectAccuseByCondition(param).then(
+          res=>{
+            if(res.data.length>0){
+              this.accuse = true
+              this.accuseRes = res.data[0]
+            }else{
+              this.accuse = false
+            }
+          }
+        )
+      }else{
+        // this.$message.warning("请登录")
+      }
+    },
+    addAccuse(){
+      let _this=this
+      if(_this.user.id){
+        let param={
+          userId:this.user.id,
+          accuseId:this.article.id,
+          accuseType:1,
+        }
+        _this.$request.insertAccuse(param).then(
+          res=>{
+            _this.$message.success("举报成功")
+            _this.getAccuse()
+          }
+        )
       }else{
         this.$message.warning("请登录")
       }
+    },
+    deleteAccuse(){
+      let _this=this
+      _this.$request.deleteAccuse({id:_this.accuseRes.id}).then(
+        res=>{
+          _this.$message.success("已取消举报")
+          _this.getAccuse()
 
+        }
+      )
     }
 
   },
  }
 </script>
 
-<style lang="less" scoped>
-.info-article{
+<style lang="less">
+@import "../../../static/css/main";
+.article{
   position: relative;
-  background-color: #fff;
-  width: 70%;
-  box-shadow: 0 0 10px 0 #eee;
-  margin: 20px auto;
-  padding: 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   .menu{
-    position: absolute;
-    left: -120px;
-    top: 0;
+    z-index: 100;
+    position: fixed;
+    left: 7vw;
+    top: 8vh;
     li{
       cursor: pointer;
-      width: 80px;
-      height: 80px;
+      width: 13vh;
+      height: 13vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       background-color: #fff;
-      margin-top: 10px;
+      border: 1px solid #eee;
+      box-shadow: 0 0 5px 0 #eee;
+      margin-top: 1vh;
       font-weight: 700;
+      label{
+        cursor: pointer;
+      }
       i{
+        cursor: pointer;
         font-size: 18px;
         margin-bottom: 10px;
       }
@@ -272,94 +310,134 @@ export default {
       }
     }
   }
-  .name{
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 10px;
-  }
-  .base{
-    display: flex;
-    justify-content: center;
-    margin-bottom: 10px;
-    p{
-      width: 30%;
-    }
-  }
-  .content-article{
-    border: 1px solid #eee;
-    box-shadow: 0 0 5px 0 #eee;
-    width: 80%;
-    margin: 0 auto;
-    padding: 10px;
-    p{
-      font-size: 16px;
-      text-align: left;
-
-    }
-  }
-  .content{
+  .info-article{
+    position: relative;
+    background-color: #fff;
     width: 70%;
-    margin: 0 auto;
-    p{
-      font-size: 16px;
-      text-align: left;
-
+    box-shadow: 0 0 10px 0 #eee;
+    margin: 3vh auto 0;
+    padding: 3vh 0;
+    .name{
+      font-size: 4vh;
+      line-height: 5vh;
+      font-weight: 800;
+      margin-bottom: 3vh;
+    }
+    .base{
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2vh;
+      label{
+        font-size: 1.5vh;
+        color: #aaa;
+        margin-right: 0.3vw;
+      }
+      p{
+        width: 30%;
+      }
+    }
+    .content-article{
+      width: 90%;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      .content-content{
+        white-space: pre-line;
+        padding: 1vh;
+        width: 70%;
+        font-size: 2.4vh;
+        text-align: left;
+        // border: 1px solid #eee;
+        // box-shadow: 0 0 5px 0 #eee;
+      }
+      .content-img{
+        margin-left: 1vw;
+        flex: 1;
+        .image{
+          min-height: 20vh;
+          background-repeat: no-repeat;
+          background-size: 100%;
+          img{
+            border: 1px solid #eee;
+            width: 100%;
+            margin-bottom: 1vh;
+          }
+        }
+      }
+    }
+    
+    .commentInput{
+      width: 70%;
+      position: fixed;
+      bottom: 2vh;
+      // height: 10%;
+      background-color: @fifthColor;
+      border: 0.1vh solid #ccc;
+      padding: 1vh;
+      .el-textarea__inner{
+        margin-bottom: 1vh;
+        height: 10vh;
+        border: none;
+        border-radius: 0;
+      }
+      .el-textarea__inner:focus{
+        outline: none;
+      }
+      .el-button{
+        border-radius: 1px;
+        padding: 1vh 2vw;
+        font-size: 1.8vh;
+        line-height: 2vh;
+        border: none;
+      }
     }
   }
   .comment{
-    background-color: #fafafa;
-    box-shadow: 0 0 10px 0 #eee;
-    margin-top: 20px;
+    width: 70%;
+    background-color: #fff;
+    border:0.1vh solid @sixthColor;
+    margin-bottom: 3vh;
+    margin-top: 1vh;
+    label{
+      height: 7vh;
+      font-size: 2.5vh;
+      color: #aaa;
+      line-height: 7vh;
+    }
     .comment-info{
       display: flex;
-      border: 1px solid #fff;
+      // border: 1px solid #fff;
       position: relative;
+      border-bottom: 0.1vh solid #eee;
+      background-color: rgba(240,240,240,0.2);
       .author{
-        width: 20%;
+        // height: 80%;
+        width: 15%;
         font-weight: 700;
-        font-size: 18px;
-        margin-top: 20px;
+        font-size: 2.3vh;
+        padding-top: 2vh;
+        border-right: 0.1vh solid #eee;
       }
       .comment-single{
         // width: 30%;
         width: 70%;
         text-align: left;
-        margin-left: 30px;
+        margin-left: 2vw;
         display: flex;
         flex-direction: column;
-        padding: 10px 0;
+        padding: 1vh 0;
         p{
           color: #ababab;
+          font-size: 1.5vh;
         }
-        p.content{
+        p.comment-content{
           color:#111;
-          font-size: 16px;
+          font-size: 1.9vh;
           margin-left:0;
-          margin-top: 5px;
+          white-space: pre-line;
+          margin-top: 1vh;
         }
       }
-      &::before{
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 20%;
-        width: 5px;
-        height: 100%;
-        background-color: #fff;
-      }
-    }
-  }
-  
-  .commentInput{
-    width: 70%;
-    position: fixed;
-    bottom:20px;
-    // height: 10%;
-    background-color: coral;
-    padding: 10px;
-    .el-textarea__inner{
-      margin-bottom: 10px;
-      height: 100px;
     }
   }
 }

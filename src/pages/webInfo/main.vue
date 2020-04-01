@@ -6,7 +6,7 @@
       <li @click="login">登录</li>
       <el-popover placement="left" trigger="hover">
         <ul class="registe">
-          <li @click="registe('school')">我想招募</li>
+          <li @click="registe('recruiter')">我想招募</li>
           <li @click="registe('volunteer')">我想支教</li>
         </ul>
         <li slot="reference" style="border-top:none;">注册</li>
@@ -25,9 +25,9 @@
   </div>
   <div class="leftNav" ref="leftNav">
     <ul>
-      <li>招募信息</li>
-      <li>文章</li>
-      <li>交流区</li>
+      <li><a href="#articles">日志文章</a></li>
+      <li><a href="#info">招募信息</a></li>
+      <li><a href="#postCard">讨论交流</a></li>
       <li class="top" @mouseenter.self="handleTopEnter" @mouseleave.self="handleTopLeave" @click="scrollTop">
         <p class="arrow" v-if="moveArrow">&lt;</p>
         <p v-else>返回顶部</p>
@@ -38,15 +38,25 @@
   <div class="main">
     <!-- 搜索栏 -->
     <div class="search" ref="search">
-      <el-select name="" id="" v-model="searchMsg.select.value" class="searchSel">
-        <el-option v-for="sel in searchSel" :key="sel.id" :value="sel.value" :label="sel.label"></el-option>
+      <el-select name="" id="" v-model="searchMsg.select" class="searchSel">
+        <template v-if="!!user.id">
+          <el-option v-for="sel in searchSel"
+          v-if="user.userType=='1'&&sel.field!='vol'" 
+          :key="sel.id" :value="sel.field" :label="sel.label"></el-option>
+          <el-option v-for="sel in searchSel"
+           v-if="user.userType=='2'&&(sel.field!='job'&&sel.field!='school')"
+            :key="sel.id" :value="sel.field" :label="sel.label"></el-option>
+        </template>
+        <template v-else>
+          <el-option v-for="sel in searchSel" :key="sel.id" :value="sel.field" :label="sel.label"></el-option>
+        </template>
       </el-select>
-      <el-input v-model="searchMsg.searchText" placeholder="请输入内容" class="input-with-select searchInput">
+      <el-input v-model="searchMsg.text" placeholder="请输入内容" class="input-with-select searchInput">
       </el-input>
       <el-button icon="el-icon-search" @click="searchByKeyword">搜索</el-button>
     </div>
     <!-- 日志文章 -->
-    <div class="articles" ref="info">
+    <div class="articles" id="articles" ref="info">
       <div class="title">
         <div class="name">日志文章</div>
         <div class="more">查看更多 >></div>
@@ -55,35 +65,41 @@
         <!-- <el-col :span="6"  class="el-col"> -->
         <!-- <essay v-for="(article, index) in articles" :key="index"
             :essay="article"></essay> -->
-        <essay v-for="(article, index) in 8" :key="index"></essay>
+        <essay v-for="(article, index) in articles" :key="index" :essay="article"></essay>
         <!-- </el-col> -->
 
       </el-row>
     </div>
     <!-- 招募职位、志愿者信息查看 -->
-    <div class="info">
+    <div class="info" id="info">
       <div class="title">
         <div class="name">招募信息</div>
         <div class="more">查看更多 >></div>
       </div>
-      <div class="teachers">
+      <div class="teachers" v-if="user.id&&user.userType=='1'">
         <teacher class="single-teacher" v-for="(teacher,index) in teachers" :key="index" :teacher="teacher"></teacher>
       </div>
-      <div class="volunteers">
+      <div class="volunteers" v-if="user.id&&user.userType=='2'">
+        <volunteer class="single-volunteers" v-for="(volunteer,index) in volunteers" :key="index" :volunteer="volunteer"></volunteer>
+      </div>
+      <div class="teachers all" v-if="!user.id">
+        <teacher class="single-teacher" v-for="(teacher,index) in teachers" :key="index" :teacher="teacher"></teacher>
+      </div>
+      <div class="volunteers all" v-if="!user.id">
         <volunteer class="single-volunteers" v-for="(volunteer,index) in volunteers" :key="index" :volunteer="volunteer"></volunteer>
       </div>
     </div>
     <!-- 热门帖子 -->
-    <div class="postCard">
+    <div class="postCard" id="postCard">
       <div class="title">
-        <div class="name">讨论交流区</div>
+        <div class="name">讨论交流</div>
         <div class="more">查看更多 >></div>
       </div>
       <!-- <disguss class="post-single" v-for="(post,index) in posts" :key="index" :disguss="post">
           <div slot="num"><div class="num"></div></div>
         </disguss> -->
       <div class="disgusses">
-        <disguss v-for="(index,o) in 4" :key="index" :disguss="disgussHot" class="post-single">
+        <disguss v-for="(post,index) in posts" :key="index" :disguss="post" class="post-single">
         </disguss>
       </div>
     </div>
@@ -96,7 +112,6 @@
 </template>
 
 <script>
-import carousel from '../../components/common/carousel.vue'
 import teacher from '../../components/common/teacher.vue'
 import volunteer from '../../components/common/volunteer.vue'
 import essay from '../../components/common/essay.vue'
@@ -106,7 +121,6 @@ import Clipboard from 'clipboard'
 
 export default {
   components: {
-    carousel,
     teacher,
     volunteer,
     essay,
@@ -118,133 +132,50 @@ export default {
       url: "https://lingxidan.github.io/",
       panels: {},
       moveArrow: true,
+      articles: [],
       searchSel: [{
           id: 0,
           field: "total",
-          label: "全部",
-          value: "全部"
+          label: "全部"
         },
         {
           id: 1,
-          field: "school",
-          label: "学校",
-          value: "学校"
+          field: "job",
+          label: "职位"
         },
         {
           id: 2,
-          field: "teacher",
-          label: "教职",
-          value: "教职"
+          field: "school",
+          label: "学校"
+        },
+        {
+          id: 3,
+          field: "vol",
+          label: "志愿者"
+        },
+        {
+          id: 4,
+          field: "article",
+          label: "文章"
+        },
+        {
+          id: 5,
+          field: "post",
+          label: "帖子"
         }
       ],
-      teachers: [{
-          name: "数学教师",
-          during: "4-10年",
-          education: "本科",
-          teacherCert: true,
-          schoolName: "XXX小学",
-          schoolAddr: "北京市 北京市 朝阳区",
-          contactImg: "/src/assets/logo_vue.png",
-          contactPerson: "刘女士",
-          contactJob: "教育局代表人",
-        },
-        {
-          name: "语文教师",
-          during: "1-5年",
-          education: "本科",
-          teacherCert: true,
-          schoolName: "XXX小学",
-          schoolAddr: "北京市 北京市 朝阳区",
-          contactImg: "/src/assets/logo_vue.png",
-          contactPerson: "张先生",
-          contactJob: "校长",
-        },
-        {
-          name: "语文教师",
-          during: "1-5年",
-          education: "本科",
-          teacherCert: true,
-          schoolName: "XXX小学",
-          schoolAddr: "北京市 北京市 朝阳区",
-          contactImg: "/src/assets/logo_vue.png",
-          contactPerson: "张先生",
-          contactJob: "校长",
-        },
-        {
-          name: "语文教师",
-          during: "1-5年",
-          education: "本科",
-          teacherCert: true,
-          schoolName: "XXX小学",
-          schoolAddr: "北京市 北京市 朝阳区",
-          contactImg: "/src/assets/logo_vue.png",
-          contactPerson: "张先生",
-          contactJob: "校长",
-        },
-        {
-          name: "语文教师",
-          during: "1-5年",
-          education: "本科",
-          teacherCert: true,
-          schoolName: "XXX小学",
-          schoolAddr: "北京市 北京市 朝阳区",
-          contactImg: "/src/assets/logo_vue.png",
-          contactPerson: "张先生",
-          contactJob: "校长",
-        }
-      ],
-      volunteers: [{
-          name: "张老师",
-          during: "4-10年经验",
-          education: "本科",
-          projects: ["数学", "英语", "语文"],
-        },
-        {
-          name: "曾老师",
-          during: "3-5年经验",
-          education: "研究生",
-          projects: ["数学", "语文"],
-        },
-        {
-          name: "曾老师",
-          during: "3-5年经验",
-          education: "研究生",
-          projects: ["数学", "语文"],
-        },
-        {
-          name: "曾老师",
-          during: "3-5年经验",
-          education: "研究生",
-          projects: ["数学", "语文"],
-        },
-        {
-          name: "曾老师",
-          during: "3-5年经验",
-          education: "研究生",
-          projects: ["数学", "语文"],
-        }
-      ],
+      teachers: [],
+      volunteers: [],
       searchMsg: {
         select: "",
-        searchText: ""
+        text: ""
       },
-      disgussHot: {
-        title: "志愿过程中的费用如何解决?",
-        content: "当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取",
-        img: "./../../../static/img/panel_3.jpg",
-        viewCnt: 13000,
-        disCnt: 300
-      },
-      disgussStar: {
-        title: "志愿过程中会遇到什么不可预计的事情?",
-        content: "志愿过程中，会有哪些需要预防的事情，有什么应急处理方法志愿过程中，会有哪些需要预防的事情，有什么应急处理方法志愿过程中，会有哪些需要预防的事情，有什么应急处理方法",
-        img: "./../../../static/img/panel_1.jpg",
-        viewCnt: 13000,
-        disCnt: 300
-      }
+      posts:[],
+      user:{}
     }
   },
   mounted() {
+    this.user = JSON.parse(sessionStorage.getItem('user'))||{};
     let _this = this
     this.panels.top = this.$parent.$refs.top
     this.panels.search = this.$refs.search
@@ -255,101 +186,54 @@ export default {
 
     this.panels.info = this.$refs.info
     this.handleScroll()
-    this.searchMsg.select = this.searchSel[0]
+    this.searchMsg.select = this.searchSel[0].field
     // 复制按钮
     // console.log(this.$refs)
     window.addEventListener('scroll', this.handleScroll, true); // 监听（绑定）滚轮滚动事件
     this.$request.selectJobByCondition({}).then(
       res => {
-        console.log(res.data)
-        // this.teachers = res.data.slice(0, 6)
+        this.teachers = res.data.slice(0, 6)
       }
     )
-    this.$request.getUser().then(
+    this.$request.getVols({}).then(
       res => {
-        res.data = res.data.reverse()
         let userList = []
         for (let i = 0; i < res.data.length; i++) {
-          _this.getUser(res.data[i].id, (res) => {
-            if (userList.length < 6) {
-              userList.push(res.data)
-              console.log(userList)
-              // _this.volunteers = userList
-            }
-          })
+          userList.push(res.data[i])
         }
+        _this.volunteers = userList
+      }
+    )
+    this.$request.getRecrs({}).then(
+      res => {
+        let userList = []
+        for (let i = 0; i < res.data.length; i++) {
+          userList.push(res.data[i])
+        }
+        // _this.teachers = userList
       }
     )
     this.$request.selectArticleByCondition({}).then(
       res => {
-        _this.articles = res.data
-        // res.data=res.data.reverse()
-        // let userList=[]
-        // for(let i=0;i<res.data.length;i++){
-        //   _this.getUser(res.data[i].id,(res)=>{
-        //     if(userList.length<6){
-        //       userList.push(res.data)
-        //       console.log(userList)
-        //       _this.volunteers=userList
-        //     }
-        //   })
-        // }
+        _this.articles = res.data.slice(0, 8)
       }
     )
     this.$request.selectPostByCondition({}).then(
       res => {
         _this.posts = res.data
-        // res.data=res.data.reverse()
-        // let userList=[]
-        // for(let i=0;i<res.data.length;i++){
-        //   _this.getUser(res.data[i].id,(res)=>{
-        //     if(userList.length<6){
-        //       userList.push(res.data)
-        //       console.log(userList)
-        //       _this.volunteers=userList
-        //     }
-        //   })
-        // }
       }
     )
   },
   methods: {
-    getUser(userId, func) {
-      let _this = this
-      _this.$request.getVolunteer({
-        userId: userId
-      }).then(
-        res => {
-          func(res)
-        },
-        error => {
-          _this.$request.getRecuriter({
-            userId: userId
-          }).then(res => {
-            func(res)
-          }, )
-        }
-      )
-    },
-    // school(){
-    //   this.$router.push('/registe/school')
-    // },
-    // volunteer(){
-    //   this.$router.push('/registe/volunteer')
-    // },
     registe(opt) {
-      console.log(opt)
       this.$router.push('/registe/' + opt)
     },
     login() {
-      // let _login = this.panels.login
-      // _login.style.display ="block"
       this.$router.push('/login')
     },
     cancel() {
       let _login = this.panels.login
       _login.style.display = "none"
-      // this.$router.push('/login')
     },
     // 滚动条事件
     handleScroll() {
@@ -440,13 +324,19 @@ export default {
       this.$router.push({
         path: '/search',
         query: {
-          keyword: this.searchMsg.searchText
+          field: this.searchMsg.select,
+          text: this.searchMsg.text,
         }
       })
       // console.log()
 
     }
-  }
+  },
+  watch: {
+    '$route'(to,from) {
+      this.user = JSON.parse(sessionStorage.getItem('user'))||{};
+    }
+  },
 }
 </script>
 <style lang="less" scoped>
@@ -527,8 +417,7 @@ ul.registe {
     .teachers,.volunteers {
       border-top: 5px solid @thirthColor;
       display: inline-block;
-      width: 50%;
-
+      width: 100%;
       .single-teacher,.single-volunteers {
         height: 10vh;
         border-bottom: 1px solid @sixthColor;
@@ -537,6 +426,9 @@ ul.registe {
         border-left: 1px solid @sixthColor;
       }
 
+    }
+    .all{
+      width: 50%;
     }
   }
 }
@@ -577,7 +469,10 @@ ul.registe {
 
   li:hover {
     background-color: @fourthColor;
-    color: #fff;
+      color: white;
+    a{
+      color: white;
+    }
   }
   
 }
@@ -598,7 +493,9 @@ ul.registe {
 
   li.top:hover {
     background-color: @thirthColor;
-    color: white;
+    a{
+      color: white;
+    }
   }
 }
 
@@ -641,13 +538,13 @@ ul.registe {
     margin: 2.5vh 0 1vh;
     border-left: 0.5vw solid @mainColor;
     padding: 0.8vh;
-    padding-left: 1.8vw;
+    padding-left: 1.3vw;
     background: linear-gradient(to right,@secondColor 5%, transparent 50%);
     color: #f7f7f7;
     display: flex;
     .name{
       width: 30%;
-      letter-spacing: 1.2vw;
+      letter-spacing: 0.5vw;
       font-size: 3vh;
       font-weight: bold;
       text-align: left;
@@ -666,14 +563,15 @@ ul.registe {
     }
   }
   .disgusses{
-    border-top: 5px solid @thirthColor;
+    // border-top: 5px solid @thirthColor;
   }
   .post-single {
     margin: 0.6vw;
     border-bottom: 1px solid @sixthColor;
-    &:hover{
-      background-color: @sixthColor;
-    }
+    transition: .3s;
+    // &:hover{
+    //   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    // }
   }
 }
 .articles{

@@ -1,12 +1,14 @@
 <template>
   <div class="post-list">
-    <editPost class="edit-school" v-if="addPostFlag" @cancel="cancel" @onSubmit="onSubmit"
-    :typeIdx="typeIdx"></editPost>
-    <div class="table-school" v-else>
-      <h1>我发表的帖子</h1>
+    <el-dialog title="文章管理" :visible.sync="editVisible" top="2vh" width="50%" :destroy-on-close="true">
+      <editPost class="edit-school"  @cancel="editVisible = false" @onSubmit="onSubmit"
+      :typeIdx="typeIdx"></editPost>
+    </el-dialog>
+    <div class="table-school">
       <div class="postTop">
+      <h1>我发表的帖子</h1>
         <div class="feature">
-          <el-button type="primary" @click="addPost">发表帖子</el-button>
+          <el-button type="primary" @click="addPost" class="add-btn">发表帖子</el-button>
         </div>
         <!-- <input-select ref="totalSel" :inputs="inputData" :selects="selectData" :searchBtn="true" @search="search"></input-select> -->
 
@@ -29,76 +31,53 @@ export default {
   name: 'post-list',
   data() { 
     return {
-      addPostFlag:false,
+      editVisible:false,
       typeIdx:-1,
-      tableData:[{
-        postName:"光明小学",
-        postAddr:"XX省XX市XX区XX镇XX村",
-        postScale:"80人",
-        postDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        postEstablish:"2000年10月10日",
-        },{
-        postName:"希望小学",
-        postAddr:"XX省XX市XX区",
-        postScale:"80人",
-        postDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        postEstablish:"2000年10月10日",
-        },{
-        postName:"光明小学",
-        postAddr:"XX省XX市XX县XX镇XX村",
-        postScale:"80人",
-        postDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        postEstablish:"2000年10月10日",
-        }],
+      tableData:[],
       tableTitles:[{
           prop: "title",
-          label: "帖子名",
-          width: "170",
-          fixed: true,
+          label: "帖子名"
         },{
           prop: "establishDt",
-          label: "发表时间",
-          width: "170"
+          label: "发表时间"
         },{
-          prop: "statusName",
-          label: "帖子状态",
-          width: "230"
+          prop: "msgCount",
+          label: "评论数"
+        },{
+          prop: "attentionCount",
+          label: "收藏数"
         }],
       tableConf:{
         // 表格按钮操作列(是否需要，列头，操作按钮列表)
         operation:true,
-        // operaHeader:{
-        //   id:"edit",
-        //   text:"修改信息",
-        //   size:"medium",
-        //   type:"primary",
-        //   click:()=>{
-        //     console.log(this.$refs.tbMain.$refs.elTb.tableData)
-        //   }
-        // },
         btns:[{
           id:"volunteer",
-          text:"查看/修改帖子",
+          text:"查看",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
-            this.addPostFlag=true
+            this.$router.push({path:'/post',query:{id:val.id}})
+          }
+        },{
+          id:"volunteer",
+          text:"修改帖子",
+          size:"medium",
+          type:"text",
+          click:(val)=>{
+            this.editVisible=true
             this.typeIdx=val.id
           }
         },{
           id:"delete",
           text:"删除帖子",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
-            val.status=-1
             let _this=this
-            _this.$request.updatePost(val).then(
+            _this.$request.deletePost({postId:val.id}).then(
               res=>{
                 _this.$message.success("删除成功")
-                _this.getUserInfo(_this.user.userId)
+                _this.initData()
               }
             )
           }
@@ -223,74 +202,68 @@ export default {
     inputSelect,
     editPost
   },
-  mounted() {
-    this.selectData=this.selectDataAddr
+  created(){
     this.user = JSON.parse(sessionStorage.getItem('user'));
-    this.getUserInfo(this.user.userId)
+    this.initData()
+  },
+  mounted() {
   },
   methods:{
-    getUserInfo(dataId){
+    initData(){
       let _this=this
       _this.tableData=[]
-      // _this.$request.getRecuriter({userId:dataId}).then(
-        // res=>{
-          // _this.recruiter=res.data
-
-          // 文章列表
-          _this.$request.selectPostByCondition({userId:dataId}).then(
-            res=>{
-              console.log("getArticle",res.data)
-              _this.tableData=res.data
-              _this.tableData.forEach(data=>{
-                data.articleId = data.id
-                data.statusName=""
-                if(data.status==0){
-                  data.statusName="正常"
-
-                }
-                if(data.status==-1){
-                  data.statusName="删除"
-
-                }
-                if(data.status==-2){
-                  data.statusName="被举报"
-
-                }
-              })
-              console.log(_this.tableData)
-            }
-          )
-        // }
-      // )
+      // 文章列表
+      _this.$request.selectPostByCondition({userId:this.user.id}).then(
+        res=>{
+          res.data.forEach(data=>{
+            data.msgCount = 0
+            data.attentionCount = 0
+            this.$request.selectCommentByCondition({type:2,mainId:data.id}).then(res=>{
+              data.msgCount = res.data.length
+            })
+            this.$request.selectAttentionByCondition({collectType:2,userId:this.user.id,collectId:data.id}).then(res=>{
+              data.attentionCount = res.data.length
+            })
+          })
+          _this.tableData=res.data
+        }
+      )
     },
     addPost(){
       this.typeIdx=-1
-      this.addPostFlag=true
+      this.editVisible=true
     },
     cancel(){
-      this.addPostFlag=false
+      this.editVisible=false
     },
     onSubmit(post){
-      this.addPostFlag=false
       let _this=this
-      console.log(post)
-      // let _this=this
+      post.authorId=this.user.id
+      let formData = new FormData();
+      let image = (post.image||[]).map(item=>item.raw)
+      image.forEach(item=>{formData.append('image', item)})
+      formData.append("image", image)
+      formData.append("title", post.title)
+      formData.append("content", post.content)
+      formData.append("authorId", post.authorId)
+      formData.append("frontPath", this.$rootPath)
+      console.log(post, formData)
       if(_this.typeIdx==-1){
         // 添加学校
-        post.authorId=this.user.userId
-        this.$request.insertPost(post).then(
+        this.$request.insertPost(formData).then(
           res=>{
-            console.log(res)
-            _this.getUserInfo(_this.user.userId)
+            this.editVisible=false
+            _this.initData()
           }
         )
       }
       else{
-        // school.userId=this.recruiter.userId
-        
-        this.$request.updatePost(post).then(
+        formData.append("imgs", post.imgs)
+        formData.append("id", post.id)
+        this.$request.updatePost(formData).then(
           res=>{
-            _this.getUserInfo(_this.user.userId)
+            this.editVisible=false
+            _this.initData()
           }
         )
       }
@@ -301,29 +274,48 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../../../static/css/main';
 .post-list{
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #fff;
   h1{
     font-weight: bold;
     letter-spacing: 2px;
-    font-size: 20px;
+    font-size: 3vh;
+    padding-left: 3.5vw;
+    line-height: 1.4;
   }
   .postTop{
     width: 100%;
     display: flex;
+    align-items: center;
+    // justify-content: center;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
     .feature{
-      margin-left: 30px;
-      width: 10%;
-      display: flex;
-      align-items: center;
+      margin-left: 5vw;
+      padding: 1vh;
+      .add-btn{
+        background-color: @thirthColor;
+        border-color: @sixthColor;
+        padding: 1.4vh 1vw;
+        font-size: 1.6vh;
+        border-radius: 4px;
+        &:hover{
+          background: none;
+          color: @secondColor;
+          border-color: @sixthColor;
+        }
+      }
     }
   }
   .tablepage{
     width: 100%;
+    max-height: 90vh;
+    overflow: auto;
+    // margin-bottom: 2vh;
   }
   .table-school{
     width: 100%;
@@ -335,6 +327,23 @@ export default {
     left: 0;
     background-color: #fff;
     z-index: 100;
+  }
+
+}
+</style>
+<style lang="less">
+.table{
+  .el-dialog__title {
+    line-height: 1;
+    font-size: 3vh;
+    font-weight: bolder;
+  }
+  .el-dialog__body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1vw;
   }
 }
 </style>

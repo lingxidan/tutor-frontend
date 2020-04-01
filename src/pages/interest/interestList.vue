@@ -1,22 +1,26 @@
 <template>
   <div class="interest-list">
     <el-tabs v-model="activeName" @tab-click="handleClick">
-      <!-- <el-tab-pane label="我关注的志愿者" name="first">
-        <div class="main-interest">
-          <teacher class="half" v-for="(teacher,index) in teachers" :key="index"
-          :teacher="teacher"
-          :interest="true"></teacher>
-        </div>
-      </el-tab-pane> -->
       <el-tab-pane label="我关注的文章" name="first">
-        <div class="main-interest">
-          <essay class="half article" v-for="(article, idx) in articleList" :key="index"
-          :article="article"></essay>
-        </div></el-tab-pane>
+        <div class="interest-content">
+          <div class="main-interest" v-for="(article, index) in articleAttentions">
+            <essay :key="index" :essay="article"></essay>
+            <div class="delete-interest">
+              <i class="el-icon-star-on"></i>
+              <label @click="deleteArticleAttention(article)">取消收藏</label>
+            </div>
+          </div>
+        </div>
+      </el-tab-pane>
       <el-tab-pane label="我关注的帖子" name="second">
-        <div class="main-interest">
-          <disguss class="half" v-for="(index,o) in 5" :key="index" :disguss="disgussStar">
-          </disguss>
+        <div class="interest-content-post">
+          <div class="main-interest-post" v-for="(post,index) in postAttentions">
+            <disguss :key="index" :disguss="post"></disguss>
+            <div class="delete-interest">
+              <i class="el-icon-star-on"></i>
+              <label @click="deletePostAttention(post)">取消收藏</label>
+            </div>
+          </div>
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -32,67 +36,12 @@ export default {
   data() { 
     return {
       activeName: 'first',
-      teachers:[
-        {
-          name:"数学教师",
-          during:"4-10年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"刘女士",
-          contactJob:"教育局代表人",
-        },
-        {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
-        },
-        {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
-        },
-        {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
-        },
-        {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
-        }],
-      
-      // articleInterests:[{
-      //   name:"文章",
+      teachers:[],
+      articleAttentions:[],
+      postAttentions:[],
+      articleList:[],
+      postList:[]
 
-      // }]
     }
   },
   props: {
@@ -105,74 +54,124 @@ export default {
   },
   mounted() {
     let _this=this
-    this.user = JSON.parse(sessionStorage.getItem('user')); 
-    // if(this.user.education){
-    //   console.log("志愿者")
-    // }
-    // if(this.user.identify){
-    //   console.log("招募者")
-    // }
-    this.$request.selectInterestByCondition({userId:this.user.userId,type:3}).then(
-      res=>{
-        console.log(res.data)
-        _this.articleList = res.data
-      }
-    )
-    this.$request.selectInterestByCondition({userId:this.user.userId,type:4}).then(
-      res=>{
-        console.log(res.data)
-        _this.postList = res.data
-      }
-    )
+    this.user = JSON.parse(sessionStorage.getItem('user'));
+    this.getPostAttentionList()
+    this.getArticleAttentionList()
   },
   methods:{
-    getUser(userId,func){
-      let _this=this
-      _this.$request.getVolunteer({userId:userId}).then(
+    getPostAttentionList(){
+      this.postAttentions = []
+      this.$request.selectAttentionByCondition({userId:this.user.id,collectType:2}).then(res=>{
+        res.data.forEach(data=>{
+          this.$request.selectPostById({postId:data.collectId}).then(sourceRes=>{
+            sourceRes.data.attention = data
+            this.postAttentions.push(sourceRes.data)
+          })
+        })
+      })
+    },
+    getArticleAttentionList(){
+      this.articleAttentions = []
+      this.$request.selectAttentionByCondition({userId:this.user.id,collectType:1}).then(res=>{
+        res.data.forEach(data=>{
+          this.$request.selectArticleById({articleId:data.collectId}).then(sourceRes=>{
+            sourceRes.data.attention = data
+            this.articleAttentions.push(sourceRes.data)
+          })
+        })
+      })
+    },
+    handleClick(tab, event) {
+      this.activeName = tab.name
+    },
+    deleteArticleAttention(article){
+      this.$request.deleteAttention({id:article.attention.id}).then(
         res=>{
-          func(res)
-        },
-        error=>{
-          _this.$request.getRecuriter({userId:userId}).then(res=>{
-            func(res)
-          },)
+          this.$message.success("已取消收藏")
+          this.getArticleAttentionList()
+
+        }
+      )
+      
+    },
+    deletePostAttention(post){
+      this.$request.deleteAttention({id:post.attention.id}).then(
+        res=>{
+          this.$message.success("已取消收藏")
+          this.getPostAttentionList()
+
         }
       )
     },
-    handleClick(tab, event) {
-      console.log(tab, event);
-    }
   },
  }
 </script>
 
-<style lang="less" scoped>
+<style lang="less" >
 .interest-list{
-  .main-interest{
+  padding: 1vh 2vw;
+  background-color: #fff;
+  min-height: 90vh;
+  .interest-content{
     display: flex;
     flex-wrap: wrap;
-    // align-items: center;
-    // justify-content: center;
-  }
-  .half{
-    width: 45%;;
-    &:nth-child(2n){
+    .main-interest{
       position: relative;
-      &::before{
-        content: "";
-        position: absolute;
-        width: 2px;
-        height: 100px;
-        background-color: #fce9c7;
-        left:0;
-        top:50%;
-        transform: translateY(-50%);
+      margin: 0.5vw;
+      margin-top: 0;
+      width: 25%;
+      &:hover{
+        .delete-interest{
+          opacity: 1;
+        }
+      }
+      .el-col-6{
+        width: 100%;
       }
     }
   }
-  .article{
-    margin-left: 10px;
-    width: 30%;
+  .interest-content-post{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5vw;
+    padding-bottom: 1vh;
+  }
+  .main-interest-post{
+    position: relative;
+    width: 80vw;
+    transition: .3s;
+    border-bottom: 0.1px solid #ccc;
+    &:hover{
+      .delete-interest{
+        opacity: 1;
+      }
+    }
+  }
+  .delete-interest{
+    cursor: pointer;
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    opacity: 0;
+    transition: .3s;
+    width: 100%;
+    font-size: 2vh;
+    text-decoration: underline;
+    box-sizing: border-box;
+    padding: 1vh 0 0 0;
+    height: 30%;
+    color: rgb(255, 127, 80);
+    background: linear-gradient(to bottom,rgba(255, 127, 80,0.1),transparent);
+    i,label{
+      cursor: pointer;
+    }
+    label:hover{
+      color: rgba(255, 127, 80, 0.8);
+    }
+  }
+  .el-tabs__header{
+    margin-bottom: 1vh;
   }
 }
 </style>

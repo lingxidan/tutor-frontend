@@ -2,9 +2,9 @@
   <div class="registe" ref="registe">
     <div class="img"></div>
     <div class="teacher">
-      <h1 v-if="registeForm.identy=='volunteer'" class="registe_top">欢迎加入志愿教师大家庭</h1>
-      <h1 v-else class="registe_top">一站招募式平台</h1>
-      <el-form :model="registeForm" status-icon :rules="rules" ref="registeForm" label-position="right" label-width="130px" class="form-cont">
+      <h1 v-if="identy=='volunteer'" class="registe_top">欢迎加入志愿教师大家庭</h1>
+      <h1 v-else class="registe_top">一站式招募平台</h1>
+      <el-form :model="registeForm" :rules="rules" ref="registeForm" label-position="right" class="form-cont">
         <el-form-item prop="name" label="用户名">
           <el-input v-model="registeForm.name" autocomplete="off" placeholder="用户名">
           </el-input>
@@ -29,8 +29,10 @@
           <el-input type="password" v-model="registeForm.checkPass" autocomplete="off" placeholder="再次输入密码">
           </el-input>
         </el-form-item>
-        <el-form-item prop="checkUser" label="联系地址" class="input-with-select">
-          <el-select v-model="registeForm.province" style="width:180px;"
+      </el-form>
+      <el-form :model="registeForm" :rules="rules" ref="moreForm" label-position="right" class="form-cont">
+        <el-form-item label="联系地址">
+          <el-select v-model="registeForm.province"
               placeholder="省"
               @change="changeCity">
             <el-option
@@ -40,7 +42,7 @@
               :value="item.code">
             </el-option>
           </el-select>
-          <el-select v-model="registeForm.city" style="width:180px;"
+          <el-select v-model="registeForm.city"
               placeholder="市"
               @change="changeCounty">
             <el-option
@@ -51,7 +53,7 @@
               placeholder="">
             </el-option>
           </el-select>
-          <el-select v-model="registeForm.county" style="width:180px;"
+          <el-select v-model="registeForm.county"
               placeholder="区县">
             <el-option
               v-for="item in options.county"
@@ -62,23 +64,33 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item>
-          <el-button style="width:100%" type="primary" >登录</el-button>
-        </el-form-item> -->
-      </el-form>
-        <el-button v-if="registeForm.identy=='volunteer'" 
+        <el-form-item v-for="(item, index) in moreForm" :key="item.model" :prop="item.model" :label="item.label">
+          <el-input v-if="item.type == 'input'" v-model="registeForm[item.model]">
+          </el-input>
+          <el-select v-if="item.type == 'select'" v-model="registeForm[item.model]">
+            <el-option
+              v-for="itemOp in item.options"
+              :key="itemOp.code"
+              :label="itemOp.name"
+              :value="itemOp.code"
+              placeholder="">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-button v-if="identy=='volunteer'" 
           class="login_bottom" 
-          @click="registe('registeForm')"
-          style="width:70%" 
+          @click="registe"
           type="primary" >开启志愿之旅</el-button>
         <el-button v-else
           class="login_bottom" 
-          @click="registe('registeForm')"
-          style="width:70%" 
+          @click="registe"
           type="primary" >开启招募大门</el-button>
+      </el-form>
+      <div class="form_bottom">
         <p class="loginDirect" @click="login">已有账号？现在就登录</p>
-        <p v-if="registeForm.identy=='volunteer'" class="loginDirect" @click="registeDirect(2)">招募教师志愿者</p>
-        <p v-else class="loginDirect" @click="registeDirect(1)">我想支教</p>
+        <p v-if="identy=='volunteer'" class="loginDirect" @click="registeDirect">去招募</p>
+        <p v-else class="loginDirect" @click="registeDirect">我想支教</p>
+      </div>
     </div>
   </div>
 </template>
@@ -138,15 +150,19 @@ export default {
       codeTime:{},
       registeForm: {
         name: '',
-        idcard:'',
+        idcard: '',
         phone: '',
         email: '',
         password: '',
         checkPass: '',
-        province:'',
-        city:'',
-        county:'',
-        identy:this.$route.path.split('/')[2]
+        province: '',
+        city: '',
+        county: '',
+        education: '1',
+        status: '1',
+        companyName: '',
+        identify: '',
+        companyPhone: ''
       },
       options:{
         province:[],
@@ -183,11 +199,10 @@ export default {
         ],
         county: [
           {required: true, message: '地址不能为空'}
-        ],
-        // checkUser:[
-        //   { validator: validateUser2, trigger: 'blur' }
-        // ]
-      }
+        ]
+      },
+      moreForm:[],
+      identy:this.$route.path.split('/')[2]
     }
   },
   props: {
@@ -197,23 +212,22 @@ export default {
   },
   watch: {
     $route(to,from){
-      this.registeForm.identy=this.$route.path.split('/')[2]
+      this.identy=this.$route.path.split('/')[2]
+      this.getMoreForm()
     }
   },
   created(){
     
   },
   mounted() {
-    // console.log(this.user)
     let _this=this
     let clientHeight = document.documentElement.clientHeight || document.body.clientHeight
     this.$refs.registe.style.height = clientHeight + "px"
     this.panels.codeBtn = this.$refs.code
-    // console.log()
     this.$request.selectAddress({level:1,pcode:0}).then(res=>{
-      console.log(res)
       _this.options.province=res.data
     })
+    this.getMoreForm()
   },
   methods:{
     changeCity(pcode){
@@ -223,7 +237,6 @@ export default {
       _this.registeForm.city=""
       _this.registeForm.county=""
       this.$request.selectAddress({level:2,pcode:pcode}).then(res=>{
-        console.log(res)
         _this.options.city=res.data
       })
     },
@@ -244,85 +257,96 @@ export default {
     //   this.panels.codeBtn.innerText="已发送，请在60s内输入"
     //   // alert(this.codeTime.startTime)
     // },
-    registe(formName){
-      let _this=this
-      let identy = this.registeForm.identy
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          if(identy == "volunteer"){
-            console.log(this.registeForm)
-            let formData=this.registeForm
-            let param={
-              name:formData.name,
-              password:formData.password,
-              phone:formData.phone,
-              email:formData.email,
-              address:formData.county,
-              idcard:formData.idcard
-            }
-            _this.$request.registerVolunteer(param).then(
-              res=>{
-                let userId = res.data
-                // console.log(res)
-                _this.$request.getVolunteer({userId}).then(
-                  res=>{
-                    // console.log(res)
-                    res.data.identy=identy
-                    this.$store.commit('user', res.data);
-                    sessionStorage.setItem("user",JSON.stringify(res.data))
-                    this.$router.push('/user/vol/'+identy)
-                    console.log(this.$store.state.user)
-                  }
-                )
-              }
-            )
-          }
-          if(identy == "recruiter"){
-            console.log(this.registeForm)
-            let formData=this.registeForm
-            let param={
-              name:formData.name,
-              password:formData.password,
-              phone:formData.phone,
-              email:formData.email,
-              address:formData.county,
-              idcard:formData.idcard
-            }
-            _this.$request.registeRecuriter(param).then(
-              res=>{
-                let userId = res.data
-                // console.log(res)
-                _this.$request.getRecuriter({userId}).then(
-                  res=>{
-                    console.log(res)
-                    res.data.identy=identy
-                    this.$store.commit('user', res.data);
-                    sessionStorage.setItem("user",JSON.stringify(res.data))
-                    this.$router.push('/user/recr/'+identy)
-                    console.log(this.$store.state.user)
-                  }
-                )
-              }
-            )
-
-          }
-          // if(identy == "recruiter"){
-          //   this.$router.push('/user/recr/'+identy)
-          // }else{
-          //   this.$router.push('/user/vol/'+identy)
-          // }
-          // this.login(this.ruleForm.user, this.ruleForm.pass)
-        } else {
-          return false
-        }
-      })
-      // location.reload()
+    getMoreForm(){
+      this.moreForm = []
+      if(this.identy == "volunteer"){
+        this.moreForm = [{
+            model: "education",
+            label: "学历",
+            type: "select",
+            options: [{
+              name:"高中及以下",
+              code:"1"
+            },{
+              name:"高中",
+              code:"2"
+            },{
+              name:"大专",
+              code:"3"
+            },{
+              name:"本科",
+              code:"4"
+            },{
+              name:"硕士研究生",
+              code:"5"
+            },{
+              name:"博士研究生",
+              code:"6"
+            },]
+          },{
+            model: "status",
+            label: "求职状态",
+            type: "select",
+            options: [{
+              name:"考虑机会",
+              code: "1"
+            },{
+              name:"暂不考虑",
+              code: "2"
+            }]
+          }]
+      }
+      if(this.identy == "recruiter"){
+        this.moreForm = [{
+            model: "companyName",
+            label: "公司名称",
+            type: "input"
+          },{
+            model: "identify",
+            label: "职位",
+            type: "input"
+          },{
+            model: "companyPhone",
+            label: "公司联系方式",
+            type: "input",
+          }]
+      }
     },
-    registeDirect(flag){
-      if(flag==1){
+    registe(){
+      let _this=this
+      let identy = this.identy
+      this.$refs.registeForm.validate(valid=>{
+        this.$refs.moreForm.validate(valid1=>{
+          if(valid && valid1){
+            this.registeForm.address = this.registeForm.county || this.registeForm.city || this.registeForm.province || ""
+            if(this.identy == "volunteer"){
+              this.$request.registerVolunteer(this.registeForm).then(
+                res=>{
+                  this.$store.commit('user', res.data);
+                  sessionStorage.setItem("user", JSON.stringify(res.data))
+                  this.$router.push('/user/vol/' + this.identy)
+                }
+              )
+            }
+            if(this.identy == "recruiter"){
+              this.$request.registeRecuriter(this.registeForm).then(
+                res=>{
+                  this.$store.commit('user', res.data);
+                  sessionStorage.setItem("user", JSON.stringify(res.data))
+                  this.$router.push('/user/vol/' + this.identy)
+                }
+              )
+
+            }
+          }
+        })
+      })
+    },
+    registeDirect(){
+      if(this.identy == "recruiter"){
         this.$router.push('/registe/volunteer')
       }
-      if(flag==2){
+      if(this.identy == "volunteer"){
         this.$router.push('/registe/recruiter')
       }
     },
@@ -339,37 +363,81 @@ export default {
   // width:100%;
   height:100%;
   .el-input__inner, .el-checkbox__inner, .el-textarea__inner, .el-button {
-    border-radius: 13px 0 13px 0;
+    border-radius: 3px;
     border-color: @mainColor;
-    // display: inline;
     z-index:10;
+    border-width: 0.1vh;
   }
   .el-icon-arrow-up:before{
     color:@mainColor;
   }
-  .el-button,.el-input-group__append{
-    background-color: @secondColor;
-    // width: 10%;
-    color:white;
-    padding-bottom: 13px;
-    border-radius: 3px;
-    border:none;
+  .el-form-item{
+    margin-bottom: 2.4vh;
+    height: 5vh;
+    line-height: 5vh;
+    font-size: 2vh;
+    margin-left: 2vw;
+    display: flex;
+    .el-form-item__label{
+      width: 7vw;
+      height: inherit;
+      line-height: inherit;
+      font-size: inherit;
+      padding: 0 0.7vw 0 0;
+    }
+    .el-form-item__content{
+      // flex: 1;
+      height: inherit;
+      line-height: inherit;
+      font-size: inherit;
+      display: flex;
+      width: 65%;
+      .el-input{
+        height: 100%;
+        font-size: inherit;
+        .el-input__inner{
+          height: inherit;
+          line-height: inherit;
+          font-size: 1.6vh;
+          padding: 0 1vw;
+        }
+      }
+      .el-input__suffix{
+        right: 0.2vw;
+        display: block;
+      }
+      .el-input__icon{
+        // height: 99%;
+        line-height: 5.2vh;
+        // line-height: 4vh;
+        font-size: inherit;
+        width: 2vw;
+      }
+      .el-form-item__error{
+        // height: inherit;
+        // line-height: inherit;
+        font-size: 1.3vh;
+        position: absolute;
+        padding: 0;
+        top: 113%;
+        right: 0;
+        text-align: right;
+      }
+    }
+
   }
-  .el-input-group__append{
-    padding-bottom: 0;
-  }
-  .el-button:hover,.el-button:focus,.el-input-group__append:hover,.el-input-group__append:focus{
+  .el-button{
+    width: 90%;
+    height: 5vh;
+    line-height: 5vh;
+    font-size: 2vh;
+    padding: 0;
+    margin-top: 1vh;
     background-color: @thirthColor;
     border: none;
-  }
-  .el-input__inner:hover,.el-input__inner:focus{
-    border-color: @secondColor;
-  }
-  .el-form-item__label{
-    // letter-spacing: 3px;
-    // font-family: @thirdFont;
-    font-size: 17px;
-    // font-weight: bold;
+    &:hover{
+      background-color: @secondColor;
+    }
   }
 }
 </style>
@@ -381,14 +449,11 @@ export default {
   z-index: 1;
   position: relative;
   padding-left: 100px;
-  // padding-right: 80px;
-  // background:  linear-gradient(60deg,#fff 30%,@thirthColor 30%, @secondColor 90%);
-  // background: linear-gradient(60deg, #fff 33.3%, @thirthColor 0, @thirthColor 66.6%,@secondColor 0); 
+  display: flex;
   background: linear-gradient(60deg, @secondColor 33.3%, @thirthColor 0, @thirthColor 67%,#fff 0); 
   overflow: hidden;
   display: flex;
   align-items: center;
-  // justify-content: center;
   &::before{
     content: "";
     position: absolute;
@@ -400,68 +465,69 @@ export default {
     z-index: -1;
   }
   .img{
-    width: 37%;
-    height: 59%;
+    width: 30%;
+    height: 48%;
     background: url('../../../static/img/registe_bc.jpg') no-repeat;
     background-position: center;
     background-size: 100% 100%;
     background-size: cover;
     border-radius: 0 50% 0 50%;
-    box-shadow: 0 0 10px 10px @mainColor;
+    box-shadow: 0 0 5px 5px @thirthColor;
     z-index: -3;
-    margin-left: 60px;
+    margin-left: 6vw;
   }
   .registe_top{
     width: 100%;
-    height: 33px;
-    line-height: 33px;
-    font-family: @secondFont;
-    font-size: 30px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    background-color:rgba(250,184,62,0.5);
+    height: 4vh;
+    line-height: 4vh;
+    font-weight: bolder;
+    font-size: 3.6vh;
+    letter-spacing: 1px;
+    padding-top: 1.5vh;
+    padding-bottom: 1.5vh;
+    background-color:@thirthColor;
+    color: @sixthColor;
   }
   .teacher,.school{
-    margin-left: -10px;
+    margin-left: -1.6vw;
     background-color: rgba(255, 255, 255, 1);
     width: 42%;
-    height: 79%;
-    // display: flex;
-    // flex-direction: column;
-    padding-top: 40px;
-    // padding-left: 50px;
-    // color:white;
-    // line-height: 300px;
-    // font-size: 30px;
-    // letter-spacing: 3px;
-
-    // box-shadow: -9px 9px 3px 0px @mainColor;
-    border-radius: 10px;
+    // height: 86vh;
+    border-radius: 0.5vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     .form-cont{
-      padding: 40px 50px 30px 20px;
-      // height: 70%;
-      // padding-right: 100px;
+      // padding: 5vh 4vw 0 0;
+      // height: ;
+      flex: 1;
+      margin-top: 3vh;
+      width: 80%;
     }
-    .loginDirect{
-      position: relative;
-      display: block;
-      height: 10px;
-      line-height: 10px;
-      font-size: 13px;
-      margin-top: 20px;
-      text-decoration: underline;
-      cursor: pointer;
-      &:hover{
-        color: @thirthColor;
+    .form-cont+.form-cont{
+      margin-top: 0;
+    }
+    .form_bottom{
+      height: 3vh;
+      width: 80%;
+      margin-top: 1vh;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 2vh;
+      .loginDirect{
+        position: relative;
+        display: block;
+        font-size: 1.5vh;
+        margin-left: 1vw;
+        text-decoration: underline;
+        font-size: 1.4vh;
+        cursor: pointer;
+        &:hover{
+          color: @fourthColor;
+        }
       }
     }
-    // .login_bottom{
-    //   margin-top: 50px;
-    // }
   }
-  // .school{
-  //   background-color: rgba(250,184,62,0.5);
-  //   background:  radial-gradient(rgba(250,184,62,0.5),#fff);
-  // }
 }
 </style>

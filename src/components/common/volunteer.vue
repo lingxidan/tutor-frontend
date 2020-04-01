@@ -3,32 +3,21 @@
     <div class="mainInfo">
       <div class="name"><p>{{volunteer.name}}</p></div>
       <div class="require">
-        <span>{{volunteer.education}}</span>
-        <span>{{volunteer.during}}</span>
+        <span>{{volunteer.educationName}}</span>
+        <!-- <span>{{volunteer.during}}</span> -->
         <!-- <span>{{volunteer.teacherCert?"要求教资":"不要求教资"}}</span> -->
       </div>
     </div>
     <div class="schoolInfo">
-      <div class="name"><p>教授科目</p></div>
+      <div class="name"><p>现居地</p></div>
       <div class="require">
-        <span v-for="(pro, index) in volunteer.projects" :key="index">
-          {{pro}}
+        <span>
+          {{volunteer.addressName}}
         </span>
       </div>
     </div>
     <div class="contactInfo">
-      <div class="change">
-        <!-- <span>
-          <img :src="volunteer.contactImg" alt="" />
-          </span>
-        <span>{{volunteer.contactPerson}}</span>
-        <span>{{volunteer.contactJob}}</span> -->
-        <!-- <div class="name">{{teacher.contactPerson}}</div>
-        <div class="require">
-          <span>{{teacher.contactJob}}</span>
-        </div> -->
-      </div>
-      <el-button class="btnChange">立即沟通</el-button>
+      <el-button class="btnChange" @click="addContact">立即沟通</el-button>
     </div>
   </div>
 </template>
@@ -38,23 +27,16 @@ export default {
   name: '',
   data() { 
     return {
-      contact:false
+      contact:false,
+      user:{},
+      
     }
   },
   props: {
     volunteer:{
       type:Object,
       default:function () {
-        return {
-          name:"X老师",
-          during:"4-10年经验",
-          education:"本科",
-          projects:["数学","英语","语文"],
-          // schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"刘女士",
-          contactJob:"教育局代表人",
-        }
+        return {}
       }
         
     }
@@ -62,11 +44,73 @@ export default {
   components:{
   },
   mounted() {
-
+    this.user = JSON.parse(sessionStorage.getItem('user'))||{};
+    let education = [{
+              name:"高中及以下",
+              code:"1"
+            },{
+              name:"高中",
+              code:"2"
+            },{
+              name:"大专",
+              code:"3"
+            },{
+              name:"本科",
+              code:"4"
+            },{
+              name:"硕士研究生",
+              code:"5"
+            },{
+              name:"博士研究生",
+              code:"6"
+            },]
+    this.volunteer.educationName = education.filter(a=>a.code == this.volunteer.education)[0].name
   },
   methods:{
+    addContact(){
+      this.user = JSON.parse(sessionStorage.getItem('user'))||{}; 
+      let _this=this
+      if(this.user.id){
+        let param={
+          fromId:this.user.id,
+          toId:_this.volunteer.userId,
+          content:"你好！"
+        }
+        _this.$request.insertChat(param).then(
+          res=>{
+            _this.$router.push("/user/recr/chat",param)
 
+          }
+        )
+      }else{
+        this.$message.warning("请登录")
+      }
+    }
   },
+  watch:{
+    volunteer(newVal,oldVal){
+      let education = [{
+                name:"高中及以下",
+                code:"1"
+              },{
+                name:"高中",
+                code:"2"
+              },{
+                name:"大专",
+                code:"3"
+              },{
+                name:"本科",
+                code:"4"
+              },{
+                name:"硕士研究生",
+                code:"5"
+              },{
+                name:"博士研究生",
+                code:"6"
+              },]
+      newVal.educationName = education.filter(a=>a.code == newVal.education)[0].name
+    }
+  }
  }
 </script>
 
@@ -77,13 +121,13 @@ export default {
   width: 100%;
   border-top:none;
   background-color: #fff;
-  padding: 0.2vh 0;
-  cursor: pointer;
+  padding: 1vh 0;
   .name{
     text-align: left;
     padding-left: 0.6vw;
     margin-top: 0.7vh;
-    height: 45%;
+    height: 5vh;
+    line-height: 5vh;
     p{
       text-align: left;
       font-size: 2.4vh;
@@ -162,9 +206,10 @@ export default {
   .btnChange:hover{
     background-color: @thirthColor;
   }
+  transition: .3s;
 }
 .volunteer:hover{
-  background-color: @sixthColor;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   .mainInfo .name{
     color:@thirthColor;
   }

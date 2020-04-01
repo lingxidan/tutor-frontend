@@ -1,11 +1,12 @@
 import axios from 'axios'
 import { Message } from "element-ui"
 //transmitType: 'json'/'url'
-export default function request(url, type = 'GET', transmitType = 'url', data = {}) {
+export default function request(url, type = 'GET', transmitType = 'url', data = {}, otherOptions = {}) {
 	return new Promise(function(resolve,reject) {
 		let option = {
 			url,
-			method: type
+			method: type,
+			...otherOptions
 		}
 		if (transmitType === 'url') {
 			option.params = data

@@ -1,5 +1,47 @@
 <template>
   <div class="selfInfo">
+    <el-dialog title="申请认证" :visible.sync="identyFormVisible" top="2vh"
+      width="40%">
+      <el-form ref="identyForm" label-position="right" :model="identyFormData" class="identy-form" :rules="rules" >
+        <el-form-item v-for="prop,idx in identyForm" :prop="prop.prop" class="edit-form-item" :label="prop.label":key="idx">
+          <el-input v-if="prop.type == 'input'" v-model="identyFormData[prop.prop]" :placeholder="prop.label"></el-input>
+          <div v-if="prop.type=='image'" class="image-upload">
+            <el-upload
+              action="doUpload"
+              list-type="picture-card"
+              :on-change="handleChange"
+              :auto-upload="false">
+              <i slot="default" class="el-icon-plus"></i>
+              <div slot="file" slot-scope="{file}">
+                <img
+                  class="el-upload-list__item-thumbnail"
+                  :src="file.url" alt=""
+                >
+                <span class="el-upload-list__item-actions">
+                  <span
+                    class="el-upload-list__item-delete"
+                    @click="handleRemove(file)"
+                  >
+                    <i class="el-icon-delete"></i>
+                  </span>
+                </span>
+              </div>
+            </el-upload>
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="applyRecrIdenty">提交申请</el-button>
+          <el-button type="primary" @click="identyFormVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+    <el-dialog title="认证历史" :visible.sync="identyHisFormVisible" top="2vh"
+      width="60%">
+      <div class="history-info">仅处理最新认证申请</div>
+      <tablePage ref="tbMain" :tableTitles="tableTitles"
+        :tableData="tableData"
+        :tableConf="tableConf" class="tablepage" :tableCellStyle="tableCellStyle"></tablePage>
+    </el-dialog>
     <div class="info">
       <div class="base">
         <h3>个人信息</h3>
@@ -7,55 +49,56 @@
           <label v-if="baseEdit" for="">&nbsp;&nbsp;取消</label>
           <label v-else for="">&nbsp;&nbsp;编辑</label>
         </i>
-        <el-form ref="baseInfoForm" label-position="right" :model="baseInfoForm" class="demo-form-inline-base" label-width="100px" :rules="rules" >
-          <template v-for="prop,idx in baseForm" >
-            <el-form-item :prop="prop.prop" class="edit-form-item" :label="prop.label":key="idx">
-              <div v-if="baseEdit">
-                <div v-if="prop.prop!='address'">
-                  <el-input v-model="baseInfoForm[prop.prop]" :placeholder="prop.label" :disabled="!prop.edit"></el-input>
-                </div>
-                <div v-else>
-                  <el-select v-model="recruiter.province" style="width:180px;"
-                      placeholder="省"
-                      @change="changeCity">
-                    <el-option
-                      v-for="item in selectData.province"
-                      :key="item.code"
-                      :label="item.name"
-                      :value="item.code">
-                    </el-option>
-                  </el-select>
-                  <el-select v-model="recruiter.city" style="width:180px;"
-                      placeholder="市"
-                      @change="changeCounty">
-                    <el-option
-                      v-for="item in selectData.city"
-                      :key="item.code"
-                      :label="item.name"
-                      :value="item.code"
-                      placeholder="">
-                    </el-option>
-                  </el-select>
-                  <el-select v-model="recruiter.county" style="width:180px;"
-                      placeholder="区县">
-                    <el-option
-                      v-for="item in selectData.county"
-                      :key="item.code"
-                      :label="item.name"
-                      :value="item.code"
-                      placeholder="">
-                    </el-option>
-                  </el-select>
-                </div>
-              </div>
-              <label v-else>
-                <label for="" v-if="prop.prop=='address'">{{recruiter.addressName}}</label>
-                <label for="" v-else>{{recruiter[prop.prop]}}</label>
-              </label>
-            </el-form-item>
-          </template>
+        <el-form ref="baseForm" label-position="right" :model="baseFormData" class="demo-form-inline-base" :rules="rules" >
+          <!-- <template> -->
+          <el-form-item v-for="prop,idx in baseForm" :prop="prop.prop" class="edit-form-item" :label="prop.label":key="idx">
+            <template v-if="baseEdit">
+              <template v-if="prop.prop!='address'">
+                <el-input :type="prop.prop=='password'?'password':'text'" v-model="baseFormData[prop.prop]" :placeholder="prop.label" :disabled="!prop.edit"></el-input>
+              </template>
+              <template v-else>
+                <el-select v-model="recruiter.province"
+                    placeholder="省"
+                    @change="changeCity">
+                  <el-option
+                    v-for="item in selectData.province"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code">
+                  </el-option>
+                </el-select>
+                <el-select v-model="recruiter.city"
+                    placeholder="市"
+                    @change="changeCounty">
+                  <el-option
+                    v-for="item in selectData.city"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code"
+                    placeholder="">
+                  </el-option>
+                </el-select>
+                <el-select v-model="recruiter.county"
+                    placeholder="区县">
+                  <el-option
+                    v-for="item in selectData.county"
+                    :key="item.code"
+                    :label="item.name"
+                    :value="item.code"
+                    placeholder="">
+                  </el-option>
+                </el-select>
+              </template>
+            </template>
+            <label v-else>
+              <label for="" v-if="prop.prop=='address'">{{recruiter.addressName}}</label>
+              <label for="" v-else-if="prop.prop=='password'">************</label>
+              <label for="" v-else>{{recruiter[prop.prop]}}</label>
+            </label>
+          </el-form-item>
+          <!-- </template> -->
           <el-form-item v-if="baseEdit" prop="checkPass" label="确认密码">
-            <el-input type="password" v-model="baseInfoForm.checkPass" autocomplete="off" placeholder="再次输入密码">
+            <el-input type="password" v-model="baseFormData.checkPass" autocomplete="off" placeholder="再次输入密码">
             </el-input>
           </el-form-item>
           <el-form-item v-if="baseEdit">
@@ -64,79 +107,51 @@
         </el-form>
       </div>
       <div class="identy">
-        <h3 style="width:100%">认证信息</h3>
-        <el-form label-position="right" :model="recruiter" class="demo-form-inline" label-width="100px">
-          <el-form-item label="身份证号">
-            <el-input class="inline-input" v-model="recruiter.idcard" disabled>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="身份认证">
-            <el-input v-if="recruiter.status==1" class="inline-input" v-model="identyName" >
-              <el-button slot="append"
-                @click="submitIdenty">认证身份</el-button>
-            </el-input>
-            <label v-else>{{recruiter.identyName}}</label>
-          </el-form-item>
-          <!-- <template v-for="prop,idx in identyForm" >
-            <el-form-item :label="prop.label":key="idx">
-              <el-input v-if="recruiter.identify==1" class="inline-input" v-model="recruiter[prop.prop]" :placeholder="prop.label" :disabled="!prop.edit" 
-              @focus="changeIndenty" @blur="changeIndenty">
-                <el-button slot="append" v-if="prop.hasOwnProperty('focus')&&recruiter.identify==1"
-                @click="submitIdenty">认证身份</el-button>
-                <label v-if="prop.hasOwnProperty('focus')">{{recruiter.reason}}</label>
-                <label v-if="prop.hasOwnProperty('focus')">{{recruiter.reason}}</label>
-              </el-input>
-              <label v-else>{{recruiter[prop.prop]}}</label>
-            </el-form-item>
-          </template> -->
-        </el-form>
       </div>
     </div>
     <div class="zhaomu">
-      <h3 style="width:100%">综合信息</h3>
-      <div class="mg-total">
-        <div class="school-mg mg-div" @click="pathTo(1)">
-          <p for="" class="title">学校</p>
-          <p for="" class="cnt">{{recruiter.schoolCnt}}</p>
-        </div>
-        <div class="job-mg mg-div" @click="pathTo(2)">
-          <p for="" class="title">职位</p>
-          <p for="" class="cnt">{{recruiter.jobCnt}}</p>
-        </div>
-        <div class="article-mg mg-div" @click="pathTo(3)">
-          <p for="" class="title">文章</p>
-          <p for="" class="cnt">{{recruiter.articleCnt}}</p>
-        </div>
-        <div class="post-mg mg-div" @click="pathTo(4)">
-          <p for="" class="title">帖子</p>
-          <p for="" class="cnt">{{recruiter.postCnt}}</p>
-        </div>
+      <div class="identy-title">
+        <h3>认证信息</h3>
+        <el-button icon="el-icon-edit" @click="identyFormVisible = true">申请认证</el-button>
+        <el-button icon="el-icon-notebook-2" @click="showHisIdenty">认证历史</el-button>
       </div>
-      <!-- <el-form label-position="right" :model="recruiter" class="demo-form-inline" label-width="80px">
-        <el-form-item label="管理学校" class="form-sub">
-          <label>{{recruiter.schoolCnt}}个</label>
-          <router-link to="school">查看详情</router-link>
+      <el-form label-position="right" :model="recruiter" class="demo-form">
+        <el-form-item label="身份证号">
+          <label for="">{{recruiter.idcard}}</label>
         </el-form-item>
-        <el-form-item label="管理职位" class="form-sub">
-          <router-link to="zhiwei">查看详情</router-link>
-          <el-form label-position="right" :model="recruiter" class="demo-form-inline">
-            <el-form-item label="总数" class="form-form-label">
-              <label>{{recruiter.zhiwei.cnt}}个</label>
-            </el-form-item>
-            <el-form-item label="已关闭" class="form-form-label">
-              <label>{{recruiter.zhiwei.closed}}个</label>
-            </el-form-item>
-            <el-form-item label="招募中" class="form-form-label">
-              <label>{{recruiter.zhiwei.opened}}个</label>
-            </el-form-item>
-          </el-form>
+        <el-form-item label="认证状态">
+          <label 
+          :style="recruiter.result==-1?'color:orange':recruiter.result==-2?'color:red':'color:green'">
+          {{recruiter.result==-1?"认证中...":recruiter.result==-2?"认证失败":"认证成功"}}
+          </label>
         </el-form-item>
-      </el-form> -->
+        <el-form-item label="公司名称">
+          <label>{{recruiter.companyName}}</label>
+        </el-form-item>
+        <el-form-item label="公司职位">
+          <label>{{recruiter.applyName}}</label>
+        </el-form-item>
+        <el-form-item label="公司联系方式">
+          <label>{{recruiter.companyPhone}}</label>
+        </el-form-item>
+        <el-form-item label="工号">
+          <label>{{recruiter.applyId||"无"}}</label>
+        </el-form-item>
+        <el-form-item label="工作证照片" class="upload-images">
+          <template v-if="recruiter.image&&recruiter.image.length>0">
+            <img class="upload-image" v-for="img in recruiter.image" :src="img" alt="" />
+          </template>
+          <template v-else>
+            无相关照片
+          </template>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
 
 <script>
+import tablePage from '../../../components/common/table-page.vue'
 export default {
   name: 'selfInfo',
   data() { 
@@ -156,8 +171,8 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'));
       } else {
-        if (this.baseInfoForm.checkPass !== '') {
-          this.$refs.baseInfoForm.validateField('checkPass');
+        if (this.baseFormData.checkPass !== '') {
+          this.$refs.baseForm.validateField('checkPass');
         }
         callback();
       }
@@ -165,7 +180,7 @@ export default {
     var validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'));
-      } else if (value !== this.baseInfoForm.password) {
+      } else if (value !== this.baseFormData.password) {
         callback(new Error('两次输入密码不一致!'));
       } else {
         callback();
@@ -173,7 +188,6 @@ export default {
     };
     return {
       baseEdit:false,
-      identyFocus:false,
       baseForm:[
         {
           prop:"name",
@@ -199,40 +213,41 @@ export default {
           prop:"password",
           label:"登录密码",
           edit:true,
-        },
+        }
 
       ],
       identyForm:[
         {
-          prop:"idcard",
-          label:"身份证号",
-          edit:false,
+          prop:"companyName",
+          label:"公司名称",
+          type: "input"
         },
         {
-          prop:"identify",
-          label:"招募身份认证",
-          edit:true,
-          focus:"focus"
+          prop:"companyPhone",
+          label:"公司联系方式",
+          type: "input"
         },
+        {
+          prop:"applyName",
+          label:"职称",
+          type: "input"
+        },
+        {
+          prop:"applyId",
+          label:"工号",
+          type: "input"
+        },
+        {
+          prop:"image",
+          label:"工作证图片",
+          type: "image"
+        }
       ],
-      recruiter:{
-        name:"张XX",
-        identiCard:"142729********20",
-        phone:"1738200****",
-        email:"ajoheobn@ss.com",
-        password:"adsfa",
-        address:"北京市朝阳区",
-        reason:"s",
-        identity:"简巨科技有限公司HR经理",
-        schoolCnt:8,
-        zhiwei:{
-          cnt:10,
-          opened:6,
-          closed:4
-        },
-      },
+      identyFormData: {},
+      identyFormVisible: false,
+      recruiter:{},
       
-      baseInfoForm: {
+      baseFormData: {
         name: '',
         phone: '',
         email: '',
@@ -260,9 +275,15 @@ export default {
           {required: true, message: '重复密码不能为空'},
           { validator: validatePass2, trigger: 'blur' }
         ],
-        // checkUser:[
-        //   { validator: validateUser2, trigger: 'blur' }
-        // ]
+        companyName: [
+          {required: true, message: ' '}
+        ],
+        companyPhone: [
+          {required: true, message: ' '}
+        ],
+        applyName: [
+          {required: true, message: ' '}
+        ],
       },
       
       selectData:{
@@ -270,80 +291,83 @@ export default {
         city:[],
         county:[],
       },
-      identyName:""
+      identyHisFormVisible: false,
+      tableTitles:[{
+        prop: "applyDt",
+        label: "申请日期"
+      },{
+        prop: "companyName",
+        label: "公司名称"
+      },{
+        prop: "companyPhone",
+        label: "公司联系方式"
+      },{
+        prop: "applyName",
+        label: "职称"
+      },{
+        prop: "applyId",
+        label: "工号"
+      },{
+        prop: "resultName",
+        label: "结果"
+      },{
+        prop: "describe",
+        label: "备注说明"
+      }],
+      tableData:[],
+      tableConf:{
+        operation:false
+      },
     }
   },
   props: {
 
   },
   components:{
+    tablePage
   },
   mounted() {
     let _this=this
     this.recruiter = JSON.parse(sessionStorage.getItem('user'));
-    _this.getUserInfo(this.recruiter.userId)
+    // console.log(this.recruiter)
+    _this.getUserInfo(this.recruiter.id)
   },
   methods:{
-    getUserInfo(dataId){
+    getUserInfo(dataId=this.recruiter.userId){
       let _this=this
       _this.$request.getRecuriter({userId:dataId}).then(
         res=>{
-          console.log("getUser",res.data)
           _this.recruiter=res.data
           _this.recruiter.province=res.data.address.substring(0,2)
           _this.recruiter.city=res.data.address.substring(0,4)
           _this.recruiter.county=res.data.address
-          _this.recruiter.status=_this.recruiter.identify.substring(0,1)
-          let identyName=_this.recruiter.identify.substring(1,_this.recruiter.identify.length)
-          _this.recruiter.identyName=identyName
-
-          // 学校
-          _this.$request.selectSchoolByCondition({userId:dataId}).then(
-            res=>{
-              _this.recruiter.schoolCnt=res.data.length
-              _this.recruiter={..._this.recruiter}
-            }
-          )
-          // 岗位
-          _this.$request.selectJobByCondition({userId:dataId}).then(
-            res=>{
-              _this.recruiter.jobCnt=res.data.length
-              _this.recruiter={..._this.recruiter}
-            }
-          )
-          // 文章
-          _this.$request.selectArticleByCondition({userId:dataId}).then(
-            res=>{
-              _this.recruiter.articleCnt=res.data.length
-              _this.recruiter={..._this.recruiter}
-            }
-          )
-          // 帖子
-          _this.$request.selectPostByCondition({userId:dataId}).then(
-            res=>{
-              _this.recruiter.postCnt=res.data.length
-              _this.recruiter={..._this.recruiter}
-            }
-          )
-
           Object.keys(_this.recruiter).forEach(key=>{
-            if(_this.baseInfoForm.hasOwnProperty(key)){
-              _this.baseInfoForm[key]=_this.recruiter[key]
+            if(_this.baseFormData.hasOwnProperty(key)){
+              _this.baseFormData[key]=_this.recruiter[key]
             }
           })
           this.$request.selectAddress({level:1,pcode:0}).then(res=>{
-            // console.log(res)
             _this.selectData.province=res.data
-            // _this.selectData.expectJob.forEach(item=>{
-            //   item.province=res.data
-            // })
           })
           this.$request.selectAddress({level:2,pcode:_this.recruiter.province}).then(res=>{
-            // console.log(res)
             _this.selectData.city=res.data
           })
           this.$request.selectAddress({level:3,pcode:_this.recruiter.city}).then(res=>{
             _this.selectData.county=res.data
+          })
+          // 获取认证信息
+          _this.$request.getLastRecrIdenty({recrId:dataId}).then(res=>{
+            if(res.data.image!="[]"){
+              res.data.image = res.data.image.substr(1, res.data.image.length-2).split(",").map(url=>{
+                return "/" + url.substr(url.indexOf("static"), url.length - url.indexOf("static")).replace(/\\/g, "/")
+              })
+            }else{
+              res.data.image = []
+            }
+            _this.recruiter = {
+              ..._this.recruiter,
+              ...res.data
+            }
           })
         }
       )
@@ -373,35 +397,25 @@ export default {
     },
     onSubmit(){
       let _this=this
-      this.baseEdit=!this.baseEdit
-      Object.keys(this.baseInfoForm).forEach(key=>{
-        if(_this.recruiter.hasOwnProperty(key)){
-          _this.recruiter[key]=_this.baseInfoForm[key]
+      this.$refs.baseForm.validate(valid => {
+        if (valid) {
+          Object.keys(this.baseFormData).forEach(key=>{
+            if(_this.recruiter.hasOwnProperty(key)){
+              _this.recruiter[key]=_this.baseFormData[key]
+            }
+          })
+          _this.recruiter.address=_this.recruiter.county
+          _this.$request.editRecuriter(_this.recruiter).then(
+            res=>{
+              _this.getUserInfo(_this.recruiter.userId)
+              this.baseEdit=!this.baseEdit
+            }
+          )
+        } else {
+          return false
         }
       })
-      _this.recruiter.address=_this.recruiter.county
-      console.log(_this.recruiter)
-      _this.$request.editRecuriter(_this.recruiter).then(
-        res=>{
-          console.log(res)
-          _this.getUserInfo(_this.recruiter.userId)
-        }
-      )
-    },
-    changeIndenty(){
-      // console.log(this)
-      this.identyFocus=!this.identyFocus
-    },
-    submitIdenty(){
-      let _this=this
-      _this.recruiter.identify='2'+_this.identyName+"\n等待认证中"
-      _this.$request.editRecuriter(_this.recruiter).then(
-        res=>{
-          console.log(res)
-          _this.getUserInfo(_this.recruiter.userId)
-        }
-      )
-
+      
     },
     pathTo(flag){
       if(flag==1){
@@ -416,34 +430,123 @@ export default {
       if(flag==4){
         this.$router.push("/user/recr/post")
       }
+    },
+    // 删除文件
+    handleRemove(file) {
+      let fileList = this.identyFormData.image
+      fileList.splice(fileList.indexOf(file), 1)
+      this.identyFormData.image = fileList
+    },
+    handleChange(file, fileList) {
+      this.identyFormData.image = fileList
+      if(fileList.length > 2){
+        this.$message.warning("最多选择两张照片")
+        fileList.splice(fileList.length-1, 1)
+      }
+    },
+    // 申请认证
+    applyRecrIdenty(){
+      this.$refs.baseForm.validate(valid => {
+        if(valid){
+          let image = (this.identyFormData.image||[]).map(item=>item.raw)
+          let formData = new FormData();
+          image.forEach(item=>{formData.append('image', item)})
+          formData.append("recrId", this.recruiter.userId)
+          formData.append("companyName", this.identyFormData.companyName)
+          formData.append("companyPhone", this.identyFormData.companyPhone)
+          formData.append("applyName", this.identyFormData.applyName)
+          formData.append("applyId", this.identyFormData.applyId||"")
+          formData.append("frontPath", this.$rootPath)
+          
+          this.$request.appplyRecrIdenty(formData).then(
+            res=>{
+              this.getUserInfo()
+              this.identyFormVisible = false
+            }
+          )
+          
+        }else{
+          return false
+        }
+      })
+    },
+    showHisIdenty(){
+      this.$request.getRecrIdenty({recrId:this.recruiter.userId}).then(res=>{
+        this.tableData = res.data.map((item,idx)=>{
+          switch(item.result){
+            case -1:
+              if(idx==0){
+                item.resultName = "认证中"
+              }else{
+                item.resultName = "过期"
+              }
+              break;
+            case 0:
+              item.resultName = "认证失败"
+              break;
+            case 2:
+              item.resultName = "认证成功"
+              break;
+          }
+          return item
+        })
+        this.identyHisFormVisible = true
+      })
+    },
+    tableCellStyle(row){
+      if(row.column.property == "resultName")
+      switch(row.row.result){
+        case -1:
+          if(row.rowIndex==0){
+            return "color:orange;"
+          }else{
+            return "color:#ccc;"
+          }
+        case 0:
+          return "color:red"
+        case 2:
+          return "color:green"
+      }
     }
   },
  }
 </script>
 
 <style lang="less" scoped>
+@import '../../../../static/css/main';
 .selfInfo{
   display: flex;
   height: 100%;
+  padding: 1vh;
   .info,.zhaomu{
-    padding-right: 80px;
-    width: 50%;
+    width: 45%;
+    text-align: left;
     h3{
-      font-size: 20px;
+      font-size: 3vh;
       font-weight: bold;
       text-align: left;
-      border-left: 3px solid #fce9c7;
-      padding-left: 30px;
-      margin-bottom: 20px;
+      border-left: 0.5vw solid @secondColor;
+      padding-left: 2vw;
+      margin-left: 2vw;
+      margin-bottom: 2vh;
       letter-spacing: 2px;
       display: inline-block;
-      width: 70%;
+      width: 50%;
+    }
+    .demo-form-inline-base{
+      padding-left: 2vw;
     }
   }
   .info{
     border-right: 1px solid #f7f7f7;
     .base,.identy{
-      padding: 10px;
+      padding: 2vh;
+    }
+  }
+  .zhaomu{
+    padding: 2vh;
+    .identy-title{
+      display: flex;
     }
   }
   .zhaomu{
@@ -524,71 +627,162 @@ export default {
 
     // }
   }
+  
+  .tablepage{
+    width: 100%;
+    height: 70vh;
+  }
 }
 </style>
 <style lang="less">
-.form-sub{
-  .el-form-item__label{
-    font-weight: bold;
+@import '../../../../static/css/main';
+.selfInfo{
+  .el-form{
+    width: 80%;
+    .el-form-item{
+      margin-bottom: 2.3vh;
+      font-size: 2vh;
+      line-height: 6vh;
+      // height: 6vh;
+      display: flex;
+      .el-form-item__label{
+        text-align: right;
+        width: 8vw;
+        height: 6vh;
+        line-height: inherit;
+        font-size: 1.6vh;
+        padding: 0 1vw 0 0;
+      }
+      .el-form-item__content{
+        flex: 1;
+        // height: inherit;
+        line-height: inherit;
+        font-size: inherit;
+        display: flex;
+        label{
+          font-size: 1.8vh;
+        }
+        .el-input{
+          height: inherit;
+          line-height: inherit;
+          font-size: inherit;
+          .el-input__inner{
+            height: inherit;
+            line-height: 2.7;
+            font-size: inherit;
+            padding: 0 1vw;
+            border-color: @sixthColor;
+          }
+        }
+        .el-button{
+          width: 100%;
+          height: inherit;
+          line-height: inherit;
+          font-size: inherit;
+          padding: 0;
+          background-color: @thirthColor;
+          border: none;
+          letter-spacing: 1px;
+          &:hover{
+            background-color: @secondColor;
+          }
+        }
+        .el-form-item__error{
+          font-size: 1.4vh;
+          width: 100%;
+          text-align: right;
+        }
+        .el-upload--picture-card {
+          border-radius: 2px;
+          width: 6vw;
+          height: 6vw;
+          line-height: 6vw;
+          i{
+            font-size: 3vh;
+          }
+        }
+        .el-upload-list--picture-card .el-upload-list__item{
+          border-radius: 2px;
+          width: 6vw;
+          height: 6vw;
+          margin: 0 1vw 0 0;
+          border-color: @sixthColor;
+        }
+      }
+    }
+    .upload-images{
+      display: flex;
+      .el-form-item__content{
+        display: flex;
+      }
+      .upload-image{
+        width: 40%;
+        height: auto;
+        margin-right: 1vw;
+        margin-bottom: 1vw;
+        border: 1px solid @sixthColor;
+      }
+    }
   }
-  .el-form-item__content{
-    text-align: left;
+  .demo-form{
+    .el-form-item{
+      margin-bottom: 0;
+      .el-form-item__label{
+        width: 10vw;
+      }
+    }
   }
-}
-.form-form-label {
-  .el-form-item__label{
-    font-weight: normal;
-    font-size: 12px;
+  .el-dialog__title {
+    line-height: 1;
+    font-size: 3vh;
+    font-weight: bolder;
   }
-  .el-form-item__content{
-    text-align: left;
+  .el-dialog__body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1vw;
+    .history-info{
+      margin-bottom: 1vh;
+      font-size: 1.6vh;
+    }
   }
-}
-.info .edit-form-item{
-  // cursor: pointer;
-  .el-form-item__label{
-    font-weight: 700;
-  }
-}
-.info .el-input-group__append{
-  background-color: rgb(252, 187, 47);
-  color: #fff;
-  border: none;
-  &:hover{
-    background-color: rgb(255, 217, 135);
-  }
-}
-.info .edit-form-item .el-form-item__content{
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 .info{
-  // .el-input__inner{
-  //   width: 70%;
-  // }
   .base{
-    .el-input__inner{
-      width: 70%;
-    }
     .el-icon-edit{
       cursor: pointer;
-      font-size: 20px;
-      margin-left: 30px;
-      margin-right: 30px;
-      opacity: 0;
+      font-size: 1.6vh;
+      line-height: 1.6vh;
+      text-decoration: underline;
+      &:hover{
+        color: #fba400;
+        font-weight: bold;
+        background: none;
+      }
     }
     .el-icon-edit label{
       cursor: pointer;
     }
   }
 }
-.info .base:hover,
-.info .identy:hover{
-  background-color: #fff8eb;
-  .el-icon-edit{
-    color: #fba400;
-    opacity: 1;
+.zhaomu{
+  .identy-title{
+    .el-button{
+      border-color: transparent;
+      padding: 0;
+      font-size: 1.6vh;
+      line-height: 1.6vh;
+      text-decoration: underline;
+      background: none;
+      &:hover{
+        // border-bottom-color: @fourthColor;
+        color: #fba400;
+        font-weight: bold;
+        background: none;
+      }
+    }
   }
 }
 </style>

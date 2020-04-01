@@ -1,23 +1,21 @@
 <template>
-  <div class="teacher" @click="showJob">
-    <div class="mainInfo">
-      <div class="name"><p>{{teacher.name}}</p></div>
+  <div class="teacher">
+    <div class="mainInfo" @click="showJob">
+      <div class="name">职位:<p :title="teacher.name">{{teacher.name.substr(0,5)+(teacher.name.length>5?"...":"")}}</p></div>
       <div class="require">
-        <span>学历:{{teacher.education}}</span>
-        <!-- <span>{{teacher.during}}</span>
-        <span>{{teacher.teacherCert?"要求教资":"不要求教资"}}</span> -->
+        <span>学历要求:{{teacher.education}}</span>
       </div>
     </div>
-    <div class="schoolInfo">
-      <div class="name"><p>{{teacher.schoolName}}</p></div>
+    <div class="schoolInfo" @click="showSchool">
+      <div class="name">学校:<p :title="teacher.name">{{school.name}}</p></div>
       <div class="require">
-        <span>{{teacher.schoolAddr}}</span>
+        <span>{{school.addressName}}</span>
       </div>
     </div>
     <div class="contactInfo">
       <div class="change">
-        <span>{{teacher.contactPerson}}</span>
-        <span>{{teacher.contactJob}}</span>
+        <span>{{recruiter.name}}</span>
+        <span>{{recruiter.email}}</span>
       </div>
       <el-button class="btnChange" @click="addContact">立即沟通</el-button>
     </div>
@@ -29,25 +27,16 @@ export default {
   name: '',
   data() { 
     return {
-
+      user: {},
+      school:{},
+      recruiter:{}
     }
   },
   props: {
     teacher:{
       type:Object,
       default:function () {
-        return {
-          id:4,
-          name:"数学教师",
-          during:"4-10年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"刘女士",
-          contactJob:"教育局代表人",
-        }
+        return {}
       }
         
     }
@@ -55,27 +44,39 @@ export default {
   components:{
   },
   mounted() {
+    this.user = JSON.parse(sessionStorage.getItem('user'))||{};
+    this.$request.selectSchoolById({schoolId:this.teacher.schoolId}).then(res=>{
+      this.school = res.data
+    })
+    this.$request.getRecuriter({userId:this.teacher.userId}).then(res=>{
+      this.recruiter = res.data
+    })
   },
   methods:{
     showJob(){
-      console.log(this.teacher)
-      // this.$router.push({name:'路由命名',params:{参数名:参数值,参数名:参数值}})
       this.$router.push({path:'/job',query:{id:this.teacher.id}})
     },
+    showSchool(){
+      this.$router.push({path:'/school',query:{id:this.school.id}})
+    },
     addContact(){
+      this.user = JSON.parse(sessionStorage.getItem('user'))||{}; 
       let _this=this
-      console.log(_this.teacher)
-      let param={
-        fromId:24,
-        toId:_this.teacher.userId,
-        content:"你好，我对此岗位有兴趣"
-      }
-      _this.$request.insertChat(param).then(
-        res=>{
-          _this.$router.push("/user/vol/chat")
-
+      if(this.user.id){
+        let param={
+          fromId:this.user.id,
+          toId:_this.teacher.userId,
+          content:"你好！"
         }
-      )
+        _this.$request.insertChat(param).then(
+          res=>{
+            _this.$router.push("/user/vol/chat",param)
+
+          }
+        )
+      }else{
+        this.$message.warning("请登录")
+      }
     }
 
   },
@@ -89,13 +90,18 @@ export default {
   width: 100%;
   border-top:none;
   background-color: #fff;
-  padding: 0.2vh 0;
-  cursor: pointer;
+  padding: 1vh 0;
+  transition: .3s;
   .name{
     text-align: left;
     padding-left: 0.8vw;
     margin-top: 0.7vh;
-    height: 45%;
+    height: 4vh;
+    line-height: 3vh;
+    overflow: hidden;
+    label{
+      font-size: 1.7vh;
+    }
     p{
       font-size: 2.4vh;
       position: relative;
@@ -106,6 +112,7 @@ export default {
     color: #aaa;
     text-align: left;
     font-size: 1.4vh;
+    line-height: 3vh;
     span{
       display: inline-block;
       padding-left: 0.8vw;
@@ -119,19 +126,38 @@ export default {
     width: 29%;
     overflow: hidden;
     padding: 1vh;
+    font-size: 1.6vh;
     .name p{
+      display: inline-block;
       font-weight: bold;
       font-size: 2vh;
+      line-height: 3vh;
+      margin-bottom: 1vh;
+      width: 70%;
       color: @secondColor;
+      cursor: pointer;
+    }
+    &:hover{
+      .name p{
+        color: coral;
+      }
     }
   }
   .schoolInfo{
     width: 30%;
     padding: 1vh;
     overflow: hidden;
+    font-size: 1.4vh;
     .name p{
-      font-size: 1.7vh;
+      display: inline-block;
+      font-size: 1.9vh;
+      cursor: pointer;
       // margin-top: 1vh;
+    }
+    &:hover{
+      .name p{
+        color: coral;
+      }
     }
   }
   .contactInfo{
@@ -177,11 +203,9 @@ export default {
   }
 }
 .teacher:hover{
+  z-index: 100;
   // box-shadow: 0 0 1px 0 @thirthColor;
-  background-color: @sixthColor;
-  .mainInfo .name{
-    color:@thirthColor;
-  }
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
   .contactInfo .change{
     display: none;
   }

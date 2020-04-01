@@ -29,4 +29,17 @@ export default {
   color: #2c3e50;
   background-color: #f6f6f8;
 }
+.el-popover {
+    position: absolute;
+    background: #FFF;
+    min-width: 2vw;
+    border: 1px solid #EBEEF5;
+    padding: 1vh;
+    line-height: 1.4;
+    text-align: justify;
+    .el-button{
+      padding: 1vh 1vw;
+      font-size: 1.6vh;
+    }
+}
 </style>

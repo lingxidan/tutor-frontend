@@ -7,40 +7,39 @@
           师者
         </div>
         <el-menu
-          default-active="/manager/volunteer"
+          :default-active="activeIdx"
           class="el-menu-vertical-demo"
-          background-color="#2b261e"
-          text-color="#fce9c7"
-          active-text-color="#fba400"
           router>
-          <el-menu-item index="/manager/volunteer">
+          <el-menu-item index="/manager/volunteer" @click="toPath('/manager/volunteer')">
             <i class="el-icon-user"></i>
             <span>教资认证</span>
           </el-menu-item>
-          <el-menu-item index="/manager/recruiter">
+          <el-menu-item index="/manager/recruiter" @click="toPath('/manager/recruiter')">
             <i class="el-icon-help"></i>
             <span>招募者认证</span>
           </el-menu-item>
-          <el-menu-item index="/manager/school">
+          <!-- <el-menu-item index="/manager/school" @click="toPath('/manager/school')">
             <i class="el-icon-school"></i>
             <span>学校</span>
           </el-menu-item>
-          <el-menu-item index="/manager/zhiwei">
+          <el-menu-item index="/manager/zhiwei" @click="toPath('/manager/zhiwei')">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">职位</span>
-          </el-menu-item>
-          <el-menu-item index="/manager/articles">
+          </el-menu-item> -->
+          <el-menu-item index="/manager/articles" @click="toPath('/manager/articles')">
             <i class="el-icon-document"></i>
             <span slot="title">文章</span>
           </el-menu-item>
-          <el-menu-item index="/manager/posts">
+          <el-menu-item index="/manager/posts" @click="toPath('/manager/posts')">
             <i class="el-icon-s-promotion"></i>
             <span slot="title">帖子</span>
           </el-menu-item>
         </el-menu>
       </div>
       <div class="content">
-        <router-view/>
+        <div class="content-view">
+          <router-view/>
+        </div>
         <!-- 页脚 -->
         <div class="footer">
           <div class="bottom">师者教师志愿者招募平台 ©2019 </div>
@@ -48,7 +47,6 @@
       </div>
 
     </div>
-    <!-- <img src="./assets/logo.png"> -->
   </div>
 </template>
 
@@ -56,20 +54,26 @@
 import topNav from '@/components/common/topNav.vue'
 export default {
   name: 'App',
+  data(){
+    return{
+      activeIdx:"/manager/volunteer"
+    }
+  },
   components: {
     topNav
   },
+  mounted(){
+    this.activeIdx = this.$route.path
+  },
   methods:{
-    registe(opt){
-      console.log(opt)
-      this.$router.push('/manager/school')
-    },
-    login(){
-      let _login = this.panels.login
-      _login.style.display ="block"
-      // this.$router.push('/login')
-    },
-
+    toPath(path){
+      this.$router.push(path)
+    }
+  },
+  watch:{
+    "$route"(to,from){
+      this.activeIdx = to.path
+    }
   }
   
 }
@@ -86,73 +90,98 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  div.main{
+    display: flex;
+    min-height: 100vh;
+    .top {
+      width: 10%;
+      background: @mainColor;
+      .title{
+        font-size: 4vh;
+        margin-top: 2vh;
+        font-weight: bolder;
+        color: coral;
+        // text-shadow: @sixthColor 0 2px 5px;
+      }
+      .el-menu{
+        margin-top: 3vh;
+        background: none;
+        border-right: none;
+
+      }
+      .el-menu-item{
+        color: #fff;
+        text-align: left;
+        padding-left: 1vw !important;
+        margin-left: 0;
+        font-weight: 600;
+        border-radius: 1vh 70% 70% 1vh;
+        border: 0.1vh solid transparent;
+        i{
+          width: 1.5vw;
+        }
+        &:hover{
+          color: @mainColor;
+        }
+      }
+      .el-menu-item.is-active{
+        background-color: #f6f6f8;
+        color: @mainColor;
+        // border-radius: 1vh 30% 30% 1vh;
+        border: 0.1vh solid coral;
+        // border-left-width: 0.5vw;
+        border-right: none;
+        &::before{
+          position: absolute;
+          content: "";
+          height: 100%;
+          width: 0.5vw;
+          background-color: coral;
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+    .content{
+      position: relative;
+      padding:2vh 1vw 0;
+      // right: 30px;
+      width: 90vw;
+      // height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      .content-view{
+        flex: 1;
+        background-color: #fff;
+        box-shadow: 0 0 3px 0 @fourthColor;
+        .el-dialog__header{
+          padding: 2vh 2vw;
+          font-size: 3vh;
+        }
+        .el-dialog__body {
+          padding: 1vh 2vw;
+          color: #606266;
+          font-size: 2vh;
+        }
+        .el-dialog__footer{
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+      .footer {
+        width: 100%;
+        height: 3vh;
+        background-color: inherit;
+        .bottom{
+          text-align: center;
+          // margin-bottom: 1vh;
+          line-height: 3vh;
+          font-size: 1.5vh;
+        }
+      }
+    }
+  }
 }
 
-div.main{
-  display: flex;
-  .top {
-    width: 10%;
-    background:  #2b261e;
-    .title{
-      font-size: 30px;
-      margin-top: 10px;
-      font-weight: bolder;
-      color: white;
-      text-shadow: @secondColor 0 0 5px;
-    }
-  }
-  .content{
-    position: relative;
-    padding:20px 30px 20px 20px;
-    // right: 30px;
-    width: 86%;
-    height: 100%;
-  }
-}
-.footer {
-  width: 100%;
-  padding-top: 3px;
-  padding-bottom: 3px;
-  background-color: inherit;
-  .main{
-    width: 100%;
-    display:flex;
-    margin-top: 20px;
-    margin-bottom: 5px;
-    .report,.license{
-      // font-size: 30px;
-      width: 48%;
-      ul li{
-        font-size: 14px;
-        height: 24px;
-        text-align: left;
-        cursor: pointer;
-        &:hover{
-        font-size: 14px;
-        font-weight: bold;
-      }
-      }
-    }
-    .report{
-      border-right:1px solid @secondColor;
-      ul{
-        margin-right:20px;
-      }
-      ul li{
-        text-align: right;
-      }
-    }
-    .license{
-      ul{
-        margin-left:20px;
-      }
-    }
-  }
-  .bottom{
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 16px;
-    font-family: @thirdFont;
-  }
-}
 </style>

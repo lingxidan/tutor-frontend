@@ -36,7 +36,7 @@
     </el-menu>
     <div class="main">
       
-      <router-view></router-view>
+      <router-view class="main-view"></router-view>
     </div>
 
   </div>
@@ -65,49 +65,65 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../../../../static/css/main';
 .volunteer-menu{
   width: 100%;
   height: 100%;
   .main{
     position: relative;
-    padding:20px;
+    // padding:1vh;
     // right: 30px;
-    width: 85%;
+    width: 100%;
     // height: 150%;
-    margin: 20px;
-    box-shadow: 0 0 10px 0 #eeeeff;
-    background-color: #fff;
+    margin: 0.5vh auto;
+    // background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .main-view{
+      width: 80%;
+      // background-color: #fff;
+    }
   }
 }
 </style>
 <style lang="less">
+@import '../../../../static/css/main';
 .volunteer-menu{
   display: flex;
   .el-menu-vertical-demo{
+    position: fixed;
     width: 8%;
     background-color: transparent;
+    border-right: none;
     // margin-left: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: 1000;
     .el-menu-item{
+      box-shadow: 0 0 6px 0 @sixthColor;
       cursor: pointer;
-      width: 100px;
-      height: 100px;
+      width: 7vw;
+      height: 7vw;
       background-color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 5px;
+      margin: 0.5vh;
       padding: 5px !important;
       i{
-        font-size: 30px;
+        font-size: 4vh;
+        margin-right: 0;
+        width: 2vw;
+        height: 2vw;
       }
       span{
-        margin-top: 10px;
-        height: 20px;
-        line-height: 20px;
+        margin-top: 1.5vh;
+        height: 3vh;
+        line-height: 3vh;
+        font-size: 2vh;
       }
     }
     li.is-active{

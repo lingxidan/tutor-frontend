@@ -8,7 +8,10 @@ const USER_URL = {
 	EDITVOLUNTEER:'/api/user/editVolunteer',
 	GETRECRUITER:'/api/user/getRecruiter',
 	EDITRECRUITER:'/api/user/editRecruiter',
-	GETUSER:'/api/user/getUser'
+	GET_VOLS:'/api/user/getVols',
+	GET_RECRS:'/api/user/getRecrs',
+	GET_USER: '/api/user/getUser'
+
 	// TEST: 'http://localhost:8081/api/get',
 	// EMAIL: 'http://localhost:8081/api/email',
 
@@ -19,19 +22,35 @@ const USER_URL = {
 	// FILE_SELECTBYID:'/api/file/selectById',
 	// FILE_SELECTBYCOND:'/api/file/selectByCondition'
 }
+const IDENTY_URL={
+	APPLY_RECR_IDENTY: '/api/identy/applyRecrIdenty',
+	LIST_RECR_IDENTY: '/api/identy/listRecrIdenty',
+	LIST_ALL_RECR_IDENTY: '/api/identy/listAllRecrIdenty',
+	UPDATE_RECR_IDENTY: '/api/identy/updateRecrIdenty',
+	LAST_RECR_IDENTY: '/api/identy/getLasrRecrIdenty',
+
+	APPLY_VOL_IDENTY: '/api/identy/applyVolIdenty',
+	LIST_VOL_IDENTY: '/api/identy/listVolIdenty',
+	LIST_ALL_VOL_IDENTY: '/api/identy/listAllVolIdenty',
+	UPDATE_VOL_IDENTY: '/api/identy/updateVolIdenty',
+	LAST_VOL_IDENTY: '/api/identy/getLasrVolIdenty'
+
+}
 // 数据字典
 const DATADICT_URL={
 	SELECTADDRESS:'/api/datadict/selectAddress',
 	SELECTJOBTYPE:'/api/datadict/selectJobtype',
 	SELECTLICENSE:'/api/datadict/selectLicense',
-	SELECTTRADE:'/api/datadict/selectTrade'
+	SELECTTRADE:'/api/datadict/selectTrade',
+	SELECT_NAME_BY_CODE: '/api/datadict/selectAddressByCode'
 }
 // 文章
 const ARTICLE_URL={
 	INSERT:'/api/article/insertArticle',
 	SELECTBYCONDITON:'/api/article/selectByCondition',
 	SELECTBYID:'/api/article/selectById',
-	UPDATE:'/api/article/updateArticle'
+	UPDATE:'/api/article/updateArticle',
+	DELETE: '/api/article/deleteArticle'
 }
 // 资格证书
 const CERTIFICATE_URL={
@@ -42,21 +61,16 @@ const CERTIFICATE_URL={
 // 聊天
 const CHAT_URL={
 	INSERT:'/api/chat/insertChat',
-	SELECTBYFROMTO:'/api/chat/selectByFromTo',
-	SELECTLASTCHATS:'/api/chat/selectLastChats'
+	SELECT_ALL:'/api/chat/selectAllChat',
+	SELECTBYFROMTO:'/api/chat/selectByFromTo'
 }
 // 评论
 const COMMENT_URL={
-	INSERT:'/api/comment/insertComment',
+	INSERT_ARTICLE:'/api/comment/insertArticleComment',
+	INSERT_POST:'/api/comment/insertPostComment',
 	SELECTBYCONDITON:'/api/comment/selectByCondition',
-	SELECTBYID:'/api/comment/selectById',
-	UPDATE:'/api/comment/updateComment'
-}
-// 社交主页
-const CONTACT_URL={
-	INSERT:'/api/contact/insertContact',
-	SELECTBYCONDITON:'/api/contact/selectByCondition',
-	UPDATE:'/api/contact/updateContact'
+	SELECTBYID:'/api/comment/selectCommentById',
+	DELETE:'/api/comment/deleteComment'
 }
 // 期望岗位
 const EXPECTJOB_URL={
@@ -82,23 +96,29 @@ const FILE_URL={
 }
 // 收藏关注
 const INTEREST_URL={
-	INSERT:'/api/interest/insertInterest',
-	SELECTBYCONDITON:'/api/interest/selectByCondition',
-	DELETE:'/api/interest/deleteInterest'
+	INSERT_ATTENTION:'/api/interest/insertAttention',
+	INSERT_ACCUSE:'/api/interest/insertAccuse',
+	SELECTBYCONDITON_ATTENTION:'/api/interest/selectAttentionByCondition',
+	SELECTBYCONDITON_ACCUSE:'/api/interest/selectAccuseByCondition',
+	DELETE_ATTENTION:'/api/interest/deleteAttention',
+	UPDATE_ACCUSE:'/api/interest/updateAccuse',
+	DELETE_ACCUSE:'/api/interest/deleteAccuse'
 }
 // 招募岗位
 const JOB_URL={
 	INSERT:'/api/job/insertJob',
 	SELECTBYCONDITON:'/api/job/selectByCondition',
 	SELECTBYID:'/api/job/selectById',
-	UPDATE:'/api/job/updateJob'
+	UPDATE:'/api/job/updateJob',
+	DELETE: '/api/job/deleteJob'
 }
 // 帖子
 const POST_URL={
 	INSERT:'/api/post/insertPost',
 	SELECTBYCONDITON:'/api/post/selectByCondition',
 	SELECTBYID:'/api/post/selectById',
-	UPDATE:'/api/post/updatePost'
+	UPDATE:'/api/post/updatePost',
+	DELETE: '/api/post/deletePost'
 }
 // 学校
 const SCHOOL_URL={
@@ -117,8 +137,16 @@ const VOLEDU_URL={
 }
 
 export default {
-	async getUser() {
-		let resp = await http(USER_URL.GETUSER,'GET','url',{})
+	async getUser({userId}) {
+		let resp = await http(USER_URL.GET_USER,'GET','url',{userId})
+		return resp
+	},
+	async getVols({address,education,status,certificate,keyword}) {
+		let resp = await http(USER_URL.GET_VOLS,'GET','url',{address,education,status,certificate,keyword})
+		return resp
+	},
+	async getRecrs({address,companyName}) {
+		let resp = await http(USER_URL.GET_RECRS,'GET','url',{address,companyName})
 		return resp
 	},
 	// 用户
@@ -129,15 +157,17 @@ export default {
 		,email
 		,address
 		,identify
-		,reason}) {
-		let resp = await http(USER_URL.REGISTERECRUITER,'POST','url',{name
+		,companyName
+		,companyPhone}) {
+		let resp = await http(USER_URL.REGISTERECRUITER,'GET','url',{name
 			,password
 			,idcard
 			,phone
 			,email
 			,address
 			,identify
-			,reason})
+			,companyName
+			,companyPhone})
 		return resp
 	},
 	async getRecuriter({userId}) {
@@ -155,7 +185,7 @@ export default {
 		,identify
 		,reason
 	  ,userId}) {
-		let resp = await http(USER_URL.EDITRECRUITER,'POST','url',{
+		let resp = await http(USER_URL.EDITRECRUITER,'GET','url',{
 			id
 			,name
 			,password
@@ -175,11 +205,7 @@ export default {
 		,email
 		,address
 		,education
-		,workStartdt
-		,status
-		,certificate
-		,descr
-		,reason}) {
+		,status}) {
 		let resp = await http(USER_URL.REGISTEVOLUNTEER,'GET','url',{name
 			,password
 			,idcard
@@ -187,11 +213,7 @@ export default {
 			,email
 			,address
 			,education
-			,workStartdt
-			,status
-			,certificate
-			,descr
-			,reason})
+			,status})
 		return resp
 	},
 	async getVolunteer({userId}) {
@@ -207,13 +229,10 @@ export default {
 		,email
 		,address
 		,education
-		,workStartdt
 		,status
 		,certificate
-		,descr
-		,reason
 	  ,userId}) {
-		let resp = await http(USER_URL.EDITVOLUNTEER,'POST','url',{
+		let resp = await http(USER_URL.EDITVOLUNTEER,'GET','url',{
 			id
 			,name
 			,password
@@ -222,11 +241,8 @@ export default {
 			,email
 			,address
 			,education
-			,workStartdt
 			,status
 			,certificate
-			,descr
-			,reason
 			,userId})
 		return resp
 	},
@@ -234,15 +250,50 @@ export default {
 		let resp = await http(USER_URL.LOGIN,'POST','url',{name,password})
 		return resp
 	},
+	async appplyRecrIdenty(fileFormData) {
+		let resp = await http(IDENTY_URL.APPLY_RECR_IDENTY,'POST','post',fileFormData, {'Content-Type':'multipart/form-data'})
+		return resp
+	},
+	async getLastRecrIdenty({recrId}) {
+		let resp = await http(IDENTY_URL.LAST_RECR_IDENTY,'GET','url',{recrId})
+		return resp
+	},
+	async getRecrIdenty({recrId}) {
+		let resp = await http(IDENTY_URL.LIST_RECR_IDENTY,'GET','url',{recrId})
+		return resp
+	},
+	async getAllRecrIdenty({result}) {
+		let resp = await http(IDENTY_URL.LIST_ALL_RECR_IDENTY,'GET','url',{result})
+		return resp
+	},
+	async updateRecrIdenty({id, describe, result}) {
+		let resp = await http(IDENTY_URL.UPDATE_RECR_IDENTY,'GET','url',{id, describe, result})
+		return resp
+	},
+
+	async appplyVolIdenty(formData) {
+		let resp = await http(IDENTY_URL.APPLY_VOL_IDENTY,'POST','post',formData, {'Content-Type':'multipart/form-data'})
+		return resp
+	},
+	async getLastVolIdenty({volId}) {
+		let resp = await http(IDENTY_URL.LAST_VOL_IDENTY,'GET','url',{volId})
+		return resp
+	},
+	async getVolIdenty({volId}) {
+		let resp = await http(IDENTY_URL.LIST_VOL_IDENTY,'GET','url',{volId})
+		return resp
+	},
+	async getAllVolIdenty({result}) {
+		let resp = await http(IDENTY_URL.LIST_ALL_VOL_IDENTY,'GET','url',{result})
+		return resp
+	},
+	async updateVolIdenty({id, describe, result}) {
+		let resp = await http(IDENTY_URL.UPDATE_VOL_IDENTY,'GET','url',{id, describe, result})
+		return resp
+	},
 	// 文章
-	async insertArticle({ title
-		,authorId
-		,imgs
-		,content}) {
-		let resp = await http(ARTICLE_URL.INSERT,'GET','url',{ title
-			,authorId
-			,imgs
-			,content})
+	async insertArticle(formData) {
+		let resp = await http(ARTICLE_URL.INSERT,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async selectArticleByCondition({userId
@@ -255,37 +306,21 @@ export default {
 			,status})
 		return resp
 	},
+	async deleteArticle({articleId}) {
+		let resp = await http(ARTICLE_URL.DELETE,'GET','url',{articleId})
+		return resp
+	},
 	async selectArticleById({articleId}) {
 		let resp = await http(ARTICLE_URL.SELECTBYID,'GET','url',{articleId})
 		return resp
 	},
-	async updateArticle({id
-		,title
-		,authorId
-		,imgs
-		,content
-		,reason
-		,result
-		,status}) {
-		let resp = await http(ARTICLE_URL.UPDATE,'GET','url',{id
-			,title
-			,authorId
-			,imgs
-			,content
-			,reason
-			,result
-			,status})
+	async updateArticle(formData) {
+		let resp = await http(ARTICLE_URL.UPDATE,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	// 帖子
-	async insertPost({ title
-		,authorId
-		,content
-		,imgs}) {
-		let resp = await http(POST_URL.INSERT,'GET','url',{ title
-			,authorId
-			,content
-			,imgs})
+	async insertPost(formData) {
+		let resp = await http(POST_URL.INSERT,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async selectPostByCondition({userId
@@ -298,47 +333,21 @@ export default {
 			,status})
 		return resp
 	},
+	async deletePost({postId}) {
+		let resp = await http(POST_URL.DELETE,'GET','url',{postId})
+		return resp
+	},
 	async selectPostById({postId}) {
 		let resp = await http(POST_URL.SELECTBYID,'GET','url',{postId})
 		return resp
 	},
-	async updatePost({id
-		,title
-		,authorId
-		,content
-		,imgs
-		,reason
-		,result
-		,status}) {
-		let resp = await http(POST_URL.UPDATE,'GET','url',{id
-			,title
-			,authorId
-			,content
-			,imgs
-			,reason
-			,result
-			,status})
+	async updatePost(formData) {
+		let resp = await http(POST_URL.UPDATE,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	// 学校
-	async insertSChool({ name
-		,address
-		,addressName
-		,education
-		,descr
-		,imgs
-		,establishDt
-		,userId
-		,scale}) {
-		let resp = await http(SCHOOL_URL.INSERT,'GET','url',{ name
-			,address
-			,addressName
-			,education
-			,descr
-			,imgs
-			,establishDt
-			,userId
-			,scale})
+	async insertSchool(formData) {
+		let resp = await http(SCHOOL_URL.INSERT,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async selectSchoolByCondition({userId
@@ -357,32 +366,8 @@ export default {
 		let resp = await http(SCHOOL_URL.SELECTBYID,'GET','url',{schoolId})
 		return resp
 	},
-	async updateSchool({id
-		,name
-		,address
-		,addressName
-		,education
-		,descr
-		,imgs
-		,establishDt
-		,userId
-		,status
-		,scale
-		,reason
-		,result}) {
-		let resp = await http(SCHOOL_URL.UPDATE,'GET','url',{id
-			,name
-			,address
-			,addressName
-			,education
-			,descr
-			,imgs
-			,establishDt
-			,userId
-			,status
-			,scale
-			,reason
-			,result})
+	async updateSchool(formData) {
+		let resp = await http(SCHOOL_URL.UPDATE,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async deleteSchoolById({schoolId}) {
@@ -390,20 +375,8 @@ export default {
 		return resp
 	},
 	// 招募岗位
-	async insertJob({name
-		,schoolId
-		,userId
-		,address
-		,addressName
-		,education
-		,descr}) {
-		let resp = await http(JOB_URL.INSERT,'GET','url',{name
-			,schoolId
-			,userId
-			,address
-			,addressName
-			,education
-			,descr})
+	async insertJob(formData) {
+		let resp = await http(JOB_URL.INSERT,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async selectJobByCondition({userId
@@ -411,14 +384,12 @@ export default {
 		,address
 		,keyword
 		,education
-		,establishDt
 		,status}) {
 		let resp = await http(JOB_URL.SELECTBYCONDITON,'GET','url',{userId
 			,schoolId
 			,address
 			,keyword
 			,education
-			,establishDt
 			,status})
 		return resp
 	},
@@ -426,35 +397,29 @@ export default {
 		let resp = await http(JOB_URL.SELECTBYID,'GET','url',{jobId})
 		return resp
 	},
-	async updateJob({id
-		,name
-		,schoolId
-		,userId
-		,address
-		,addressName
-		,education
-		,descr
-		,status}) {
-		let resp = await http(JOB_URL.UPDATE,'GET','url',{id
-			,name
-			,schoolId
-			,userId
-			,address
-			,addressName
-			,education
-			,descr
-			,status})
+	async deleteJob({jobId}) {
+		let resp = await http(JOB_URL.DELETE,'GET','url',{jobId})
+		return resp
+	},
+	async updateJob(formData) {
+		let resp = await http(JOB_URL.UPDATE,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	// 文章/帖子评论
-	async insertComment({userId
-		,mainId
-		,msg
-		,type}) {
-		let resp = await http(COMMENT_URL.INSERT,'GET','url',{userId
-			,mainId
-			,msg
-			,type})
+	async insertArticleComment({userId
+		,articleId
+		,msg}) {
+		let resp = await http(COMMENT_URL.INSERT_ARTICLE,'GET','url',{userId
+			,articleId
+			,msg})
+		return resp
+	},
+	async insertPostComment({userId
+		,postId
+		,msg}) {
+		let resp = await http(COMMENT_URL.INSERT_POST,'GET','url',{userId
+			,postId
+			,msg})
 		return resp
 	},
 	async selectCommentByCondition({userId
@@ -465,31 +430,51 @@ export default {
 			,type})
 		return resp
 	},
-	async updateComment({id
-		,status
+	async deleteComment({id		
 		,type}) {
-		let resp = await http(COMMENT_URL.UPDATE,'GET','url',{id
-			,status
-		  ,type})
+		let resp = await http(COMMENT_URL.DELETE,'GET','url',{id			
+			,type})
 		return resp
 	},
 	// 收藏关注
-	async insertInterest({userId
+	async insertAttention({userId
 		,collectId
-		,type}) {
-		let resp = await http(INTEREST_URL.INSERT,'GET','url',{userId
+		,collectType}) {
+		let resp = await http(INTEREST_URL.INSERT_ATTENTION,'GET','url',{userId
 			,collectId
-			,type})
+			,collectType})
 		return resp
 	},
-	async selectInterestByCondition({userId
-		,type}) {
-		let resp = await http(INTEREST_URL.SELECTBYCONDITON,'GET','url',{userId
-			,type})
+	async insertAccuse({userId
+		,accuseId
+		,accuseType}) {
+		let resp = await http(INTEREST_URL.INSERT_ACCUSE,'GET','url',{userId
+			,accuseId
+			,accuseType})
 		return resp
 	},
-	async deleteInterest({interestId}) {
-		let resp = await http(INTEREST_URL.DELETE,'GET','url',{interestId})
+	async selectAttentionByCondition({userId
+		,collectType,collectId}) {
+		let resp = await http(INTEREST_URL.SELECTBYCONDITON_ATTENTION,'GET','url',{userId
+			,collectType,collectId})
+		return resp
+	},
+	async selectAccuseByCondition({userId
+		,accuseType,accuseId,accuseResult}) {
+		let resp = await http(INTEREST_URL.SELECTBYCONDITON_ACCUSE,'GET','url',{userId
+			,accuseType,accuseId,accuseResult})
+		return resp
+	},
+	async deleteAttention({id}) {
+		let resp = await http(INTEREST_URL.DELETE_ATTENTION,'GET','url',{id})
+		return resp
+	},
+	async updateAccuse({id,accuseRes}) {
+		let resp = await http(INTEREST_URL.UPDATE_ACCUSE,'GET','url',{id,accuseRes})
+		return resp
+	},
+	async deleteAccuse({id}) {
+		let resp = await http(INTEREST_URL.DELETE_ACCUSE,'GET','url',{id})
 		return resp
 	},
 	// 数据字典
@@ -509,6 +494,10 @@ export default {
 	},
 	async selectTrade() {
 		let resp = await http(DATADICT_URL.SELECTTRADE,'GET','url',{})
+		return resp
+	},
+	async selectNameByCode({code}) {
+		let resp = await http(DATADICT_URL.SELECT_NAME_BY_CODE,'GET','url',{code})
 		return resp
 	},
 	// 工作经历
@@ -540,7 +529,6 @@ export default {
 		,endDt
 		,departName
 		,jobName
-		,userId
 		,task
 		,performance}) {
 		let resp = await http(EXPERIENCE_URL.UPDATE,'GET','url',{id
@@ -549,7 +537,6 @@ export default {
 			,endDt
 			,departName
 			,jobName
-			,userId
 			,task
 			,performance})
 		return resp
@@ -573,12 +560,10 @@ export default {
 	},
 	async updateExpectJob({id
 		,name
-		,addrs
-		,userId}) {
+		,addrs}) {
 		let resp = await http(EXPECTJOB_URL.UPDATE,'GET','url',{id
 			,name
-			,addrs
-			,userId})
+			,addrs})
 		return resp
 	},
 	async deleteExpectJob({id}) {
@@ -612,7 +597,6 @@ export default {
 		,degree
 		,startDt
 		,endDt
-		,userId
 	  ,content}) {
 		let resp = await http(VOLEDU_URL.UPDATE,'GET','url',{id
 			,schoolName
@@ -620,7 +604,6 @@ export default {
 			,degree
 			,startDt
 			,endDt
-			,userId
 			,content})
 		return resp
 	},
@@ -629,46 +612,21 @@ export default {
 		return resp
 	},
 	// 资格证书
-	async insertCertificate({name
-		,userId}) {
-		let resp = await http(CERTIFICATE_URL.INSERT,'GET','url',{name
-			,userId})
+	async insertCertificate(formData) {
+		let resp = await http(CERTIFICATE_URL.INSERT,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async selectCertificateByCondition({userId}) {
 		let resp = await http(CERTIFICATE_URL.SELECTBYCONDITON,'GET','url',{userId})
 		return resp
 	},
-	async updateCertificate({id
-		,name
-		,userId}) {
-		let resp = await http(CERTIFICATE_URL.UPDATE,'GET','url',{id
-			,name
-			,userId})
-		return resp
-	},
-	// 社交主页
-	async insertContact({url
-		,userId}) {
-		let resp = await http(CONTACT_URL.INSERT,'GET','url',{url
-			,userId})
-		return resp
-	},
-	async selectContactByCondition({userId}) {
-		let resp = await http(CONTACT_URL.SELECTBYCONDITON,'GET','url',{userId})
-		return resp
-	},
-	async updateContact({id
-		,url
-		,userId}) {
-		let resp = await http(CONTACT_URL.UPDATE,'GET','url',{id
-			,url
-			,userId})
+	async updateCertificate(formData) {
+		let resp = await http(CERTIFICATE_URL.UPDATE,'POST','post',formData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	// 文件
 	async uploadFile(fileFormData) {
-		let resp = await http(FILE_URL.UPLOAD,'POST','post',fileFormData)
+		let resp = await http(FILE_URL.UPLOAD,'POST','post',fileFormData, {'Content-Type':'multipart/form-data'})
 		return resp
 	},
 	async selectFileByCondition({userId,dt}) {
@@ -706,14 +664,12 @@ export default {
 			,content})
 		return resp
 	},
-	async selectChatByFromTo({fromId
-		,toId}) {
-		let resp = await http(CHAT_URL.SELECTBYFROMTO,'GET','url',{fromId
-			,toId})
+	async selectAllChat({uesrId}) {
+		let resp = await http(CHAT_URL.SELECT_ALL,'GET','url',{uesrId})
 		return resp
 	},
-	async selectLastChats({userId}) {
-		let resp = await http(CHAT_URL.SELECTLASTCHATS,'GET','url',{userId})
+	async selectByFromTo({userId,dt}) {
+		let resp = await http(CHAT_URL.SELECTBYFROMTO,'GET','url',{userId,dt})
 		return resp
 	},
 

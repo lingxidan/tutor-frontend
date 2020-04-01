@@ -1,15 +1,50 @@
 <template>
-  <div class="table">
+  <div class="vol-identity-table">
     <h1>教资认证管理</h1>
-    <div class="schoolTop">
-      <input-select ref="totalSel" :inputs="inputData" :selects="selectData" :searchBtn="true" @search="search"></input-select>
-
-    </div>
     <tablePage ref="tbMain" :tableTitles="tableTitles"
       :tableData="tableData"
       :isLoading="false"
-      :tableConf="tableConf" class="tablepage"></tablePage>
-    <pagination :paginationConf="paginationConf" :currentPage="paginationConf.currentPage" @pageChange="pageChange"></pagination>
+      :tableConf="tableConf" class="tablepage">
+    </tablePage>
+    <el-dialog title="认证详情" :visible.sync="identityDialog" top="3vh" width="80%">
+      <div class="identity-detail">
+        <div class="identity-top">
+          <div class="top-info name"><label>用户名：</label>{{currentIdentity.volunteer.name}}</div>
+          <div class="top-info education"><label>学历：</label>{{currentIdentity.volunteer.education}}</div>
+          <div class="top-info idcard"><label>身份证号：</label>{{currentIdentity.volunteer.idcard}}</div>
+          <div class="top-info addressName"><label>联系地址：</label>{{currentIdentity.volunteer.addressName}}</div>
+          <div class="top-info email"><label>联系邮箱：</label>{{currentIdentity.volunteer.email}}</div>
+          <div class="top-info phone"><label>联系电话：</label>{{currentIdentity.volunteer.phone}}</div>
+        </div>
+        <div class="identity-content">
+          <div class="content-info applyDt">
+            <label>申请日期：</label>{{currentIdentity.applyDt}}
+            </div>
+          <div class="content-info applyId">
+            <label>证书编号：</label>{{currentIdentity.applyId}}
+            </div>
+          <div class="content-info applyStartdt">
+            <label>证书有效期：</label>
+            {{currentIdentity.applyStartdt+"  --  "+currentIdentity.applyEnddt}}
+            </div>
+          <div class="content-info image">
+            <template v-if="!currentIdentity.image||currentIdentity.image.length==0">
+              无照片
+            </template>
+            <template v-else>
+              <!-- <div class="img" v-for="image in currentIdentity.image"> -->
+                <img v-for="image in currentIdentity.image" :src="image" alt="">
+              <!-- </div> -->
+            </template>
+            </div>
+        </div>
+      </div>
+      <template slot="footer">
+        <el-input class="descr" v-model="currentDesc" placeholder="备注"></el-input>
+        <el-button type="success" @click="submitIdentity">通过申请</el-button>
+        <el-button type="warning" @click="cancelIdentity">驳回申请</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -21,176 +56,60 @@ export default {
   name: 'volunteer',
   data() { 
     return {
-      tableData:[{
-        volName:"曾老师",
-        volAddr:"XX省XX市XX区XX镇XX村",
-        volPhone:"239847",
-        volIdCard:"12876118845978x",
-        volDate:"2000年10月10日",
-        },{
-        volName:"王老师",
-        volAddr:"XX省XX市XX区",
-        volPhone:"10337465",
-        volIdCard:"12876123445978x",
-        volDate:"2000年10月10日",
-        },{
-        volName:"蓝老师",
-        volAddr:"XX省XX市XX县XX镇XX村",
-        volPhone:"1023857563",
-        volIdCard:"12876118823978x",
-        volDate:"2000年10月10日",
-        }],
+      tableData:[],
       tableTitles:[{
           prop: "volName",
-          label: "志愿者",
-          width: "170",
-          fixed: true,
+          label: "志愿者"
         },{
-          prop: "volIdCard",
-          label: "身份证号",
-          width: "170"
+          prop: "applyDt",
+          label: "申请日期"
         },{
-          prop: "volAddr",
-          label: "联系地址",
-          width: "170"
+          prop: "applyId",
+          label: "证书编号"
         },{
-          prop: "volPhone",
-          label: "联系电话",
-          width: "180"
+          prop: "applyStartdt",
+          label: "证书开始日期"
         },{
-          prop: "volDate",
-          label: "申请日期",
-          width: "230"
+          prop: "applyEnddt",
+          label: "证书结束日期"
         }],
       tableConf:{
         // 表格按钮操作列(是否需要，列头，操作按钮列表)
         operation:true,
-        // operaHeader:{
-        //   id:"edit",
-        //   text:"修改信息",
-        //   size:"medium",
-        //   type:"primary",
-        //   click:()=>{
-        //     console.log(this.$refs.tbMain.$refs.elTb.tableData)
-        //   }
-        // },
         btns:[{
           id:"detail",
           text:"查看",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
+            this.currentIdentity = val
+            this.identityDialog = true
           }
         },{
           id:"edit",
           text:"通过",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
+            this.currentIdentity = val
+            this.submitIdentity()
           }
         },{
           id:"delete",
           text:"驳回",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
-            console.log(val)
+            this.currentIdentity = val
+            this.cancelIdentity()
           }
         }]
       },
-      paginationConf:{
-        sizes: [10, 20, 50, 100],
-        size: 20,
-        total: 500,
+      currentIdentity:{
+        volunteer:{}
       },
-      inputData:[{
-          placeholder: "志愿者姓名",
-          model: "schoolName",
-          width: 170
-        }],
-      selectDataAddr: [{
-          placeholder: "省",
-          model: "province",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[0].clear()
-            request.getCity({
-                code: val,
-                level: 2
-              })
-              .then(
-                res => {
-                  _this.selectDataAddr[1].options = res.data
-                }
-              )
-          },
-          clear: () => {
-            let _this = this
-            _this.$set(_this.$refs.totalSel.searchData.selectData,
-              'city','')
-            _this.$set(_this.$refs.totalSel.searchData.selectData,
-              'town','')
-            _this.selectDataAddr[1].options = []
-            _this.selectDataAddr[2].options = []
-          },
-          options: []
-        },
-        {
-          placeholder: "市",
-          model: "city",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[1].clear()
-            request.getCity({
-                code: val,
-                level: 3
-              })
-              .then(
-                res => {
-                  _this.selectDataAddr[2].options = res.data
-                }
-              )
-          },
-          clear: () => {
-            let _this = this
-            _this.$set(_this.$refs.totalSel.searchData.selectData,
-              'town','')
-            _this.selectDataAddr[2].options = []
-          },
-          options: []
-        },
-        {
-          placeholder: "县/区",
-          model: "town",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[2].clear()
-          },
-          clear: () => {},
-          options: []
-        },
-      ],
-      selectData:[],
+      currentDesc:"",
+      identityDialog:false
     }
   },
   props: {
@@ -202,23 +121,79 @@ export default {
     inputSelect
   },
   mounted() {
-    this.selectData=this.selectDataAddr
+    this.initData()
   },
   methods:{
-
+    initData(){
+      this.$request.getAllVolIdenty({result:-1}).then(res=>{
+        res.data.forEach(data=>{
+          data.volName = ""
+          data.phone = ""
+          data.email = ""
+          data.idcard = ""
+          if(data.img!="[]"){
+            data.image = data.img
+              .substr(1, data.img.length - 2)
+              .split(",")
+              .map(url => {
+                return (
+                  "/" +
+                  url
+                    .substr(
+                      url.indexOf("static"),
+                      url.length - url.indexOf("static")
+                    )
+                    .replace(/\\/g, "/")
+                );
+              });
+          }else{
+            data.image=[]
+          }
+          this.$request.getVolunteer({userId:data.volId}).then(volRes=>{
+            data.volunteer = volRes.data
+            data.volName = volRes.data.name
+            data.phone = volRes.data.phone
+            data.email = volRes.data.email
+            data.idcard = volRes.data.idcard
+          })
+        })
+        this.tableData = res.data
+      })
+    },
+    submitIdentity(){
+      this.currentIdentity.describe = this.currentDesc
+      this.currentIdentity.result = 1
+      this.$request.updateVolIdenty( this.currentIdentity).then(res=>{
+        this.initData()
+        this.identityDialog=false
+        this.$message.success("处理成功")
+      })
+    },
+    cancelIdentity(){
+      this.currentIdentity.describe = this.currentDesc
+      this.currentIdentity.result = -2
+      this.$request.updateVolIdenty( this.currentIdentity).then(res=>{
+        this.initData()
+        this.identityDialog=false
+        this.$message.success("处理成功")
+      })
+    }
   },
  }
 </script>
 
 <style lang="less" scoped>
-.table{
+.vol-identity-table{
   display: flex;
   flex-direction: column;
-  align-items: center;
+  // align-items: center;
+  text-align: left;
   h1{
     font-weight: bold;
     letter-spacing: 2px;
-    font-size: 20px;
+    font-size: 3vh;
+    line-height: 6vh;
+    margin-left: 2vw;
   }
   .schoolTop{
     width: 100%;
@@ -232,6 +207,64 @@ export default {
   }
   .tablepage{
     width: 100%;
+  }
+  .identity-detail{
+    display: flex;
+    .identity-top{
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      width: 30%;
+      .top-info{
+        height: 6vh;
+        // width: 40%;
+        margin-left: 2vw;
+        font-size: 2.1vh;
+        label{
+          font-size: 1.7vh;
+          margin-right: 0.3vw;
+          color: #aaa;
+        }
+      }
+    }
+    .identity-content{
+      flex: 1;
+      padding-left: 2vw;
+      border-left: 0.1vh solid #ccc;
+      .content-info{
+        height: 7vh;
+        // width: 40%;
+        margin-left: 2vw;
+        font-size: 2.1vh;
+        label{
+          font-size: 1.7vh;
+          margin-right: 0.3vw;
+          color: #aaa;
+        }
+      }
+      .content-info.image{
+        display: flex;
+        // flex-direction: column;
+        width: 40vw;
+        height: auto;
+        padding-left: 1vw;
+        flex-wrap: wrap;
+        img{
+          margin-left: 1vw;
+          height: auto;
+          width: 46%;
+          border-radius: 2px;
+          border: 0.1vh solid #ccc;
+        }
+      }
+    }
+    .identity-top,.identity-content{
+      padding: 2vh;
+    }
+  }
+  .descr{
+    width: 40%;
+    margin-right: 2vw;
   }
 
 }

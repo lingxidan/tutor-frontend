@@ -3,44 +3,93 @@
     <!-- 搜索栏 -->
     <div class="search" ref="search">
       <el-select name="" id="" 
-      v-model="searchMsg.select.value"
+      v-model="searchMsg.select"
       class="searchSel">
-        <el-option v-for="sel in searchSel" 
-        :key="sel.id" :value="sel.value"
-        :label="sel.label"></el-option>
-      </el-select><el-input v-model="keyword"  placeholder="请输入内容" 
+        <template v-if="!!user.id">
+          <el-option v-for="sel in searchSel"
+          v-if="user.userType=='1'&&sel.field!='vol'" 
+          :key="sel.id" :value="sel.field" :label="sel.label"></el-option>
+          <el-option v-for="sel in searchSel"
+           v-if="user.userType=='2'&&(sel.field!='job'&&sel.field!='school')"
+            :key="sel.id" :value="sel.field" :label="sel.label"></el-option>
+        </template>
+        <template v-else>
+          <el-option v-for="sel in searchSel" :key="sel.id" :value="sel.field" :label="sel.label"></el-option>
+        </template>
+      </el-select><el-input v-model="searchMsg.text"  placeholder="请输入内容" 
       class="input-with-select searchInput">
-      </el-input><el-button icon="el-icon-search">搜索</el-button>
+      </el-input><el-button icon="el-icon-search" @click="search">搜索</el-button>
     </div>
-    <!-- <input-select ref="totalSel" :inputs="inputData" :selects="selectData" :searchBtn="false" @search="search"></input-select> -->
     <div class="search-tab">
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="招聘职位" name="first">
-          <div class="main-interest">
-          <!-- <volunteer v-for="(volunteer,index) in volunteers" :key="index"
-          :volunteer="volunteer"></volunteer> -->
-            <teacher class="single-teacher" v-for="(teacher,index) in teachers" :key="index"
-            :teacher="teacher"></teacher>
-          
+      <el-tabs v-model="activeName" @tab-click="tabClick">
+        <template v-if="!user.id">
+          <el-tab-pane label="职位" name="job">
+            <div class="main-search-post" v-if="teachers.length>0">
+              <teacher class="half" v-for="(teacher,index) in teachers" :key="index"
+              :teacher="teacher"></teacher>
+            </div>
+            <span v-else>无结果</span>
+          </el-tab-pane>
+        </template>
+        <template v-else>
+          <el-tab-pane label="职位" v-if="user.userType=='1'" name="job">
+            <div class="main-search-post" v-if="teachers.length>0">
+              <teacher class="half" v-for="(teacher,index) in teachers" :key="index"
+              :teacher="teacher"></teacher>
+            </div>
+            <span v-else>无结果</span>
+          </el-tab-pane>
+        </template>
+        <template v-if="!user.id">
+          <el-tab-pane label="学校" name="school">
+            <div class="main-search-post" v-if="schools.length>0">
+              <school-info class="half" v-for="(school,index) in schools" :key="index" 
+              :school="school"
+              ></school-info>
+            </div>
+            <span v-else>无结果</span>
+          </el-tab-pane>
+        </template>
+        <template v-else>
+          <el-tab-pane label="学校" v-if="user.userType=='1'" name="school">
+            <div class="main-search-post" v-if="schools.length>0">
+              <school-info class="half" v-for="(school,index) in schools" :key="index"
+              :school="school"></school-info>
+            </div>
+            <span v-else>无结果</span>
+          </el-tab-pane>
+        </template>
+        <template v-if="!user.id">
+          <el-tab-pane label="志愿者" name="vol">
+            <div class="main-search-post" v-if="volunteers.length>0">
+              <volunteer class="half" v-for="(volunteer,index) in volunteers" :key="index"
+              :volunteer="volunteer"></volunteer>
+            </div>
+            <span v-else>无结果</span>
+          </el-tab-pane>
+        </template>
+        <template v-else>
+          <el-tab-pane label="志愿者" v-if="user.userType=='2'" name="vol">
+            <div class="main-search-post" v-if="volunteers.length>0">
+              <volunteer class="half" v-for="(volunteer,index) in volunteers" :key="index"
+              :volunteer="volunteer"></volunteer>
+            </div>
+            <span v-else>无结果</span>
+          </el-tab-pane>
+        </template>
+        <el-tab-pane label="文章" name="article">
+          <div class="main-search" v-if="articles.length>0">
+            <essay class="article" v-for="(article, index) in articles" :key="index"
+            :essay="article"></essay>
           </div>
+          <span v-else>无结果</span>
         </el-tab-pane>
-        <!-- <el-tab-pane label="招募者" name="second">
-          <div class="main-interest">
-            <teacher class="half" v-for="(teacher,index) in teachers" :key="index"
-            :teacher="teacher"
-            :interest="true"></teacher>
-          </div>
-        </el-tab-pane> -->
-        <el-tab-pane label="文章" name="second">
-          <div class="main-interest">
-            <essay class="half article" v-for="(article, index) in articles" :key="index"
-            :article="article"></essay>
-          </div></el-tab-pane>
-        <el-tab-pane label="帖子" name="third">
-          <div class="main-interest">
+        <el-tab-pane label="帖子" name="post">
+          <div class="main-search-post" v-if="posts.length>0">
             <disguss class="half" v-for="(post,index) in posts" :key="index" :disguss="post">
             </disguss>
           </div>
+          <span v-else>无结果</span>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -51,6 +100,7 @@
 <script>
 import teacher from '../../components/common/teacher'
 import volunteer from '../../components/common/volunteer.vue'
+import schoolInfo from '../../components/common/school.vue'
 import essay from '../../components/common/essay'
 import disguss from '../../components/common/disguss'
 import inputSelect from '../../components/common/input-select.vue'
@@ -59,220 +109,48 @@ export default {
   name: 'search-list',
   data() { 
     return {
-      activeName:"first",
-      teachers:[
-        {
-          name:"数学教师",
-          during:"4-10年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"刘女士",
-          contactJob:"教育局代表人",
+      activeName:"job",
+      posts:[],
+      articles:[],
+      searchSel: [{
+          id: 0,
+          field: "total",
+          label: "全部"
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
+          id: 1,
+          field: "job",
+          label: "职位"
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
+          id: 2,
+          field: "school",
+          label: "学校"
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
+          id: 3,
+          field: "vol",
+          label: "志愿者"
         },
         {
-          name:"语文教师",
-          during:"1-5年",
-          education:"本科",
-          teacherCert:true,
-          schoolName:"XXX小学",
-          schoolAddr:"北京市 北京市 朝阳区",
-          contactImg:"/src/assets/logo_vue.png",
-          contactPerson:"张先生",
-          contactJob:"校长",
-        }],
-      
-      
-      
-      volunteers:[{
-          name:"张老师",
-          during:"4-10年经验",
-          education:"本科",
-          projects:["数学","英语","语文"],
+          id: 4,
+          field: "article",
+          label: "文章"
         },
         {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
-        },
-        {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
-        },
-        {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
-        },
-        {
-          name:"曾老师",
-          during:"3-5年经验",
-          education:"研究生",
-          projects:["数学","语文"],
-        }],
-      searchSel:[
-        {
-          id:0,
-          field:"total",
-          label:"全部",
-          value:"全部"
-        },
-        {
-          id:1,
-          field:"school",
-          label:"学校",
-          value:"学校"
-        },
-        {
-          id:2,
-          field:"teacher",
-          label:"教职",
-          value:"教职"
+          id: 5,
+          field: "post",
+          label: "帖子"
         }
       ],
       searchMsg:{
         select: "",
-        searchText:""
+        text:""
       },
-      selectDataAddr: [{
-          placeholder: "省",
-          model: "province",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[0].clear()
-            request.getCity({
-                code: val,
-                level: 2
-              })
-              .then(
-                res => {
-                  _this.selectDataAddr[1].options = res.data
-                }
-              )
-          },
-          clear: () => {
-            let _this = this
-            _this.$set(_this.$refs.totalSel.searchData.selectData,
-              'city','')
-            _this.$set(_this.$refs.totalSel.searchData.selectData,
-              'town','')
-            _this.selectDataAddr[1].options = []
-            _this.selectDataAddr[2].options = []
-          },
-          options: []
-        },
-        {
-          placeholder: "市",
-          model: "city",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[1].clear()
-            request.getCity({
-                code: val,
-                level: 3
-              })
-              .then(
-                res => {
-                  _this.selectDataAddr[2].options = res.data
-                }
-              )
-          },
-          clear: () => {
-            let _this = this
-            _this.$set(_this.$refs.totalSel.searchData.selectData,
-              'town','')
-            _this.selectDataAddr[2].options = []
-          },
-          options: []
-        },
-        {
-          placeholder: "县/区",
-          model: "town",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[2].clear()
-          },
-          clear: () => {},
-          options: []
-        },
-        {
-          placeholder: "学校规模",
-          model: "scale",
-          label: "name",
-          value: "code",
-          width: 170,
-          change: (val) => {
-            let _this = this
-            if (!val) {
-              return
-            }
-            _this.selectDataAddr[2].clear()
-          },
-          clear: () => {},
-          options: []
-        }
-      ],
-      selectData:[],
       teachers:[],
-      articles:[],
-      posts:[],
+      schools:[],
+      volunteers:[],
+      user:{}
 
     }
   },
@@ -285,52 +163,112 @@ export default {
     teacher,
     volunteer,
     essay,
-    disguss
+    disguss,
+    schoolInfo
   },
   created(){
-    this.keyword=this.$route.query.keyword
+    this.user = JSON.parse(sessionStorage.getItem('user'))||{};
+    this.searchMsg.select = this.$route.query.field
+    this.searchMsg.text = this.$route.query.text
     this.search()
   },
   mounted() {
-    this.searchMsg.select = this.searchSel[0]
-    this.selectData=this.selectDataAddr
-
   },
   methods:{
     search(){
       let _this=this
-      _this.$request.selectJobByCondition({keyword:this.keyword}).then(
-        res=>{
-          console.log(res.data)
-          this.teachers=res.data
+      if(this.searchMsg.select == 'total'||this.searchMsg.select == 'vol'){
+        _this.$request.getVols({keyword:this.searchMsg.text}).then(
+          res=>{
+            this.volunteers=res.data
+          }
+        )
+        this.activeName=this.searchMsg.select
+      }
+      if(this.searchMsg.select == 'total'||this.searchMsg.select == 'job'){
+        _this.$request.selectJobByCondition({keyword:this.searchMsg.text}).then(
+          res=>{
+            this.teachers=res.data
+          }
+        )
+        this.activeName=this.searchMsg.select
+      }
+      if(this.searchMsg.select == 'total'||this.searchMsg.select == 'school'){
+        _this.$request.selectSchoolByCondition({keyword:this.searchMsg.text}).then(
+          res=>{
+            this.schools=res.data
+          }
+        )
+        this.activeName=this.searchMsg.select
+      }
+      if(this.searchMsg.select == 'total'||this.searchMsg.select == 'article'){
+        _this.$request.selectArticleByCondition({keyword:this.searchMsg.text}).then(
+          res=>{
+            this.articles=res.data
+          }
+        )
+        this.activeName=this.searchMsg.select
+      }
+      if(this.searchMsg.select == 'total'||this.searchMsg.select == 'post'){
+        _this.$request.selectPostByCondition({keyword:this.searchMsg.text}).then(
+          res=>{
+            this.posts=res.data
+          }
+        )
+        this.activeName=this.searchMsg.select
+      }
+      if(this.searchMsg.select == 'total'){
+        this.activeName=this.searchMsg.select
+        if(this.user.id){
+          if(this.user.userType==1){
+            // 获取职位和学校
+            this.activeName="job"
+          }
+          if(this.user.userType==2){
+            this.activeName="vol"
+          }
+        }else{
+          this.activeName="job"
         }
-      )
-      _this.$request.selectArticleByCondition({keyword:this.keyword}).then(
-        res=>{
-          console.log(res.data)
-          this.articles=res.data
-        }
-      )
-      _this.$request.selectPostByCondition({keyword:this.keyword}).then(
-        res=>{
-          console.log(res.data)
-          this.posts=res.data
-        }
-      )
+      }
 
+      this.$router.push({
+        path: '/search',
+        query: {
+          field: this.searchMsg.select,
+          text: this.searchMsg.text,
+        }
+      })
+    },
+    tabClick(tag){
+      this.$router.push({
+        path: '/search',
+        query: {
+          field: tag.name,
+          text: this.searchMsg.text,
+        }
+      })
     }
   },
+  watch:{
+    "$route"(to,from){
+      this.searchMsg.select = this.$route.query.field
+      this.searchMsg.text = this.$route.query.text
+      this.search()
+    }
+  }
  }
 </script>
 
 <style lang="less" scoped>
 .search-list{
   position: relative;
-  width: 80%;
+  width: 70%;
   background-color: #fff;
   margin: 0 auto;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  // margin-top: 20px;
+  // margin-bottom: 20px;
+  margin: 2vh auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -339,21 +277,38 @@ export default {
     padding: 10px;
     transition: .3s;
     padding: 20px;
-    // padding-bottom: 10px;
-    // background-color: rgba(255,255,255,.5);
-    // .searchSel{
-    //   width: 10%;
-    // }
-    // .searchInput{
-    //   width: 60%;
-    // }
   }
   .search-tab{
-    width: 80%;
-    padding: 20px 30px;
-    // background-color: #eee;
-    border: 1px solid #eee;
-    margin-bottom: 20px;
+    width: 90%;
+    padding: 2vh 2vw;
+    min-height: 70vh;
+    padding-bottom: 3vh;
+    .main-search{
+      // padding: 1vh;
+      display: flex;
+      flex-wrap: wrap;
+      .article{
+        width: 18vw;
+        margin-left: 1vw;
+      }
+    }
+    .main-search-post{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 1vh;
+      .half{
+        width: 90%;
+        border-bottom: 0.1vh solid #ccc;
+      }
+    }
+  }
+}
+</style>
+<style lang="less">
+.search-list{
+  .el-tabs__item{
+    width: 10vw;
   }
 }
 </style>

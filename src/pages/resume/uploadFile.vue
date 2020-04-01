@@ -8,38 +8,9 @@
       :file-list="fileList"
       :before-upload="beforeUpload">
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-      <!-- <a href="./static/moban.xlsx" rel="external nofollow" download="模板"><el-button size="small" type="success">下载模板</el-button></a> -->
-      <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
-      <!-- <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过5MB</div> -->
+      <el-button size="small" type="primary" @click="submitUpload()">保存到服务器</el-button>
       <div slot="tip" class="el-upload-list__item-name">{{fileName}}</div>
-      </el-upload> 
-      <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="visible = false">取消</el-button> -->
-        <el-button type="primary" @click="submitUpload()">确定</el-button>
-      <!-- </span> -->
-    <!-- <input ref="file" type="file" id="file" />
-    <el-button size="small" type="primary" @click="upload()">点击上传</el-button> -->
-    <!-- <el-input v-model="fileId"></el-input>
-    <el-button size="small" type="primary" @click="getFileList">获取文件列表</el-button>
-
-    <textarea ref="fileContent" id="div1" readonly>
-      
-    </textarea>
-    <img :src="filePath" alt="" />
-    <ul>
-      <li v-for="(file,idx) in fileRes" ::key="idx" @click="show(idx)">
-        {{file.name}}
-        <p>{{file.upDt}}</p>
-      </li>
-    </ul> -->
-    <!-- <iframe frameborder="0" id="frame" width="100%"
-    src="../../../static/pdfjs/web/viewer.html?file=../../../static/files/转正申请书-张泽丹_1567833451113.pdf"></iframe> -->
-    <!-- <iframe frameborder="0" id="frame" width="100%" height="100%"
-     v-if="showUrl!=''" :src="'../../../static/pdfjs/web/viewer.html?file=' + showUrl"></iframe> -->
-    <!-- <div v-if="showUrl!=''">
-      <fileShow :url="showUrl"></fileShow>
-    </div> -->
-
+    </el-upload> 
   </div>
 </template>
 
@@ -93,17 +64,17 @@ export default {
     fileBtn() {
       document.getElementById('file').click()
     },
-    upload() {
-      var formData = new window.FormData()
-      formData.append('userfile', this.$refs.file.files[0])
-      console.log(formData)
-      let img = document.getElementById('img')
-      request.uploadFile(formData).then(
-        res=>{
-          console.log(res)
-        }
-      )
-    },
+    // upload() {
+    //   var formData = new FormData();
+    //   formData.append('userfile', this.$refs.file.files[0])
+    //   console.log(formData)
+    //   let img = document.getElementById('img')
+    //   request.uploadFile(formData).then(
+    //     res=>{
+    //       console.log(res)
+    //     }
+    //   )
+    // },
     show(idx){
       this.showUrl="../../../static/files/"+this.fileRes[idx].name
       var url = "../../../static/files/"+this.fileRes[idx].name;
@@ -122,6 +93,14 @@ export default {
  }
 </script>
 
-<style lang="less" scoped>
-.file{}
+<style lang="less">
+.file{
+  margin-top: 2vh;
+  .el-upload-list__item-name {
+    margin-top: 0.5vw;
+    margin-right: 1vw;
+    padding-left: 1vw;
+    font-size: 1.7vh;
+  }
+}
 </style>

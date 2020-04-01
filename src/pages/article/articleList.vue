@@ -1,12 +1,14 @@
 <template>
   <div class="article-list">
-    <editArticle class="edit-school" v-if="addArticleFlag" @cancel="cancel" @onSubmit="onSubmit"
-    :typeIdx="typeIdx"></editArticle>
-    <div class="table-school" v-else>
-      <h1>我发表的文章</h1>
+    <el-dialog title="文章管理" :visible.sync="editVisible" top="2vh" width="50%" :destroy-on-close="true">
+      <editArticle class="edit-school" @cancel="editVisible = false" @onSubmit="onSubmit"
+      :typeIdx="typeIdx"></editArticle>
+    </el-dialog>
+    <div class="table-school">
       <div class="articleTop">
+      <h1>我发表的文章</h1>
         <div class="feature">
-          <el-button type="primary" @click="addArticle">发表文章</el-button>
+          <el-button type="primary" @click="addArticle" class="add-btn">发表文章</el-button>
         </div>
         <!-- <input-select ref="totalSel" :inputs="inputData" :selects="selectData" :searchBtn="true" @search="search"></input-select> -->
 
@@ -29,76 +31,58 @@ export default {
   name: 'article-list',
   data() { 
     return {
-      addArticleFlag:false,
+      editVisible:false,
       typeIdx:-1,
-      tableData:[{
-        articleName:"光明小学",
-        articleAddr:"XX省XX市XX区XX镇XX村",
-        articleScale:"80人",
-        articleDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        articleEstablish:"2000年10月10日",
-        },{
-        articleName:"希望小学",
-        articleAddr:"XX省XX市XX区",
-        articleScale:"80人",
-        articleDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        articleEstablish:"2000年10月10日",
-        },{
-        articleName:"光明小学",
-        articleAddr:"XX省XX市XX县XX镇XX村",
-        articleScale:"80人",
-        articleDesc:"2000年10月10日建立，学校学生由10人增加到80人",
-        articleEstablish:"2000年10月10日",
-        }],
+      tableData:[],
       tableTitles:[{
           prop: "title",
-          label: "文章名",
-          width: "170",
-          fixed: true,
+          label: "文章名"
         },{
           prop: "establishDt",
-          label: "发表时间",
+          label: "发表时间"
+        },{
+          prop: "msgCount",
+          label: "评论数",
           width: "170"
         },{
-          prop: "statusName",
-          label: "文章状态",
-          width: "230"
+          prop: "attentionCount",
+          label: "收藏数",
+          width: "170"
         }],
       tableConf:{
         // 表格按钮操作列(是否需要，列头，操作按钮列表)
         operation:true,
-        // operaHeader:{
-        //   id:"edit",
-        //   text:"修改信息",
-        //   size:"medium",
-        //   type:"primary",
-        //   click:()=>{
-        //     // console.log(this.$refs.tbMain.$refs.elTb.tableData)
-        //   }
-        // },
         btns:[{
           id:"volunteer",
-          text:"查看/修改文章",
+          text:"查看",
           size:"medium",
-          type:"primary",
+          type:"text",
+          click:(val)=>{
+            this.$router.push({path:'/article',query:{id:val.id}})
+          }
+        },{
+          id:"volunteer",
+          text:"修改文章",
+          size:"medium",
+          type:"text",
           click:(val)=>{
             // console.log(val)
-            this.addArticleFlag=true
+            this.editVisible=true
             this.typeIdx=val.id
           }
         },{
           id:"delete",
           text:"删除文章",
           size:"medium",
-          type:"primary",
+          type:"text",
           click:(val)=>{
             // console.log(val)
             val.status=-1
             let _this=this
-            _this.$request.updateArticle(val).then(
+            _this.$request.deleteArticle({articleId:val.id}).then(
               res=>{
                 _this.$message.success("删除成功")
-                _this.getUserInfo(_this.user.userId)
+                _this.initData()
               }
             )
           }
@@ -223,73 +207,67 @@ export default {
     inputSelect,
     editArticle
   },
-  mounted() {
-    this.selectData=this.selectDataAddr
+  created(){
     this.user = JSON.parse(sessionStorage.getItem('user'));
-    // this.user={}
-    // this.user.userId=32
-    this.getUserInfo(this.user.userId)
-
+    this.initData()
+  },
+  mounted() {
   },
   methods:{
-    getUserInfo(dataId){
+    initData(){
       let _this=this
       _this.tableData=[]
-      // _this.$request.getRecuriter({userId:dataId}).then(
-        // res=>{
-          // _this.recruiter=res.data
-
-          // 文章列表
-          _this.$request.selectArticleByCondition({userId:dataId}).then(
-            res=>{
-              // console.log("getArticle",res.data)
-              _this.tableData=res.data
-              _this.tableData.forEach(data=>{
-                data.articleId = data.id
-                data.statusName=""
-                if(data.status==0){
-                  data.statusName="正常"
-
-                }
-                if(data.status==-1){
-                  data.statusName="删除"
-
-                }
-              })
-              // console.log(_this.tableData)
-            }
-          )
-        // }
-      // )
+      // 文章列表
+      _this.$request.selectArticleByCondition({userId:this.user.id}).then(
+        res=>{
+          res.data.forEach(data=>{
+            data.msgCount = 0
+            data.attentionCount = 0
+            this.$request.selectCommentByCondition({type:1,mainId:data.id}).then(res=>{
+              data.msgCount = res.data.length
+            })
+            this.$request.selectAttentionByCondition({collectType:1,userId:this.user.id,collectId:data.id}).then(res=>{
+              data.attentionCount = res.data.length
+            })
+          })
+          _this.tableData=res.data
+        }
+      )
     },
     addArticle(){
       this.typeIdx=-1
-      this.addArticleFlag=true
-    },
-    cancel(){
-      this.addArticleFlag=false
+      this.editVisible=true
     },
     onSubmit(article){
-      this.addArticleFlag=false
       let _this=this
-      // console.log(article)
-      // let _this=this
+      article.authorId=this.user.id
+      let formData = new FormData();
+      console.log(article, formData)
+      let image = (article.image||[]).map(item=>item.raw)
+      image.forEach(item=>{formData.append('image', item)})
+      formData.append("image", image)
+      formData.append("title", article.title)
+      formData.append("content", article.content)
+      formData.append("authorId", article.authorId)
+      formData.append("frontPath", this.$rootPath)
+      console.log(article, formData)
       if(_this.typeIdx==-1){
         // 添加学校
-        article.authorId=this.user.userId
-        this.$request.insertArticle(article).then(
+        this.$request.insertArticle(formData).then(
           res=>{
             // console.log(res)
-            _this.getUserInfo(_this.user.userId)
+            this.editVisible=false
+            _this.initData()
           }
         )
       }
       else{
-        // school.userId=this.recruiter.userId
-        
-        this.$request.updateArticle(article).then(
+        formData.append("imgs", article.imgs)
+        formData.append("id", article.id)
+        this.$request.updateArticle(formData).then(
           res=>{
-            _this.getUserInfo(_this.user.userId)
+            this.editVisible=false
+            _this.initData()
           }
         )
       }
@@ -300,31 +278,49 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../../../static/css/main';
 .article-list{
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #fff;
   h1{
     font-weight: bold;
     letter-spacing: 2px;
-    font-size: 20px;
+    font-size: 3vh;
+    padding-left: 3.5vw;
+    line-height: 1.4;
   }
   .articleTop{
     width: 100%;
     display: flex;
+    align-items: center;
+    // justify-content: center;
+    margin-top: 1vh;
+    margin-bottom: 1vh;
     .feature{
-      margin-left: 30px;
-      width: 10%;
-      display: flex;
-      align-items: center;
+      margin-left: 5vw;
+      padding: 1vh;
+      .add-btn{
+        background-color: @thirthColor;
+        border-color: @sixthColor;
+        padding: 1.4vh 1vw;
+        font-size: 1.6vh;
+        border-radius: 4px;
+        &:hover{
+          background: none;
+          color: @secondColor;
+          border-color: @sixthColor;
+        }
+      }
     }
   }
   .tablepage{
     width: 100%;
+    max-height: 90vh;
+    overflow: auto;
+    // margin-bottom: 2vh;
   }
-  
   .table-school{
     width: 100%;
   }
@@ -335,6 +331,23 @@ export default {
     left: 0;
     background-color: #fff;
     z-index: 100;
+  }
+
+}
+</style>
+<style lang="less">
+.table{
+  .el-dialog__title {
+    line-height: 1;
+    font-size: 3vh;
+    font-weight: bolder;
+  }
+  .el-dialog__body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1vh 1vw;
   }
 }
 </style>

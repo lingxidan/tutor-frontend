@@ -7,17 +7,13 @@
         <div class="content">{{disguss.content}}</div>
         <div class="bottom">
           <span>
-            <i class="el-icon-self-yuedu"></i>
-            {{disguss.viewCnt}}次阅读
-          </span>
-          <span>
             <i class="el-icon-self-taolunhui"></i>
-            {{disguss.disCnt}}个讨论
+            {{commentCnt}}个评论
           </span>
         </div>
       </div>
       <div class="image">
-        <img :src="disguss.img" alt="">
+        <img :src="image" alt="">
       </div>
     </div>
   </div>
@@ -28,34 +24,73 @@ export default {
   name: 'disguss',
   data() { 
     return {
-
+      image:"",
+      commentCnt: 0
     }
   },
   props: {
     disguss:{
       type:Object,
       default:function(){
-        return {
-          title:"志愿过程中的费用如何解决?",
-          content:"当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取当志愿教师的过程中的衣食住行的费用来自哪里，如何获取",
-          img:"./../../../static/img/panel_3.jpg",
-          viewCnt:13000,
-          disCnt:300
-        }
+        return {}
       }
     }
   },
   components:{
   },
   mounted() {
-    console.log(this.disguss)
+    if (this.disguss.imgs && this.disguss.imgs != "[]") {
+      let images = this.disguss.imgs
+        .substr(1, this.disguss.imgs.length - 2)
+        .split(",")
+        .map(url => {
+          return (
+            "/" +
+            url
+              .substr(
+                url.indexOf("static"),
+                url.length - url.indexOf("static")
+              )
+              .replace(/\\/g, "/")
+          );
+        });
+      this.image=images[0]
+    }
+    this.getCommentCnt()
   },
   methods:{
     showPost(){
       this.$router.push({path:'/post',query:{id:this.disguss.id}})
-      
+    },
+    getCommentCnt(){
+      this.$request.selectCommentByCondition({type:2,mainId:this.disguss.id}).then(res=>{
+        this.commentCnt = res.data.length
+      })
     }
   },
+  watch:{
+    disguss:{
+      handler(newVal,old){
+        if(newVal.imgs&&newVal.imgs!="[]"){
+          let images = newVal.imgs
+            .substr(1, newVal.imgs.length - 2)
+            .split(",")
+            .map(url => {
+              return (
+                "/" +
+                url
+                  .substr(
+                    url.indexOf("static"),
+                    url.length - url.indexOf("static")
+                  )
+                  .replace(/\\/g, "/")
+              );
+            });
+          this.image=images[0]
+        }
+      }
+    }
+  }
  }
 </script>
 
@@ -110,5 +145,11 @@ export default {
       border-radius: 2px;
     }
   }
+}
+.main{
+  transition: .3s;
+}
+.main:hover{
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
 }
 </style>
