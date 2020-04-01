@@ -1796,6 +1796,7 @@ export default {
                 width: 85%;
                 font-size: 1.9vh;
                 word-wrap:break-word;
+                white-space: pre-line;
               }
             }
             .gongsi{
@@ -1814,7 +1815,7 @@ export default {
                 font-weight: normal;
                 color:#999;
                 line-height: 1.5;
-                width: 20%;
+                width: 30%;
               }
             }
             .neirong,.yeji{
@@ -1895,6 +1896,7 @@ export default {
                 width: 80%;
                 font-size: 1.9vh;
                 word-wrap:break-word;
+                white-space: pre-line;
               }
             }
             .gongsi{

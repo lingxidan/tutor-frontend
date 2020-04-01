@@ -1,6 +1,6 @@
 <template>
   <div class="volunteer">
-    <div class="mainInfo">
+    <div class="mainInfo" @click="showVolunteer">
       <div class="name"><p>{{volunteer.name}}</p></div>
       <div class="require">
         <span>{{volunteer.educationName}}</span>
@@ -74,7 +74,7 @@ export default {
         let param={
           fromId:this.user.id,
           toId:_this.volunteer.userId,
-          content:"你好！"
+          content:"你好！有兴趣交流一下吗？"
         }
         _this.$request.insertChat(param).then(
           res=>{
@@ -85,6 +85,9 @@ export default {
       }else{
         this.$message.warning("请登录")
       }
+    },
+    showVolunteer(){
+      this.$router.push({path:'/volunteer',query:{id:this.volunteer.userId}})
     }
   },
   watch:{

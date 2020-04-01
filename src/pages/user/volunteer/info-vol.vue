@@ -1,98 +1,87 @@
 <template>
   <div class="info-vol">
-    <div class="left">
+    <div class="content">
       <div class="jingli">
-        <div class="part selfInfo">
-          <div class="title">个人优势
-          </div>
-          <div class="partContent">{{teacher.describe}}</div>
-        </div>
         <div class="part zhiwei">
-          <div class="title">期望岗位
-          </div>
+          <div class="title">期望岗位</div>
           <div class="partContent">
-            <div class="zhiweiContent" v-for="(zhiwei,idx) in teacher.zhiwei" :key="idx">
-              <div>
+            <div class="zhiweiContent" v-for="(zhiweiInfo,idx) in zhiweiList" :key="idx">
+              <div class="zhiweiContent-part">
                 <span>
                   <i class="el-icon-self-yingpinzhiwei"></i>
-                  {{zhiwei.qiwang}}
+                  {{zhiweiInfo.name}}
                 </span>
                 <span>
                   <i class="el-icon-self-dingwei"></i>
-                  <label v-for="(addr,addrIdx) in zhiwei.city" :key="addrIdx">
-                    {{addr.province+addr.city+addr.county}}
+                  <label v-for="(addr,addrIdx) in zhiweiInfo.addrNames" :key="addrIdx">
+                    {{addr}}
                   </label>
                 </span>
               </div>
             </div>
           </div>
-        
         </div>
         <div class="part jiaoyu">
           <div class="title">教育经历</div>
           <div class="partContent">
-            <div class="jiaoyuContent" v-for="(jiaoyu,idx) in teacher.jiaoyu" :key="idx">
-              <div>
+            <div class="jiaoyuContent" v-for="(jiaoyuInfo,idx) in jiaoyuList" :key="idx">
+              <div class="jiaoyuContent-part">
                 <div class="gongsi">
                   <i class="el-icon-self-edu"></i>
-                  {{jiaoyu.name}}
-                  <span class="time">{{jiaoyu.start+"-"+jiaoyu.end}}</span>
+                  <label for="">{{jiaoyuInfo.schoolName}}</label>
+                  <span class="time">{{jiaoyuInfo.startDt+"  --  "+(jiaoyuInfo.endDt||jiaoyuInfo.endDtBak)}}</span>
                 </div>
-                <div class="zhiwei">
-                  <span>{{jiaoyu.zhuanye}}</span>
-                  <span v-if="jiaoyu.xueli">{{jiaoyu.xueli}}</span>
+                <div class="project">
+                  <label>专业：</label>
+                  <span>{{jiaoyuInfo.project}}</span>
+                </div>
+                <div class="degree">
+                  <label>学历：</label>
+                  <span >{{jiaoyuInfo.degree}}</span>
                 </div>
                 <div class="neirong">
-                  <label>内容：</label><span>{{jiaoyu.neirong}}</span>
+                  <label>经历：</label>
+                  <span>{{jiaoyuInfo.content}}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="part zhengshu">
-          <div class="title">资格证书
-          </div>
+          <div class="title">资格证书</div>
           <div class="partContent">
             <div>
-              <div class="zhengshuContent" v-for="(zhengshu,idx) in teacher.zhengshu" :key="idx">
-                  {{zhengshu}}
-              </div>
+              <el-tag
+                v-for="tag in zhengshu.zhengshuList"
+                :key="tag"
+                type="success"
+                class="license-tag">
+                {{tag}}
+              </el-tag>
             </div>
           </div>
         </div>
         <div class="part shengya">
           <div class="title">工作经历</div>
           <div class="partContent">
-            <div class="jingliContent" v-for="(jingli,idx) in teacher.jingli" :key="idx">
-              <div>
+            <div class="jingliContent" v-for="(jingliInfo,idx) in jingliList" :key="idx">
+              <div class="jingliContent-part">
                 <div class="gongsi">
                   <i class="el-icon-self-yingpinzhiwei"></i>
-                  {{jingli.name}}
-                  <span class="time">{{jingli.start+"-"+jingli.end}}</span>
+                  <label>{{jingliInfo.companyName}}</label>
+                  <span class="time">{{jingliInfo.startDt+"  --  "+(jingliInfo.endDt||jingliInfo.endDtBak)}}</span>
                 </div>
                 <div class="zhiwei">
-                  <span v-if="jingli.bumen">{{jingli.bumen}}</span>
-                  <span>{{jingli.zhiweileixing}}</span>
+                  <label>部门职位：</label>
+                  <span>{{jingliInfo.departName+"  --  "+jingliInfo.jobName}}</span>
+                  <!-- <span>{{jingliInfo.}}</span> -->
                 </div>
                 <div class="neirong">
-                  <label>内容：</label><span>{{jingli.neirong}}</span>
+                  <label>工作内容：</label><span>{{jingliInfo.task}}</span>
                 </div>
-                <div class="yeji" v-if="jingli.yeji">
-                  <label>业绩：</label><span>{{jingli.yeji}}</span>
+                <div class="yeji">
+                  <label>工作业绩：</label><span>{{jingliInfo.performance}}</span>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="part shejiao">
-          <div class="title">社交主页</div>
-          <div class="partContent">
-            <div class="shejiaoContent" v-for="(shejiao,idx) in teacher.shejiaoList" :key="idx">
-              <!-- {{webAddr}} -->
-              <div>
-                <p>
-                  <i class="el-icon-monitor"></i>{{shejiao.value}}
-                </p>
               </div>
             </div>
           </div>
@@ -102,24 +91,17 @@
         <div class="self">
           <div class="name">
             <h2 class="show">{{teacher.name}}</h2>
-            <p class="sex" v-if="teacher.sex==1">♀</p>
-            <p class="sex" v-if="teacher.sex==0">♂</p>
           </div>
           <div class="base">
             <p>
               <i class="el-icon-self-touxiang"></i>
               <label for="">当前状态:</label>
-              {{teacher.status}}
-            </p>
-            <p>
-              <i class="el-icon-self-gongzuojingyan"></i>
-              <label for="">工作经验:</label>
-              {{teacher.gongzuojingyan}}年
+              {{teacher.status==1?"考虑机会":"暂不考虑"}}
             </p>
             <p>
               <i class="el-icon-self-edu"></i>
               <label for="">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历:</label>
-              {{teacher.education}}
+              {{teacher.educationName}}
             </p>
             <p>
               <i class="el-icon-self-dianhua"></i>
@@ -132,546 +114,526 @@
               {{teacher.email}}
             </p>
             <p>
-              <i class="el-icon-message"></i>
+              <i class="el-icon-position"></i>
               <label for="">联系地址:</label>
-              {{teacher.province}}{{teacher.city}}{{teacher.county}}
+              {{teacher.addressName}}
+            </p>
+          </div>
+          <el-button v-if="user.id&&user.userType=='2'" type="primary" class="contactBtn" @click="addContact">立即沟通</el-button>
+        </div>
+        <div class="jianli">
+          <div class="title">
+            <h3>身份认证</h3>
+          </div>
+          <div class="base">
+            <p>
+              <i class="el-icon-s-flag"></i>
+              <label for="">认证状态:</label>
+              <label 
+              :style="(!teacherIdenty.result)?'color:gray':teacherIdenty.result==-1?'color:orange':teacherIdenty.result==-2?'color:red':'color:green'"> 
+                {{(!teacherIdenty.result)?"未申请":teacherIdenty.result==-1?"认证中...":teacherIdenty.result==-2?'认证失败':"认证成功"}}
+                </label>
+             
+            </p>
+            <p>
+              <i class="el-icon-postcard"></i>
+              <label for="">教资证号:</label>
+              {{teacherIdenty.applyId}}
+            </p>
+            <p>
+              <i class="el-icon-date"></i>
+              <label for="">证书开始日期:</label>
+              {{teacherIdenty.applyStartdt}}
+            </p>
+            <p>
+              <i class="el-icon-date"></i>
+              <label for="">证书结束日期:</label>
+              {{teacherIdenty.applyEnddt}}
             </p>
           </div>
         </div>
         <div class="jianli">
           <div class="title">附件简历</div>
           <div class="partContent">
-            <div class="jianliContent" v-for="(jianli,idx) in teacher.jianli" :key="idx">
-              <i class="el-icon-document"></i>
-              {{jianli.name}}
-              <a class="edit" @click="showJianli(jianli.path)">
-                <i class="el-icon-edit"></i>
-                <label>查看</label>
-              </a>
+            <div class="jianliContent" v-for="(jianli,idx) in jianliList" :key="idx">
+                <label class="jianli-name" for="">
+                  <i class="el-icon-document"></i>
+                  {{jianli.name}}
+                </label>
+                <div class="jianliContent-edit">
+                  <a class="edit" @click="showJianli(jianli)">
+                    <i class="el-icon-edit"></i>
+                    <label>查看</label>
+                  </a>
+                </div>
+              <!-- </div> -->
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="info">
-      <el-tabs v-model="activeName" >
-        <el-tab-pane label="文章" name="first">
-          <div class="main-interest">
-            <essay class="half article" v-for="(index, o) in 9" :key="index"></essay>
-          </div>
-        </el-tab-pane>
-        <el-tab-pane label="帖子" name="second">
-          <div class="main-interest">
-            <disguss class="half" v-for="(index,o) in 5" :key="index">
-            </disguss>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-    </div>
   </div>
 </template>
 
 <script>
-import teacher from '../../../components/common/teacher'
-import essay from '../../../components/common/essay'
-import disguss from '../../../components/common/disguss'
+import tablePage from '../../../components/common/table-page.vue'
 export default {
   name: 'info-vol',
-  data() { 
+  data() {
     return {
-      activeName:"first",
-      
-      teacher:{
-        name:"曾小贤",
-        identiCard:"142729********20",
-        phone:"1738200****",
-        password:"adsfa",
-        address:"北京市朝阳区",
-        sex:1,
-        gongzuojingyan:2,
-        education:"本科",
-        status:"暂不考虑",
-        email:"dajuj@mail.com",
-        province:"山西省",
-        city:"太原市",
-        county:"小店区",
-        describe:"本人性格开朗，双料硕士学位，现任广播电视主持人。唱歌雷人，尤其喜欢在洗澡时唱歌，拥有打嗝特长的特殊技能。",
-        zhiwei:[{
-          qiwang:"数学教师",
-          city:[{
-            adcode:"75766",
-            province:"山西省",
-            city:"太原市",
-            county:"小店区",
-          },{
-            adcode:"75766",
-            province:"山东省",
-            city:"潍坊市",
-            county:"潍城区",
-          },{
-            adcode:"",
-            province:"",
-            city:"",
-            county:"",
-          }]
+      zhiweiList:[],
+      jiaoyuList:[],
+      zhengshu:{},
+      jingliList:[],
+      jianliList:[],
+      teacher:{},
+      selectData:{
+        education:[{
+          name:"高中及以下",
+          code:"1"
         },{
-          qiwang:"英语教师",
-          city:[{
-            adcode:"75766",
-            province:"内蒙古自治区",
-            city:"呼和浩特市",
-            county:"呼和浩特经济技术开发区",
-          },{
-            adcode:"75766",
-            province:"山东省",
-            city:"潍坊市",
-            county:"潍城区",
-          },{
-            adcode:"",
-            province:"",
-            city:"",
-            county:"",
-          }]
-        }],
-        jiaoyu:[{
-          name:"交通大学",
-          xueli:"硕士",
-          zhuanye:"历史学",
-          start:"2015.9",
-          end:"2018.9",
-          neirong:"无"
+          name:"高中",
+          code:"2"
         },{
-          name:"交通大学",
-          xueli:"硕士",
-          zhuanye:"哲学",
-          start:"2015.9",
-          end:"2018.9",
-          neirong:"无"
-        }],
-        zhengshu:"大学英语四级;大学英语六级",
-        jingli:[{
-          name:"上海市XXX广播电台",
-          hangye:"广播/影视",
-          bumen:"广播部",
-          zhiwei:"广播主持人",
-          zhiweileixing:"主播",
-          start:"2018.1",
-          end:"至今",
-          neirong:"主持深夜广播节目《你的月亮我的心》",
-          yeji:"拉到三个赞助商广告"
+          name:"大专",
+          code:"3"
         },{
-          name:"上海市XXX广播电台",
-          hangye:"广播/影视",
-          bumen:"广播部",
-          zhiwei:"广播主持人",
-          zhiweileixing:"主播",
-          start:"2008.12",
-          end:"2018.1",
-          neirong:"主持深夜广播节目《你的月亮我的心》"
+          name:"本科",
+          code:"4"
         },{
-          name:"上海市XXX广播电台",
-          hangye:"广播/影视",
-          zhiwei:"广播主持人",
-          zhiweileixing:"主播",
-          start:"2008.10",
-          end:"2008.12",
-          neirong:"主持深夜广播节目《你的月亮我的心》",
-          yeji:"拉到三个赞助商广告"
-        }],
-        shejiao:"https://baike.baidu.com/item/%E6%9B%BE%E5%B0%8F%E8%B4%A4/1926595?fr=aladdin||https://baike.baidu.com/item/%E6%9B%BE%E5%B0%8F%E8%B4%A4/1926595?fr=aladdin",
-        jianli:[{
-          name:"附件简历_1",
-          path:"../../../../static/files/转正申请书-张泽丹_1567833451113.pdf"
-        }]
-        // jianli:[]
-      }
-      
-    
+          name:"硕士研究生",
+          code:"5"
+        },{
+          name:"博士研究生",
+          code:"6"
+        },]
+      },
+      // 身份认证
+      teacherIdenty: {},
+      user:{}
     }
   },
   props: {
 
   },
   components:{
-    essay,
-    disguss,
   },
   created(){
-    
-    let _this=this
-    this.teacher.zhengshu=this.teacher.zhengshu.split(";")
-    _this.teacher.shejiaoList=[]
-    let shejiaoList=[...this.teacher.shejiao.split("||")]
-    shejiaoList.forEach((shejiao,idx)=>{
-      _this.teacher.shejiaoList.push({value:shejiao,key:idx})
-    })
+    let teacherId=this.$route.query.id
+    this.getUserInfo(teacherId)
+    this.getExpectJobs(teacherId)
+    this.getJiaoyuList(teacherId)
+    this.getJingliList(teacherId)
+    this.getZhengshuList(teacherId)
   },
   mounted() {
-
   },
-
   methods:{
-    showSchool(){
-      this.$router.push("/school")
+    getUserInfo(dataId=this.teacher.userId){
+      this.user = JSON.parse(sessionStorage.getItem('user'))||{};
+      let _this=this
+      this.$request.getVolunteer({userId:dataId}).then(
+        res=>{
+          _this.teacher=res.data
+          _this.teacher.province=res.data.address.substring(0,2)
+          _this.teacher.city=res.data.address.substring(0,4)
+          _this.teacher.county=res.data.address
+          _this.selectData.education.forEach(edu=>{
+            if(edu.code==_this.teacher.education){
+              _this.teacher.educationName=edu.name
+            }
+          })
+          _this.teacher.checkPass = ""
+          // 获取认证信息
+          _this.$request.getLastVolIdenty({volId:dataId}).then(res=>{
+            _this.teacherIdenty = {
+              ...res.data
+            }
+          })
+          _this.teacher={..._this.teacher}
+        }
+      )
     },
-    showJianli(path){
-      window.open("../../../static/pdfjs/web/viewer.html?file=" + path);
-    }
+    getExpectJobs(dataId=this.teacher.userId){
+      let _this = this
+      _this.zhiweiList = []
+      // 期望岗位
+      _this.$request.selectExpectJobByCondition({userId:dataId}).then(
+        res=>{
+          if(res.data.length>0){
+            res.data.forEach((item,itemIdx)=>{
+              let addrsList = []
+              for(let i=0;i<3;i++){
+                addrsList.push({
+                  province:"",
+                  city:"",
+                  county:"",
+                })
+              }
+              let addrs = item.addrs.split(";")
+              addrs.forEach((addr,addrIdx)=>{
+                addrsList[addrIdx].province=addr.substr(0,2)
+                addrsList[addrIdx].city=addr.substr(0,4)
+                addrsList[addrIdx].county=addr
+              })
+              item.addrsList = addrsList
+            })
+          }
+          _this.zhiweiList = res.data
+        }
+      )
+    },
+    getJiaoyuList(dataId=this.teacher.userId){
+      let _this = this
+      _this.jiaoyuList = []
+      // 教育经历
+      _this.$request.selectVolEduByCondition({userId:dataId}).then(
+        res=>{
+          res.data.forEach(item=>{
+            if(item.endDt == "至今"){
+              item.endDt=""
+              item.endDtBak="至今"
+            }else{
+              if(item.endDt.indexOf("-")<0){
+                let year = item.endDt.substring(0,4)
+                let month = item.endDt.substring(4,6)
+                let day = item.endDt.substring(6,8)
+                item.endDt = year +"-"+month+"-"+day
+              }
+            }
+            // console.log(item.endDt.substr(0,4),item.endDt.substr(4,6),item.endDt.substr(6,8))
+          })
+          _this.jiaoyuList=[...res.data]
+        }
+      )
+    },
+    getJingliList(dataId=this.teacher.userId){
+      let _this = this
+      _this.jingliList = []
+      // 教育经历
+      _this.$request.selectExperienceByCondition({userId:dataId}).then(
+        res=>{
+          res.data.forEach(item=>{
+            if(item.endDt == "至今"){
+              item.endDt=""
+              item.endDtBak="至今"
+            }else{
+              if(item.endDt.indexOf("-")<0){
+                let year = item.endDt.substring(0,4)
+                let month = item.endDt.substring(4,6)
+                let day = item.endDt.substring(6,8)
+                item.endDt = year +"-"+month+"-"+day
+              }
+            }
+            // console.log(item.endDt.substr(0,4),item.endDt.substr(4,6),item.endDt.substr(6,8))
+          })
+          _this.jingliList=[...res.data]
+        }
+      )
+    },
+    getZhengshuList(dataId=this.teacher.userId){
+      let _this = this
+      this.zhengshu = {}
+      // 资格证书
+      _this.$request.selectCertificateByCondition({userId:dataId}).then(
+        res=>{
+          if(res.data.length>0){
+            _this.zhengshu = {...res.data[0]}
+            _this.zhengshu.zhengshuList=(res.data[0].name||"").split(",")
+          }
+        }
+      )
+    },
+    showJianli(jianli){
+      let path = jianli.filepath
+      path = path.split("static")
+      console.log(path)
+      // let path="../../../../static/files/"+jianli.name
+      window.open("../../../../static/pdfjs/web/viewer.html?file=/static" + path[1]);
+    },
+    addContact(){
+      this.user = JSON.parse(sessionStorage.getItem('user'))||{}; 
+      let _this=this
+      if(this.user.id){
+        let param={
+          fromId:this.user.id,
+          toId:_this.teacher.userId,
+          content:"你好！"
+        }
+        _this.$request.insertChat(param).then(
+          res=>{
+            if(this.user.userType=="1"){
+              // _this.$router.push("/user/vol/chat",param)
+            }
+            if(this.user.userType=="2"){
+              _this.$router.push("/user/recr/chat",param)
+            }
 
+          }
+        )
+      }else{
+        this.$message.warning("请登录")
+      }
+    }
   },
  }
 </script>
 
 <style lang="less" scoped>
+@import '../../../../static/css/main';
 .info-vol{
-  width: 70%;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  .left{
-    width: 100%;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+  .content{
+    background-color: #f8f8f8;
     display: flex;
-    // background-color: #fff;
-    margin-right: 20px;
-    position: relative;
+    justify-content: center;
     .jingli{
-      box-shadow: 0 0 10px 0 #eeeeff;
-      // box-shadow: 0 0 10px 0 #ffecb3;
-      // box-shadow: 0 0 6px 0 @mainColor;
+      box-shadow: 0 0 6px 0 @sixthColor;
       background-color: #fff;
-      width: 60%;
-      padding: 30px 30px;
-      margin-right: 10px;
+      width: 56%;
+      padding: 3vh 3vw;
+      margin-right: 1vw;
       .part{
-        padding: 6px 30px;
-        margin-bottom: 10px;
+        padding: 1vh 2vw;
+        margin-bottom: 2vh;
         border-bottom: 1px solid #eee;
         .title{
-          border-left: 5px solid coral;
+          border-left: 0.3vw solid @secondColor;
           text-align: left;
-          padding-left: 28px;
-          font-size: 20px;
+          padding-left: 1vw;
+          font-size: 2.3vh;
           font-weight: 500;
         }
         .partContent{
           // background-color: #aaa;
-          margin: 10px 5px;
+          margin: 1vh 0;
           // margin-bottom: 10px;
           text-align: left;
-          font-size: 15px;
-          line-height: 26px;
+          font-size: 1.8vh;
+          line-height: 1;
           // letter-spacing: 1px;
-          color: #61687c;
-        }
-      }
-      .selfInfo{
-        .submit-button{
-          margin-left: 200px;
-        }
-        a label{
-          cursor: pointer;
-        }
-        a.edit{
-          display: inline-block;
-          opacity: 0;
-          font-size: 16px;
-          cursor: pointer;
-          margin-left: 50px;
-          color: #aaa;
-          &:hover{
-            color: coral;
-          }
-        }
-        &:hover{
-          a.edit{
-          opacity: 1;
-          }
+          color: @mainColor;
         }
       }
       .zhiwei{
         // height: 100px;
         .zhiweiContent{
           display: flex;
-          margin-top: 6px; 
-            border: 1px solid transparent;
+          border: 1px solid transparent;
           &:first-of-type{
             margin-top: 0;
           }
-          span{
-            display: inline-block;
-            margin-right: 10px;
-            vertical-align: middle;
-          }
-          span:first-of-type{
-            width: 100px;
-          }
-          // span:nth-child(2){
-          //   width: 300px;
-          // }
-
-          &:first-child{
-            margin-top: 0;
-          }
-          a label{
-            cursor: pointer;
-          }
-          a.edit{
-            display: inline-block;
-            opacity: 0;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 50px;
-            color: #aaa;
-            &:hover{
-              color: coral;
+          .zhiweiContent-part{
+            padding: 1vh;
+            position: relative;
+            width: 100%;
+            span{
+              display: block;
+              margin-right: 1vw;
+              font-size: 1.8vh;
+              line-height: 1.8;
             }
-            vertical-align: middle;
-          }
-          &:hover{
-            border: 1px solid coral;
-            a.edit{
-            opacity: 1;
-            }
-          }
-          
-          .submit-button{
-            margin-left: 50px;
-          }
 
-          .addr-input{
-            margin-top: 10px;
-          }
-          .edit-zhiwei{
-            padding: 15px 10px;
           }
         }
       }
       .shengya{
         .jingliContent{
-          margin-top: 6px;
-          padding: 5px 5px 5px 8px;
+          display: flex;
+          position: relative;
           border: 1px solid transparent;
           &:first-of-type{
             margin-top: 0;
           }
-          a label{
-            cursor: pointer;
-          }
-          a.edit{
-            display: inline-block;
-            opacity: 0;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 50px;
-            color: #aaa;
-            &:hover{
-              color: coral;
+          .jingliContent-part{
+            padding: 1vh;
+            width: 100%;
+            .gongsi,.zhiwei,.neirong,.yeji{
+              padding: 1vh;
+              font-size: 1.7vh;
+              width: 100%;
+              display: flex;
+              label{
+                width: 4vw;
+                font-size: 1.5vh;
+                color: #ccc;
+                line-height: 1.5;
+                vertical-align: middle;
+              }
+              span{
+                // flex: 1;
+                width: 85%;
+                font-size: 1.9vh;
+                word-wrap:break-word;
+                white-space: pre-line;
+              }
             }
-          }
-          &:hover{
-            a.edit{
-            opacity: 1;
+            .gongsi{
+              font-weight: bold;
+              label{
+                margin-left: 0.3vw;
+                font-size: 2.2vh;
+                color: @mainColor;
+                line-height: 1;
+                width: auto;
+              }
+              .time{
+                display: inline-block;
+                font-size: 1.4vh;
+                margin-left: 1vw;
+                font-weight: normal;
+                color:#999;
+                line-height: 1.5;
+                width: 30%;
+              }
             }
-          }
-          
-          .submit-button{
-            margin-left: 50px;
-          }
-        }
-        .jingliContent:hover{
-          // border: 1px solid @mainColor;
-        }
-        .gongsi,.zhiwei,.neirong,.yeji{
-          padding: 3px;
-        }
-        .gongsi{
-          font-weight: bold;
-          .time{
-            display: inline-block;
-            font-size: 10px;
-            margin-left: 30px;
-            font-weight: normal;
-            color:#999;
-          }
-        }
-        .zhiwei{
-          font-weight: bold;
-        }
-        .neirong,.yeji{
-          font-size: 14px;
-          label{
-            font-weight: bold;
+            .neirong,.yeji{
+              font-size: 2vh;
+              label{
+                font-weight: bold;
+              }
+              span{
+                display: block;
+                line-height: 1.2;
+                width: 80%;
+              }
+            }
           }
         }
       }
       .jiaoyu{
         .jiaoyuContent{
-          margin-top: 6px;
-          padding: 5px 5px 5px 8px;
+          display: flex;
+          position: relative;
           border: 1px solid transparent;
           &:first-of-type{
             margin-top: 0;
           }
-          a label{
-            cursor: pointer;
-          }
-          a.edit{
-            display: inline-block;
-            opacity: 0;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 50px;
-            color: #aaa;
-            &:hover{
-              color: coral;
+          .jiaoyuContent-part{
+            padding: 1vh;
+            vertical-align: middle;
+            .gongsi,.project,.degree,.neirong{
+              padding: 1vh;
+              font-size: 1.7vh;
+              display: flex;
+              label{
+                width: 3vw;
+                font-size: 1.5vh;
+                color: #ccc;
+                line-height: 1.5;
+                vertical-align: middle;
+              }
+              span{
+                flex: 1;
+                width: 80%;
+                font-size: 1.9vh;
+                word-wrap:break-word;
+                white-space: pre-line;
+              }
+            }
+            .gongsi{
+              font-weight: bold;
+              label{
+                margin-left: 0.3vw;
+                font-size: 2.2vh;
+                color: @mainColor;
+                line-height: 1;
+                width: auto;
+              }
+              .time{
+                display: inline-block;
+                font-size: 1.4vh;
+                margin-left: 1vw;
+                font-weight: normal;
+                color:#999;
+                line-height: 1.5;
+              }
+            }
+            .neirong{
+              font-size: 2vh;
+              label{
+                font-weight: bold;
+              }
+              span{
+                line-height: 1.2;
+              }
             }
           }
           &:hover{
-            a.edit{
-            opacity: 1;
+            // border: 1px solid coral;
+            .jiaoyuContent-edit{
+              display: block;
             }
-          }
-          
-          .submit-button{
-            margin-left: 50px;
-          }
-        }
-        .jiaoyuContent:hover{
-          // border: 1px solid @mainColor;
-        }
-        .gongsi,.zhiwei,.neirong{
-          padding: 3px;
-        }
-        .gongsi{
-          font-weight: bold;
-          .time{
-            display: inline-block;
-            font-size: 10px;
-            margin-left: 30px;
-            font-weight: normal;
-            color:#999;
-          }
-        }
-        .zhiwei{
-          font-weight: bold;
-        }
-        .neirong{
-          font-size: 14px;
-          label{
-            font-weight: bold;
           }
         }
       }
       .zhengshu{
-        .zhengshuContent{
-          font-size: 13px;
-          border: 1px solid #fba400;
-          display: inline-block;
-          padding: 0px 5px;
-          border-radius: 3px;
-          margin: 5px;
-        }
-          a label{
-            cursor: pointer;
-          }
-          a.edit{
-            display: inline-block;
-            opacity: 0;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 50px;
-            color: #aaa;
-            &:hover{
-              color: coral;
-            }
-          }
-          &:hover{
-            a.edit{
-            opacity: 1;
-            }
-          }
-          
-          .submit-button{
-            margin-left: 50px;
-          }
       }
-      .shejiao{
-        .shejiaoContent{
-          display: flex;
-          align-items: center;
-          // height: 35px;
-          // line-height: 35px;
-          overflow: hidden;
-          text-overflow:ellipsis;
-          white-space: nowrap;
-          i{
-            font-size: 16px;
-            margin-right: 10px;
-          }
-          a label{
+      .license-checked{
+        display: flex;
+        overflow-x: auto;
+        height: 6vh;
+        &::-webkit-scrollbar-track {
+          background-color: @sixthColor;
+        }
+        &::-webkit-scrollbar {
+          width: 0.2vw;
+          height: 0.2vw;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: @thirthColor;
+        }
+      }
+      .license-tag{
+        margin-left: 0.2vw;
+        margin-bottom: 0.2vw;
+      }
+      .license-main{
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: 2vw;
+        margin-top: 2vh;
+        min-height: 65vh;
+        max-height: 65vh;
+        // overflow: auto;
+        overflow-y: auto;
+        &::-webkit-scrollbar-track {
+          background-color: @sixthColor;
+        }
+        &::-webkit-scrollbar {
+          width: 0.2vw;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: @thirthColor;
+        }
+        .license-item{
+          width: 21vw;
+          height: 7vh;
+          font-size: 1.7vh;
+          .license-sub{
             cursor: pointer;
-          }
-          a.edit{
-            display: inline-block;
-            opacity: 0;
-            font-size: 16px;
-            cursor: pointer;
-            margin-left: 50px;
-            color: #aaa;
             &:hover{
-              color: coral;
+              font-size: 1.8vh;
             }
-          }
-          &:hover{
-            a.edit{
-            opacity: 1;
-            }
-          }
-          
-          .submit-button{
-            margin-left: 50px;
           }
         }
-        // height: 100px;
-        // background-color: rgb(102, 18, 18);
       }
     }
     .self,.jianli{
-      box-shadow: 0 0 10px 0 #eeeeff;
-      a label{
-        cursor: pointer;
-      }
-      a.edit{
-        display: inline-block;
-        opacity: 0;
-        font-size: 16px;
-        cursor: pointer;
-        margin-left: 10px;
-        color: #aaa;
-        &:hover{
-          color: coral;
-        }
-      }
-      &:hover{
-        a.edit{
-        opacity: 1;
-        }
-      }
-      
-      .submit-button{
-        margin-left: 50px;
-      }
-      margin-bottom: 10px;
-      // width: 210px;
-      // height: 260px;
-      // background-color: rgba(0, 100, 0);
+      box-shadow: 0 0 6px 0 @sixthColor;
+      margin-bottom: 2vh;
       display: flex;
       flex-direction: column;
-      padding: 20px;
-      // background: rgb(250, 250, 250);
-      // box-shadow: 0 0 5px 0 @mainColor;
+      padding: 2vh 3vh;
       background-color: #fff;
+      
+      .submit-button{
+        height: 4vh;
+        line-height: 4vh;
+        font-size: 1.7vh;
+        padding: 0 2vw;
+      }
       .name{
         text-align: left;
         // margin-top: 20px;
@@ -679,90 +641,120 @@ export default {
           display: inline-block;
         }
         .show{
-          font-size: 22px;
+          font-size: 3vh;
           font-weight: bold;
-          line-height: 30px;
+          line-height: 1;
           letter-spacing: 3px;
-        }
-        .sex{
-          // border: 1px solid @secondColor;
-          // background-color:  @secondColor;
-          font-size: 12px;
-          font-weight: bolder;
-          line-height: 16px;
-          width: 16px;
-          text-align: center;
-          border-radius: 50% 50% 50% 0;
-          margin-left: 5px;
-          color: #f7f7f7;
         }
       }
       .base{
-        margin-top: 15px;
+        margin-top: 2vh;
         p{
           text-align: left;
-          padding: 5px 0;
+          padding: 0.4vw 0;
           // height: 40px;
           // font-weight: 600;
-          font-size: 15px;
+          font-size: 1.8vh;
           label{
-            font-weight: normal;
             color:#ccc;
-            font-size: 15px;
+            font-size: 1.7vh;
+          }
+        }
+      }
+      .contactBtn{
+        background-color: @thirthColor;
+        border: 0.1ch solid transparent;
+        border-radius: 0;
+        width: 100%;
+        padding: 1.6vh 3vw;
+        margin-top: 2vh;
+        &:hover{
+          background-color: @mainColor;
+        }
+      }
+    }
+    .self{
+      padding: 4vh 3vh;
+    }
+    .jianli{
+      .title{
+        border-left: 0.3vw solid @secondColor;
+        text-align: left;
+        padding-left: 1vw;
+        font-size: 2.3vh;
+        font-weight: 500;
+        display: flex;
+      }
+      .partContent{
+        margin-top: 2vh;
+        .jianliContent{
+          position: relative;
+          margin: 1vh 0;
+          text-align: left;
+          .jianliContent-edit{
+            position: absolute;
+            left: 70%;
+            top:0;
+            display: none;
+            // width: 100%;
+            a label{
+              cursor: pointer;
+            }
+            a.edit{
+              display: inline-block;
+              // opacity: 0;
+              font-size: 1.6vh;
+              cursor: pointer;
+              margin-left: 2vw;
+              color: #aaa;
+              &:hover{
+                color: coral;
+              }
+              vertical-align: middle;
+            }
+          }
+          &:hover{
+            .jianliContent-edit{
+              display: inline-block;
+            }
+          }
+          label.jianli-name{
+            width: 10vw;
+            display: block;
+            font-size: 1.7vh;
           }
         }
       }
     }
-    .jianli{
-      .title{
-        font-size: 16px;
-        font-weight: bold;
-        text-align: left;
+  }
+}
+</style>
+<style lang="less">
+@import '../../../../static/css/main';
+.info-vol{
+  .partContent{
+    .el-textarea__inner{
+      height: 300px;
+    }
+  }
+  .jianli{
+    .title{
+      h3{
+        font-size: 2.3vh;
+        font-weight: 500;
       }
-      .partContent{
-        margin-top: 10px;
-        .jianliContent{
-          margin: 10px 0;
-          text-align: left;
+      .el-button{
+        font-size: 1.7vh;
+        cursor: pointer;
+        margin-left: 1vw;
+        padding: 0;
+        color: #aaa;
+        &:hover{
+          color: coral;
         }
-      }
-    }
-    .editBase{
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-  }
-  .info{
-    width: 100%;
-    padding: 20px;
-    background-color: #fff;
-  }
-  
-    .school{
-      &:nth-of-type(1){
-        border-top: 1px solid #eee;
-      }
-      cursor: pointer;
-      border: 1px solid #eee;
-      border-top: none;
-      padding: 20px 0;
-      // box-shadow: 0 0 10px 0 #eee;
-      display: flex;
-
-      .school-name{
-        text-align: left;
-        font-size: 20px;
-        font-weight: 600;
-        padding: 0px 50px;
-      }
-      p{
-        margin-left: 100px;
-      }
-      &:hover{
-        box-shadow: 0 0 10px 0 #eee;
 
       }
     }
+  }
 }
 </style>

@@ -169,12 +169,12 @@ export default {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: @thirthColor;
+  background-color: @sixthColor;
 }
 ::-webkit-scrollbar {
-  width: 0.6vw;
+  width: 0.4vw;
 }
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,.5);
+  background-color: @thirthColor;
 }
 </style>

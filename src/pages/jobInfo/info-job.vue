@@ -22,8 +22,18 @@
     <div class="recr">
       <div class="name">{{recruiter.name}}</div>
       <div class="base">
-        <p class="identity">{{recruiter.identity}}</p>
-        <!-- <p><label for="">公司名称:</label>{{recruiter.address}}</p> -->
+        <p>
+          <label for="">身份认证:</label>
+          <span 
+        :style="(!recruiterIdentity.result)?'color:gray':recruiterIdentity.result==-1?'color:orange':recruiterIdentity.result==-2?'color:red':'color:green'"> 
+          {{(!recruiterIdentity.result)?"未申请":recruiterIdentity.result==-1?"认证中...":recruiterIdentity.result==-2?'认证失败':"认证成功"}}
+          </span>
+          <!-- {{recruiterIdentity.address}} -->
+        </p>
+          
+        
+        <p><label for="">公司名称:</label>{{recruiterIdentity.companyName}}</p>
+        <p><label for="">职位职称:</label>{{recruiterIdentity.applyName}}</p>
       </div>
       <div class="contact">
         <p><label for="">联系邮箱:</label>{{recruiter.email}}</p>
@@ -33,6 +43,7 @@
         <p><label for="">发布学校:</label>{{recruiter.schoolCnt}}</p>
         <p><label for="">发布岗位:</label>{{recruiter.jobCnt}}</p>
       </div>
+      <el-button v-if="user.id&&user.userType=='2'" type="primary" class="contactBtn" @click="addContact">立即沟通</el-button>
     </div>
   </div>
 </template>
@@ -45,6 +56,7 @@ export default {
       school:{},
       zhiwei:{},
       recruiter:{},
+      recruiterIdentity:{},
       user:{}
     }
   },
@@ -79,12 +91,41 @@ export default {
               // this.recruiter.jobCnt=res.data.length
               this.$set(this.recruiter,"schoolCnt",res.data.length)
             })
+            this.$request.getLastRecrIdenty({recrId:this.zhiwei.userId}).then(res=>{
+              this.recruiterIdentity = {
+                ...res.data
+              }
+            })
           })
         }
       )
     },
     showSchool(){
       this.$router.push({path:'/school',query:{id:this.school.id}})
+    },
+    addContact(){
+      this.user = JSON.parse(sessionStorage.getItem('user'))||{}; 
+      let _this=this
+      if(this.user.id){
+        let param={
+          fromId:this.user.id,
+          toId:_this.recruiter.userId,
+          content:"你好！"
+        }
+        _this.$request.insertChat(param).then(
+          res=>{
+            if(this.user.userType=="1"){
+              _this.$router.push("/user/vol/chat",param)
+            }
+            if(this.user.userType=="2"){
+              // _this.$router.push("/user/recr/chat",param)
+            }
+
+          }
+        )
+      }else{
+        this.$message.warning("请登录")
+      }
     }
   },
  }
@@ -206,6 +247,17 @@ export default {
     .fabu{
       border-top: 0.2vh solid #f6f6f8;
       padding-top: 0.3vh;
+    }
+    .contactBtn{
+      background-color: @thirthColor;
+      border: 0.1ch solid transparent;
+      border-radius: 0;
+      width: 100%;
+      padding: 1.6vh 3vw;
+      margin-top: 2vh;
+      &:hover{
+        background-color: @mainColor;
+      }
     }
   }
 }

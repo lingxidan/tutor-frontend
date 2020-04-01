@@ -79,6 +79,18 @@ export default {
         }else{
           res.data.image=[]
         }
+        if(res.data.image.length>0){
+          
+          let timer=setInterval(()=>{
+            if(this.$refs.image){
+              let image = this.$refs.image
+              image.scrollLeft+=2
+              if(image.scrollWidth==image.offsetWidth+image.scrollLeft){
+                clearInterval(timer)
+              }
+            }
+          },300)
+        }
         _this.school=res.data
       }
     )

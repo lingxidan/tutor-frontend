@@ -66,7 +66,7 @@ export default {
         let param={
           fromId:this.user.id,
           toId:_this.teacher.userId,
-          content:"你好！"
+          content:"你好！我想应聘此职位："+this.school.name+"的"+this.teacher.name
         }
         _this.$request.insertChat(param).then(
           res=>{

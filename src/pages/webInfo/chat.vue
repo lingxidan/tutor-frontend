@@ -5,8 +5,7 @@
         <div class="top">
           <div class="name">{{user.name}}</div>
           <div class="search">
-            <el-input placeholder="查找联系人" v-model="findText">
-              <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            <el-input placeholder="查找联系人" v-model="findText" @change="filterContact">
             </el-input>
           </div>
         </div>
@@ -14,13 +13,18 @@
           <li v-for="(chatContent,idx) in chatContentList" 
           :style="(current.person||{}).id==chatContent.person.id?'background-color: rgb(29, 29, 29);':''"
           :key="idx" @click="current = chatContent">
-            <div class="info">
-              <p class="name">{{chatContent.person.name}}</p>
-              <p class="last">{{chatContent.contentList[chatContent.contentList.length-1].dt}}</p>
-            </div>
-            <div class="msg">
-              <p class="last">{{chatContent.contentList[chatContent.contentList.length-1].content}}</p>
-            </div>
+            <!-- <el-badge :value="chatContent.newMsgCnt" class="item"> -->
+              <div class="info">
+                <p class="name">{{chatContent.person.name}}</p>
+                <p class="last">{{chatContent.contentList[chatContent.contentList.length-1].dt}}</p>
+              </div>
+              <div class="msg">
+                <p class="last">{{chatContent.contentList[chatContent.contentList.length-1].content}}</p>
+              </div>
+            <!-- <div class="msg"> -->
+              <!-- <p class="last">{{chatContent.newMsgCnt}}</p> -->
+            <!-- </el-badge> -->
+            <!-- </div> -->
           </li>
         </ul>
       </div>
@@ -91,6 +95,7 @@ export default {
 
       chatTimer:[],
       chatContentList: [],
+      chatSrcContentList: [],
       current:{},
       showEmojijs:false,
       chat:{
@@ -139,7 +144,8 @@ export default {
             this.personList.push(res.data)
             chatContentList.push({
               person: res.data,
-              contentList:contentList
+              contentList:contentList,
+              newMsgCnt:0
             })
             let timer = setInterval(()=>{
               this.$request.selectByFromTo({
@@ -151,6 +157,7 @@ export default {
                         ...this.chatContentList[idx].contentList,
                         ...res.data
                       ]
+                      this.chatContentList[idx].newMsgCnt = res.data.length
                     }
                   }
                 )
@@ -161,7 +168,7 @@ export default {
       }
       // 招募者
       if(this.user.userType == 2){
-        personIdList.forEach(id=>{
+        personIdList.forEach((id,idx)=>{
           let contentList = []
           chatList.forEach(chat=>{
             if(chat.fromId==id||chat.toId==id){
@@ -172,12 +179,30 @@ export default {
             this.personList.push(res.data)
             chatContentList.push({
               person: res.data,
-              contentList:contentList
+              contentList:contentList,
+              newMsgCnt:0
             })
+            let timer = setInterval(()=>{
+              this.$request.selectByFromTo({
+                userId:this.user.id,
+                dt:this.chatContentList[idx].contentList[this.chatContentList[idx].contentList.length-1].dt}).then(
+                  res=>{
+                    if(res.data.length>0){
+                      this.chatContentList[idx].contentList=[
+                        ...this.chatContentList[idx].contentList,
+                        ...res.data,
+                      ]
+                      this.chatContentList.newMsgCnt = res.data.length
+                    }
+                  }
+                )
+            },1000)
+            this.chatTimer.push(timer)
           })
         })
       }
       this.chatContentList = chatContentList
+      this.chatSrcContentList = this.chatContentList
     })
   },
   mounted() {
@@ -198,6 +223,10 @@ export default {
     },
     onEnter(){
       this.chat.content+="\n"
+    },
+    filterContact(val){
+      this.chatContentList = this.chatSrcContentList.filter(a=>a.person.name.indexOf(val)>=0)
+      this.current={}
     }
   },
   updated(){
@@ -206,7 +235,7 @@ export default {
     if(this.$refs.messageList){
       this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
     }
-  },
+  }
 }
 </script>
 
@@ -214,7 +243,7 @@ export default {
 @import '../../../static/css/main';
 .chat-main{
   display: flex;
-  width: 90%;
+  width: 78vw;
   height: 90vh;
   box-shadow: 0 0 6px 0 @fifthColor;
   margin-top: 1vh;
@@ -231,6 +260,7 @@ export default {
         color:#f7f7f7;
         text-align: left;
         padding-left: 2vw;
+        background-color: rgb(59, 59, 59);
       }
       .search{
         .el-input__inner{
@@ -280,6 +310,18 @@ export default {
           color: #b6b6b6;
         }
       }
+      .el-badge__content {
+        background: coral;
+        border-radius: 50%;
+        color: #FFF;
+        display: inline-block;
+        font-size: 1.4vh;
+        height: 3vh;
+        line-height: 3vh;
+        padding: 0 0.5vw;
+        border: none;
+        top: 80%;
+      }
     }
   }
   .chatInfo{
@@ -299,6 +341,7 @@ export default {
         height: 100%;
         font-size: 3vh;
         line-height: 5vh;
+        background-color: #fff;
       }
     }
     .messages{
@@ -352,9 +395,10 @@ export default {
         text-align: right;
         span{
           text-align: left;
-          background-color: lightsalmon;
+          background-color: rgba(255, 128, 82, .5);
           color: @sixthColor;
           border-radius: 4vh 4vh 0 4vh;
+          color: @mainColor;
         }
       }
     }
