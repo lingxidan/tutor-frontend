@@ -121,8 +121,8 @@
         </el-form-item>
         <el-form-item label="认证状态">
           <label 
-          :style="recruiter.result==-1?'color:orange':recruiter.result==-2?'color:red':'color:green'">
-          {{recruiter.result==-1?"认证中...":recruiter.result==-2?"认证失败":"认证成功"}}
+          :style="(!recruiter.result)?'color:gray':recruiter.result==-1?'color:orange':recruiter.result==-2?'color:red':'color:green'">
+          {{(!recruiter.result)?'未认证':recruiter.result==-1?"认证中...":recruiter.result==-2?"认证失败":"认证成功"}}
           </label>
         </el-form-item>
         <el-form-item label="公司名称">

@@ -663,8 +663,8 @@
               <i class="el-icon-s-flag"></i>
               <label for="">申请状态:</label>
               <label 
-              :style="teacherIdenty.result==-1?'color:orange':teacherIdenty.result==-2?'color:red':'color:green'"> 
-                {{teacherIdenty.result==-1?"认证中...":teacherIdenty.result==-2?'认证失败':"认证成功"}}
+              :style="(!teacherIdenty.result)?'color:gray':teacherIdenty.result==-1?'color:orange':teacherIdenty.result==-2?'color:red':'color:green'"> 
+                {{(!teacherIdenty.result)?"未申请":teacherIdenty.result==-1?"认证中...":teacherIdenty.result==-2?'认证失败':"认证成功"}}
                 </label>
              
             </p>

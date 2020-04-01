@@ -2,7 +2,7 @@
   <div class="mainTopNav">
     <img class="logo" src="../../../static/img/logo.png" />
     <nav class="mainNav">
-      <a href="/" title="首页">首页</a>
+      <a href="/shizheFront" title="首页">首页</a>
       <template v-if="!!user.id">
         <a @click="toJob" v-if="user.userType=='1'" title="教职岗位" 
         :style="searchField=='job'?'background-color: rgba(255,255,255,.2);':''">教职岗位</a>
