@@ -225,6 +225,7 @@ export default {
     this.getJiaoyuList(teacherId)
     this.getJingliList(teacherId)
     this.getZhengshuList(teacherId)
+    this.getJianliList(teacherId)
   },
   mounted() {
   },
@@ -341,6 +342,15 @@ export default {
             _this.zhengshu = {...res.data[0]}
             _this.zhengshu.zhengshuList=(res.data[0].name||"").split(",")
           }
+        }
+      )
+    },
+    getJianliList(dataId=this.teacher.userId){
+      let _this = this
+      // 简历文件
+      this.$request.selectFileByCondition({userId:dataId}).then(
+        res=>{
+          _this.jianliList=[...res.data]
         }
       )
     },

@@ -125,6 +125,7 @@ export default {
   border-top:none;
   background-color: #fff;
   padding: 1vh 0;
+  cursor: pointer;
   .name{
     text-align: left;
     padding-left: 0.6vw;
