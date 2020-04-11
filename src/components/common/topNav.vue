@@ -150,6 +150,7 @@ export default {
 @import "../../../static/css/main.less";
 a {
   cursor: pointer;
+  transition: .3s;
 }
 .mainTopNav {
   font-size: 1.7vh;
@@ -180,7 +181,7 @@ a {
       font-size: 1.9vh;
     }
     a:hover {
-      background-color: @thirthColor;
+      background-color: rgba(255,255,255,.2);
     }
   }
   nav.want {
@@ -193,7 +194,7 @@ a {
       padding: 0.4vh 1.3vw;
     }
     a:hover,a.active {
-      background-color: @thirthColor;
+      background-color: rgba(255,255,255,.2);
     }
   }
   .user {
@@ -211,9 +212,10 @@ a {
       border: none;
       font-size: 1.8vh;
       height: 3vh;
+      font-weight: bold;
     }
     button:hover {
-      background-color: @thirthColor;
+      background-color: rgba(255,255,255,.2);
     }
   }
 }

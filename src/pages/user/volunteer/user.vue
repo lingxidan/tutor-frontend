@@ -1,13 +1,8 @@
 <template>
   <div class="volunteer-menu">
-    
-      <!-- text-color="#fff"
-      background-color="#4b3613"
-      active-text-color="#fce9c7" -->
     <el-menu
       :default-active="this.$route.path"
       class="el-menu-vertical-demo"
-      active-text-color="#fce9c7"
       router>
       <el-menu-item index="/user/vol/volunteer">
         <i class="el-icon-setting"></i>
@@ -102,7 +97,7 @@ export default {
     align-items: center;
     z-index: 1000;
     .el-menu-item{
-      box-shadow: 0 0 6px 0 @sixthColor;
+      box-shadow: 0 0 3px 0 #eee;
       cursor: pointer;
       width: 7vw;
       height: 7vw;
@@ -127,8 +122,19 @@ export default {
       }
     }
     li.is-active{
-      background-color: coral;
+      background-color: @thirthColor;
       font-weight: 800;
+      color: #fff;
+    }
+    li:hover{
+      background-color: @thirthColor;
+      color: #fff;
+      i{
+        color: #fff;
+      }
+    }
+    li.is-active:hover{
+      background-color: @thirthColor;
     }
   }
 }

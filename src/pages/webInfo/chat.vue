@@ -396,9 +396,9 @@ export default {
         span{
           text-align: left;
           background-color: rgba(255, 128, 82, .5);
-          color: @sixthColor;
+          // color: @sixthColor;
           border-radius: 4vh 4vh 0 4vh;
-          color: @mainColor;
+          // color: @mainColor;
         }
       }
     }

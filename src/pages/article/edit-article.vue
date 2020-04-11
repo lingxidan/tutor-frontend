@@ -239,7 +239,7 @@ export default {
             line-height: 2.7;
             font-size: inherit;
             padding: 0 1vw;
-            border-color: @sixthColor;
+            border-color: #eee;
           }
         }
 
@@ -253,7 +253,7 @@ export default {
           border: none;
           letter-spacing: 1px;
           margin-left: 3vw;
-          color: @sixthColor;
+          color: #eee;
 
           &:hover {
             background-color: @secondColor;
@@ -282,7 +282,7 @@ export default {
           width: 6vw;
           height: 6vw;
           margin: 0 1vw 0 0;
-          border-color: @sixthColor;
+          border-color: #eee;
         }
 
         .el-date-editor.el-input .el-input__inner {
@@ -303,7 +303,7 @@ export default {
         height: auto;
         margin-right: 1vw;
         margin-bottom: 1vw;
-        border: 1px solid @sixthColor;
+        border: 1px solid #eee;
       }
     }
   }

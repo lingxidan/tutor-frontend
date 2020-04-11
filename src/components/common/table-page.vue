@@ -279,32 +279,29 @@ export default {
 }
 .el-table .cell {
   white-space: pre-line;
-  font-size: 1.8vh;
+  font-size: 1.7vh;
   line-height: 1.4;
   .el-button{
-    font-size: 1.8vh;
+    font-size: 1.6vh;
     text-decoration: underline;
-    color: @secondColor;
+    color: @mainColor;
+    letter-spacing: 0.05vw;
   }
   .el-button:hover{
     color: #fba400;
   }
 }
 .el-table th>.cell{
-  font-size: 2.3vh;
+  font-size: 2.2vh;
 }
 .el-table th.is-leaf {
-  border-bottom: 0.1vh solid #EBEEF5;
-  background-color: rgba(105, 141, 116,0.3);
+  border: none;
+  background-color: rgba(108, 149, 133,0.2);
   color: @thirthColor;
 }
 .demo-table-expand {
   font-size: 0;
-  margin-left: 100px;
-}
-.demo-table-expand label {
-  width: 90px;
-  // color: #99a9bf;
+  // margin-left: 100px;
 }
 .demo-table-expand .el-form-item {
   position: relative;

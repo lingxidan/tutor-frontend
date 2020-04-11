@@ -60,7 +60,7 @@ export default {
   justify-content: center;
   z-index: 2000;
   
-  background: linear-gradient(60deg,@mainColor 33.3%, #fce9c7 0, #fce9c7 67%,#fff 0); 
+  background: linear-gradient(60deg,@secondColor 33.3%, @mainColor 0, @mainColor 67%,#fff 0); 
   .content{
     background-color: rgba(252, 252, 252, 0.8);
     width: 35%;
@@ -81,7 +81,7 @@ export default {
     }
   }
   .el-form-item .el-form-item__content .el-input .el-input__inner{
-    background-color: rgba(0, 0, 0, .1);
+    background-color: rgba(0, 0, 0, .05);
     border: none;
     border-radius: 0;
     color: @mainColor;
@@ -98,7 +98,7 @@ export default {
     }
   }
   .el-button+.el-button{
-    background-color: @sixthColor;
+    background-color: #fff;
     color: @mainColor;
     &:hover{
       background-color: @fifthColor;

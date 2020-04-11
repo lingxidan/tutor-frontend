@@ -44,11 +44,9 @@ export default {
       // console.log(file,'文件');
       this.files = file;
       // 限制文件格式
-      const extension = file.name.split('.')[1] === 'doc'
-      const extension2 = file.name.split('.')[1] === 'docx'
       const extension3 = file.name.split('.')[1] === 'pdf'
-      if (!extension && !extension2 && !extension3) {
-        this.$message.warning('上传模板只能是 doc、docx格式或者pdf格式!')
+      if ( !extension3) {
+        this.$message.warning('请上传pdf格式简历!')
         return
       }
       this.fileName = file.name;
@@ -94,6 +92,7 @@ export default {
 </script>
 
 <style lang="less">
+@import '../../../static/css/main.less';
 .file{
   margin-top: 2vh;
   .el-upload-list__item-name {
@@ -101,6 +100,13 @@ export default {
     margin-right: 1vw;
     padding-left: 1vw;
     font-size: 1.7vh;
+  }
+  .el-button{
+    background-color: @thirthColor;
+    border: none;
+    &:hover{
+      background-color: @secondColor;
+    }
   }
 }
 </style>

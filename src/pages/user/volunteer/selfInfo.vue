@@ -3,76 +3,18 @@
     <div class="content">
       <div class="jingli">
         <div class="part zhiwei">
-          <div class="title">期望岗位</div>
+          <div class="title">
+            <label>期望岗位</label>
+            <span class="content-add">
+              <a class="edit" @click="addData('zhiwei')">
+                <i class="el-icon-edit"></i>
+                <label v-if="add.zhiwei">取消</label>
+                <label v-else>添加</label>
+              </a>
+            </span>
+          </div>
           <div class="partContent">
-            <div class="zhiweiContent" v-for="(zhiweiInfo,idx) in zhiweiList" :key="idx">
-              <div  v-if="edit.zhiwei[idx]" class="edit-zhiwei">
-                <el-form ref="zhiweiEditForm" label-position="right" :model="zhiweiInfo" class="identy-form" :rules="zhiweiRules" >
-                  <el-form-item class="edit-form-item" label="职位名称" prop="name">
-                    <el-input v-model="zhiweiInfo.name"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item"
-                  v-for="(addr,addrIdx) in 3" :key="addrIdx" :label="'期望地址'+(addrIdx+1)" :prop="'zhiweiAddr'+addrIdx">
-                    <el-select v-model="zhiweiInfo.addrsList[addrIdx].province"
-                        placeholder="省"
-                        @change="changeExpectCity(addrIdx, zhiweiInfo.addrsList[addrIdx])">
-                      <el-option
-                        v-for="item in selectData.expectJob[addrIdx].province"
-                        :key="item.code"
-                        :label="item.name"
-                        :value="item.code">
-                      </el-option>
-                    </el-select>
-                    <el-select v-model="zhiweiInfo.addrsList[addrIdx].city"
-                        placeholder="市"
-                        @change="changeExpectCounty(addrIdx, zhiweiInfo.addrsList[addrIdx])">
-                      <el-option
-                        v-for="item in selectData.expectJob[addrIdx].city"
-                        :key="item.code"
-                        :label="item.name"
-                        :value="item.code"
-                        placeholder="">
-                      </el-option>
-                    </el-select>
-                    <el-select v-model="zhiweiInfo.addrsList[addrIdx].county"
-                        placeholder="区县">
-                      <el-option
-                        v-for="item in selectData.expectJob[addrIdx].county"
-                        :key="item.code"
-                        :label="item.name"
-                        :value="item.code"
-                        placeholder="">
-                      </el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-form>
-                <el-button class="submit-button" type="primary" @click="editExpectJob(zhiweiInfo)">提交</el-button>
-                <el-button class="submit-button" type="primary" @click="editData('zhiwei',idx)">取消</el-button>
-              </div>
-              <div v-else class="zhiweiContent-part">
-                <span class="zhiweiContent-edit">
-                  <a class="edit" @click="editData('zhiwei',idx)">
-                    <i class="el-icon-edit"></i>
-                    <label>编辑</label>
-                  </a>
-                  <a class="edit" @click="deleteExpectJob(idx)">
-                    <i class="el-icon-delete"></i>
-                    <label >删除</label>
-                  </a>
-                </span>
-                <span>
-                  <i class="el-icon-self-yingpinzhiwei"></i>
-                  {{zhiweiInfo.name}}
-                </span>
-                <span>
-                  <i class="el-icon-self-dingwei"></i>
-                  <label v-for="(addr,addrIdx) in zhiweiInfo.addrNames" :key="addrIdx">
-                    {{addr}}
-                  </label>
-                </span>
-              </div>
-            </div>
-            <div class="zhiweiContent" v-if="edit.zhiwei.indexOf(true) < 0 && zhiweiList.length<3">
+            <div class="zhiweiContent" v-if="add.zhiwei">
               <div class="edit-zhiwei">
               <el-form ref="zhiweiForm" label-position="right" :model="zhiwei" class="identy-form" :rules="zhiweiRules" >
                 <el-form-item class="edit-form-item" label="职位名称" prop="name">
@@ -182,11 +124,126 @@
               <el-button class="submit-button" type="primary" @click="addExpectJob">提交</el-button>
               
             </div>
+            <div class="zhiweiContent" v-for="(zhiweiInfo,idx) in zhiweiList" :key="idx">
+              <div  v-if="edit.zhiwei[idx]" class="edit-zhiwei">
+                <el-form ref="zhiweiEditForm" label-position="right" :model="zhiweiInfo" class="identy-form" :rules="zhiweiRules" >
+                  <el-form-item class="edit-form-item" label="职位名称" prop="name">
+                    <el-input v-model="zhiweiInfo.name"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item"
+                  v-for="(addr,addrIdx) in 3" :key="addrIdx" :label="'期望地址'+(addrIdx+1)" :prop="'zhiweiAddr'+addrIdx">
+                    <el-select v-model="zhiweiInfo.addrsList[addrIdx].province"
+                        placeholder="省"
+                        @change="changeExpectCity(addrIdx, zhiweiInfo.addrsList[addrIdx])">
+                      <el-option
+                        v-for="item in selectData.expectJob[addrIdx].province"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code">
+                      </el-option>
+                    </el-select>
+                    <el-select v-model="zhiweiInfo.addrsList[addrIdx].city"
+                        placeholder="市"
+                        @change="changeExpectCounty(addrIdx, zhiweiInfo.addrsList[addrIdx])">
+                      <el-option
+                        v-for="item in selectData.expectJob[addrIdx].city"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code"
+                        placeholder="">
+                      </el-option>
+                    </el-select>
+                    <el-select v-model="zhiweiInfo.addrsList[addrIdx].county"
+                        placeholder="区县">
+                      <el-option
+                        v-for="item in selectData.expectJob[addrIdx].county"
+                        :key="item.code"
+                        :label="item.name"
+                        :value="item.code"
+                        placeholder="">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
+                <el-button class="submit-button" type="primary" @click="editExpectJob(zhiweiInfo)">提交</el-button>
+                <el-button class="submit-button" type="primary" @click="editData('zhiwei',idx)">取消</el-button>
+              </div>
+              <div v-else class="zhiweiContent-part">
+                <span class="zhiweiContent-edit">
+                  <a class="edit" @click="editData('zhiwei',idx)">
+                    <i class="el-icon-edit"></i>
+                    <label>编辑</label>
+                  </a>
+                  <a class="edit" @click="deleteExpectJob(idx)">
+                    <i class="el-icon-delete"></i>
+                    <label >删除</label>
+                  </a>
+                </span>
+                <span>
+                  <i class="el-icon-self-yingpinzhiwei"></i>
+                  {{zhiweiInfo.name}}
+                </span>
+                <span>
+                  <i class="el-icon-self-dingwei"></i>
+                  <label v-for="(addr,addrIdx) in zhiweiInfo.addrNames" :key="addrIdx">
+                    {{addr}}
+                  </label>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="part jiaoyu">
-          <div class="title">教育经历</div>
+          <div class="title">
+            <label>教育经历</label>
+            <span class="content-add">
+              <a class="edit" @click="addData('jiaoyu')">
+                <i class="el-icon-edit"></i>
+                <label v-if="add.jiaoyu">取消</label>
+                <label v-else>添加</label>
+              </a>
+            </span>
+          </div>
           <div class="partContent">
+            <div class="jiaoyuContent" v-if="add.jiaoyu">
+              <div class="edit-zhiwei">
+                <el-form ref="jiaoyuForm" label-position="right" :model="jiaoyu" class="identy-form" :rules="jiaoyuRules" >
+                  <el-form-item class="edit-form-item" label="学校名称" prop="schoolName">
+                    <el-input v-model="jiaoyu.schoolName"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="专业名称" prop="project">
+                    <el-input v-model="jiaoyu.project"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="专业学历" prop="degree">
+                    <el-input v-model="jiaoyu.degree"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item-date" label="就学时间" prop="range">
+                    <el-date-picker
+                      v-model="jiaoyu.startDt"
+                      type="date"
+                      format="yyyy-MM-dd"
+                      value-format="yyyyMMdd"
+                      placeholder="开始日期">
+                    </el-date-picker>
+                    <span class="date-sperator">至</span>
+                    <el-date-picker
+                      v-model="jiaoyu.endDt"
+                      type="date"
+                      format="yyyy-MM-dd"
+                      value-format="yyyyMMdd"
+                      placeholder="结束日期"
+                      @change="changeJiaoyuEndDtBak(jiaoyu)">
+                    </el-date-picker>
+                    <el-button type="text" :style="jiaoyu.endDtBak=='至今'?'background-color:#436E67;color:#fff':' '" @click="changeJiaoyuEndDt(jiaoyu)">至今</el-button>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="学校经历" prop="content">
+                    <el-input type="textarea"  v-model="jiaoyu.content"></el-input>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <el-button class="submit-button" type="primary" @click="addJiaoyu">提交</el-button>
+              
+            </div>
             <div class="jiaoyuContent" v-for="(jiaoyuInfo,idx) in jiaoyuList" :key="idx">
               <div  v-if="edit.jiaoyu[idx]" class="edit-zhiwei">
                 <el-form ref="jiaoyuEditForm" label-position="right" :model="jiaoyuInfo" class="identy-form" :rules="jiaoyuRules" >
@@ -216,7 +273,7 @@
                       placeholder="结束日期"
                       @change="changeJiaoyuEndDtBak(jiaoyuInfo)" :clearable="false">
                     </el-date-picker>
-                    <el-button type="text" :style="jiaoyuInfo.endDtBak=='至今'?'background-color:#134120':' '" @click="changeJiaoyuEndDt(jiaoyuInfo)">至今</el-button>
+                    <el-button type="text" :style="jiaoyuInfo.endDtBak=='至今'?'background-color:#436E67;color:#fff':' '" @click="changeJiaoyuEndDt(jiaoyuInfo)">至今</el-button>
                   </el-form-item>
                   <el-form-item class="edit-form-item" label="学校经历" prop="content">
                     <el-input type="textarea" v-model="jiaoyuInfo.content"></el-input>
@@ -255,45 +312,6 @@
                   <span>{{jiaoyuInfo.content}}</span>
                 </div>
               </div>
-            </div>
-            <div class="jiaoyuContent" v-if="edit.jiaoyu.indexOf(true) < 0">
-              <div class="edit-zhiwei">
-                <el-form ref="jiaoyuForm" label-position="right" :model="jiaoyu" class="identy-form" :rules="jiaoyuRules" >
-                  <el-form-item class="edit-form-item" label="学校名称" prop="schoolName">
-                    <el-input v-model="jiaoyu.schoolName"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="专业名称" prop="project">
-                    <el-input v-model="jiaoyu.project"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="专业学历" prop="degree">
-                    <el-input v-model="jiaoyu.degree"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item-date" label="就学时间" prop="range">
-                    <el-date-picker
-                      v-model="jiaoyu.startDt"
-                      type="date"
-                      format="yyyy-MM-dd"
-                      value-format="yyyyMMdd"
-                      placeholder="开始日期">
-                    </el-date-picker>
-                    <span class="date-sperator">至</span>
-                    <el-date-picker
-                      v-model="jiaoyu.endDt"
-                      type="date"
-                      format="yyyy-MM-dd"
-                      value-format="yyyyMMdd"
-                      placeholder="结束日期"
-                      @change="changeJiaoyuEndDtBak(jiaoyu)">
-                    </el-date-picker>
-                    <el-button type="text" :style="jiaoyu.endDtBak=='至今'?'background-color:#134120':' '" @click="changeJiaoyuEndDt(jiaoyu)">至今</el-button>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="学校经历" prop="content">
-                    <el-input type="textarea"  v-model="jiaoyu.content"></el-input>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <el-button class="submit-button" type="primary" @click="addJiaoyu">提交</el-button>
-              
             </div>
           </div>
         </div>
@@ -355,8 +373,59 @@
           </div>
         </div>
         <div class="part shengya">
-          <div class="title">工作经历</div>
+          <div class="title">
+            <label>工作经历</label>
+            <span class="content-add">
+              <a class="edit" @click="addData('jingli')">
+                <i class="el-icon-edit"></i>
+                <label v-if="add.jingli">取消</label>
+                <label v-else>添加</label>
+              </a>
+            </span>
+          </div>
           <div class="partContent">
+            <div class="jingliContent" v-if="add.jingli">
+              <div class="edit-zhiwei">
+                <el-form ref="jingliForm" label-position="right" :model="jingli" class="identy-form" :rules="jingliRules" >
+                  <el-form-item class="edit-form-item" label="公司名称" prop="companyName">
+                    <el-input v-model="jingli.companyName"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="部门名称" prop="departName">
+                    <el-input v-model="jingli.departName"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="职位名称" prop="jobName">
+                    <el-input v-model="jingli.jobName"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item-date" label="工作时间" prop="range">
+                    <el-date-picker
+                      v-model="jingli.startDt"
+                      type="date"
+                      format="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
+                      placeholder="开始日期" :clearable="false">
+                    </el-date-picker>
+                    <span class="date-sperator">至</span>
+                    <el-date-picker
+                      v-model="jingli.endDt"
+                      type="date"
+                      format="yyyy-MM-dd"
+                      value-format="yyyy-MM-dd"
+                      placeholder="结束日期"
+                      @change="changeJingliEndDtBak(jingli)" :clearable="false">
+                    </el-date-picker>
+                    <el-button type="text" :style="jingli.endDtBak=='至今'?'background-color:#436E67;color:#fff':' '"
+                     @click="changeJingliEndDt(jingli)">至今</el-button>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="工作内容" prop="task">
+                    <el-input type="textarea" v-model="jingli.task"></el-input>
+                  </el-form-item>
+                  <el-form-item class="edit-form-item" label="工作业绩" prop="performance">
+                    <el-input type="textarea" v-model="jingli.performance"></el-input>
+                  </el-form-item>
+                </el-form>
+              </div>
+              <el-button class="submit-button" type="primary" @click="addJingli">提交</el-button>
+            </div>
             <div class="jingliContent" v-for="(jingliInfo,idx) in jingliList" :key="idx">
               <div v-if="edit.jingli[idx]" class="edit-zhiwei">
                 <el-form ref="jingliEditForm" label-position="right" :model="jingliInfo" class="identy-form" :rules="jingliRules" >
@@ -386,7 +455,7 @@
                       placeholder="结束日期"
                       @change="changeJingliEndDtBak(jingliInfo)" :clearable="false">
                     </el-date-picker>
-                    <el-button type="text" :style="jingliInfo.endDtBak=='至今'?'background-color:#134120':' '"
+                    <el-button type="text" :style="jingliInfo.endDtBak=='至今'?'background-color:#436E67;color:#fff':' '"
                      @click="changeJingliEndDt(jingliInfo)">至今</el-button>
                   </el-form-item>
                   <el-form-item class="edit-form-item" label="工作内容" prop="task">
@@ -428,48 +497,6 @@
                   <label>工作业绩：</label><span>{{jingliInfo.performance}}</span>
                 </div>
               </div>
-            </div>
-            <div class="jingliContent" v-if="edit.jingli.indexOf(true) < 0">
-              <div class="edit-zhiwei">
-                <el-form ref="jingliForm" label-position="right" :model="jingli" class="identy-form" :rules="jingliRules" >
-                  <el-form-item class="edit-form-item" label="公司名称" prop="companyName">
-                    <el-input v-model="jingli.companyName"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="部门名称" prop="departName">
-                    <el-input v-model="jingli.departName"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="职位名称" prop="jobName">
-                    <el-input v-model="jingli.jobName"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item-date" label="工作时间" prop="range">
-                    <el-date-picker
-                      v-model="jingli.startDt"
-                      type="date"
-                      format="yyyy-MM-dd"
-                      value-format="yyyy-MM-dd"
-                      placeholder="开始日期" :clearable="false">
-                    </el-date-picker>
-                    <span class="date-sperator">至</span>
-                    <el-date-picker
-                      v-model="jingli.endDt"
-                      type="date"
-                      format="yyyy-MM-dd"
-                      value-format="yyyy-MM-dd"
-                      placeholder="结束日期"
-                      @change="changeJingliEndDtBak(jingli)" :clearable="false">
-                    </el-date-picker>
-                    <el-button type="text" :style="jingli.endDtBak=='至今'?'background-color:#134120':' '"
-                     @click="changeJingliEndDt(jingli)">至今</el-button>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="工作内容" prop="task">
-                    <el-input type="textarea" v-model="jingli.task"></el-input>
-                  </el-form-item>
-                  <el-form-item class="edit-form-item" label="工作业绩" prop="performance">
-                    <el-input type="textarea" v-model="jingli.performance"></el-input>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <el-button class="submit-button" type="primary" @click="addJingli">提交</el-button>
             </div>
           </div>
         </div>
@@ -965,7 +992,14 @@ export default {
       },
       identyFormVisible: false,
       identyFormData: {},
-      teacherIdenty: {}
+      teacherIdenty: {},
+
+      // 隐藏表单
+      add:{
+       zhiwei: false,
+       jiaoyu: false,
+       jingli: false
+      }
     }
   },
   props: {
@@ -999,6 +1033,35 @@ export default {
   mounted() {
   },
   methods:{
+    // 添加数据的表单的展示/隐藏
+    addData(field){
+      if(field == "zhiwei"){
+        if(this.edit.zhiwei.indexOf(true) >= 0){
+          this.$message.warning("正在编辑期望岗位")
+        }
+        else if(this.zhiweiList.length==3){
+          this.$message.warning("期望岗位最多只可以填写三个")
+        }else{
+          this.add[field] = !this.add[field]
+        }
+      }
+      if(field == "jiaoyu"){
+        if(this.edit.jiaoyu.indexOf(true) >= 0){
+          this.$message.warning("正在编辑教育经历")
+        }
+        else{
+          this.add[field] = !this.add[field]
+        }
+      }
+      if(field == "jingli"){
+        if(this.edit.jingli.indexOf(true) >= 0){
+          this.$message.warning("正在编辑教育经历")
+        }
+        else{
+          this.add[field] = !this.add[field]
+        }
+      }
+    },
     getUserInfo(dataId=this.teacher.userId){
       let _this=this
       this.$request.getVolunteer({userId:dataId}).then(
@@ -1085,6 +1148,7 @@ export default {
             this.edit.jiaoyu.push(false)
           }
           res.data.forEach(item=>{
+            item.endDtBak=""
             if(item.endDt == "至今"){
               item.endDt=""
               item.endDtBak="至今"
@@ -1306,6 +1370,7 @@ export default {
         switch(field){
           case "zhiwei":
             let addrsList = _this.zhiweiList[id].addrsList
+            console.log(addrsList)
             addrsList.forEach((addr,idx)=>{
               let jobAddr = _this.selectData.expectJob[idx]
               if(addr.province){
@@ -1351,7 +1416,7 @@ export default {
           })
           let param={
             name:zhiwei.name,
-            addrs:addrs.substr(0,addrs.length-2),
+            addrs:addrs.substr(0,addrs.length-1),
             userId:this.teacher.userId
           }
           this.$request.insertExpectJob(param).then(
@@ -1364,6 +1429,7 @@ export default {
                 {province:"",city:"",county:"",address:""}]
               }
               this.$refs.zhiweiForm.resetFields()
+              this.add.zhiwei = false
             }
           )
         }else{
@@ -1423,6 +1489,7 @@ export default {
               this.getJiaoyuList()
               this.$refs.jiaoyuForm.resetFields()
               this.jiaoyu = {}
+              this.add.jiaoyu = false
             }
           )
         }else{
@@ -1442,7 +1509,14 @@ export default {
     },
     changeJiaoyuEndDt(jiaoyu = this.jiaoyu){
       if(jiaoyu.id){
-        jiaoyu.endDtBak = jiaoyu.endDt=="至今"?jiaoyu.endDt:""
+        // jiaoyu.endDtBak = jiaoyu.endDt=="至今"?jiaoyu.endDt:""
+        // console.log(jiaoyu.endDt,jiaoyu.endDtBak)
+        if(jiaoyu.endDtBak=="至今"){
+          jiaoyu.endDtBak = ""
+        }else{
+          this.$set(jiaoyu,"endDt","")
+          this.$set(jiaoyu,"endDtBak","至今")
+        }
       }else{
         if(jiaoyu.endDtBak=="至今"){
           jiaoyu.endDtBak = ""
@@ -1527,6 +1601,7 @@ export default {
               this.getJingliList()
               this.$refs.jingliForm.resetFields()
               this.jingli = {}
+              this.add.jingli = false
             }
           )
         }else{
@@ -1548,7 +1623,12 @@ export default {
     },
     changeJingliEndDt(jingli = this.jingli){
       if(jingli.id){
-        jingli.endDtBak = jingli.endDt=="至今"?jingli.endDt:""
+        if(jingli.endDtBak=="至今"){
+          jingli.endDtBak = ""
+        }else{
+          this.$set(jingli,"endDt","")
+          this.$set(jingli,"endDtBak","至今")
+        }
       }else{
         if(jingli.endDtBak=="至今"){
           jingli.endDtBak = ""
@@ -1656,12 +1736,20 @@ export default {
 .volInfo{
   margin-top: 1vh;
   margin-bottom: 1vh;
+  .submit-button{
+    background-color: @thirthColor;
+    border: none;
+    border-radius: 0;
+    &:hover{
+      background-color: @secondColor;
+    }
+  }
   .content{
     background-color: #f8f8f8;
     display: flex;
     justify-content: center;
     .jingli{
-      box-shadow: 0 0 6px 0 @sixthColor;
+      box-shadow: 0 0 6px 0 #ddd;
       background-color: #fff;
       width: 56%;
       padding: 3vh 3vw;
@@ -1669,13 +1757,25 @@ export default {
       .part{
         padding: 1vh 2vw;
         margin-bottom: 2vh;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid @sixthColor;
         .title{
           border-left: 0.3vw solid @secondColor;
           text-align: left;
           padding-left: 1vw;
           font-size: 2.3vh;
           font-weight: 500;
+          .content-add{
+            margin-left: 5vw;
+            font-size: 1.7vh;
+            a{
+              color: coral;
+              cursor: pointer;
+              text-decoration: underline;
+              label{
+                cursor: pointer;
+              }
+            }
+          }
         }
         .partContent{
           // background-color: #aaa;
@@ -1685,7 +1785,7 @@ export default {
           font-size: 1.8vh;
           line-height: 1;
           // letter-spacing: 1px;
-          color: @mainColor;
+          color: #111;
         }
       }
       .zhiwei{
@@ -1966,6 +2066,14 @@ export default {
             display: inline-block;
           }
         }
+        .el-button{
+          background-color: @thirthColor;
+          border: none;
+          border-radius: 0;
+          &:hover{
+            background-color: @secondColor;
+          }
+        }
       }
       .license-checked{
         display: flex;
@@ -1987,12 +2095,12 @@ export default {
         margin-bottom: 0.2vw;
       }
       .license-list{
-        box-shadow: 0 0 6px 0 @sixthColor;
+        box-shadow: 0 0 3px 0 @fifthColor;
         height: 100%;
         margin-bottom: 1vh;
         padding-bottom: 2vh;
         .el-tabs__nav-prev .is-disabled{
-          background-color: @sixthColor;
+          background-color: @secondColor;
         }
       }
       .license-main{
@@ -2027,7 +2135,7 @@ export default {
       }
     }
     .self,.jianli{
-      box-shadow: 0 0 6px 0 @sixthColor;
+      box-shadow: 0 0 6px 0 #ddd;
       margin-bottom: 2vh;
       display: flex;
       flex-direction: column;
@@ -2109,6 +2217,15 @@ export default {
       }
       .partContent{
         margin-top: 2vh;
+        .el-button{
+          border: 0.1vh solid @secondColor;
+          cursor: pointer;
+          color: @mainColor;
+          border-radius: 0;
+          label{
+            cursor: pointer;
+          }
+        }
         .jianliContent{
           position: relative;
           margin: 1vh 0;
@@ -2179,7 +2296,7 @@ export default {
 .volInfo{
   .partContent{
     .el-textarea__inner{
-      height: 300px;
+      height: 20vh;
     }
   }
   
@@ -2214,7 +2331,7 @@ export default {
         line-height: 5vh;
         font-size: 1.6vh;
         padding: 0 1vw;
-        border-color: @sixthColor;
+        border-color: #eee;
       }
       .el-input__suffix{
         right: 0.3vw;
@@ -2258,7 +2375,7 @@ export default {
       height: 5vh;
       line-height: 5vh;
       font-size: 1.6vh;
-      border-color: @sixthColor;
+      border-color: #eee;
     }
 
   }
@@ -2302,14 +2419,14 @@ export default {
       .el-button--text{
         font-size: 1.7vh;
         width: 5vw;
-        background-color: @fifthColor;
-        color: #fff;
-        border: 0.1vh solid @sixthColor;
+        background-color: #eee;
+        color: @fifthColor;
+        border: 0.1vh solid #eee;
         padding: 1.5vh;
         line-height: 1;
         &:hover{
-          background: none;
-          color: @fourthColor;
+          background: @secondColor;
+          color: @fifthColor;
         }
       }
     }
@@ -2399,7 +2516,7 @@ export default {
               line-height: 2.7;
               font-size: inherit;
               padding: 0 1vw;
-              border-color: @sixthColor;
+              border-color: #eee;
             }
           }
           .el-button{
@@ -2434,7 +2551,7 @@ export default {
             width: 6vw;
             height: 6vw;
             margin: 0 1vw 0 0;
-            border-color: @sixthColor;
+            border-color: #eee;
           }
         }
       }
@@ -2474,12 +2591,12 @@ export default {
     .el-button{
       padding: 1.4vh 2vw;
       font-size: 2vh;
-      background-color: @mainColor;
-      border: 0.1vh solid @mainColor;
+      background-color: @thirthColor;
+      border: 0.1vh solid @thirthColor;
       color: #fff;
       &:hover{
         background: none;
-        color: @mainColor;
+        color: @secondColor;
       }
     }
   }
@@ -2507,7 +2624,7 @@ export default {
         line-height: 5vh;
       }
       .el-tabs__item.is-active{
-        background-color: @sixthColor;
+        background-color: @fifthColor;
       }
       .el-tabs__active-bar{
         display: none;
@@ -2516,10 +2633,10 @@ export default {
     .el-dropdown{
       font-size: 1.8vh;
     }
-    .el-tabs__nav-prev,.el-tabs__nav-next{
-      background-color: @sixthColor;
-      color: @secondColor;
-    }
+    // .el-tabs__nav-prev,.el-tabs__nav-next{
+    //   background-color: @sixthColor;
+    //   color: @secondColor;
+    // }
   }
 }
 </style>

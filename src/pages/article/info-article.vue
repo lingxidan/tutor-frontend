@@ -391,6 +391,13 @@ export default {
         font-size: 1.8vh;
         line-height: 2vh;
         border: none;
+        background-color: @thirthColor;
+        &:hover{
+          background-color: @secondColor;
+        }
+      }
+      .el-button+.el-button{
+        background-color: #eee;
       }
     }
   }

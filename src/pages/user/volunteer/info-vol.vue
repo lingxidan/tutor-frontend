@@ -423,7 +423,7 @@ export default {
           font-size: 1.8vh;
           line-height: 1;
           // letter-spacing: 1px;
-          color: @mainColor;
+          color: #111;
         }
       }
       .zhiwei{

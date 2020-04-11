@@ -30,6 +30,7 @@
   </div>
   <div class="user-mask" v-if="!user.id">
     <span>登录以查看更多信息</span>
+    <hr @click="manage">
   </div>
 </div>
 </template>
@@ -94,7 +95,8 @@ export default {
     width: 100%;
     padding-top: 1vh;
     padding-bottom: 1vh;
-    background-color: @sixthColor;
+    background-color: @mainColor;
+    color: #fff;
     .main {
       width: 100%;
       display: flex;
@@ -151,9 +153,10 @@ export default {
     position: absolute;
     z-index: 1000;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to top,#ccc, transparent);
+    background: linear-gradient(to top,@mainColor, transparent);
     span{
       // position: absolute;
       // margin-top: 10vh;
@@ -164,6 +167,11 @@ export default {
       background-color: rgba(255,255,255,0.8);
       // border: 0.2vh solid @secondColor;
       font-size: 4vh;
+      display: block;
+      position: relative;
+    }
+    hr{
+      width: 90%;
     }
   }
 }

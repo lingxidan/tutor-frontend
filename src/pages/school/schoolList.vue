@@ -275,14 +275,15 @@ export default {
       padding: 1vh;
       .add-btn{
         background-color: @thirthColor;
-        border-color: @sixthColor;
+        border-color: @thirthColor;
+        border-width: 0.1vh;
         padding: 1.4vh 1vw;
         font-size: 1.6vh;
         border-radius: 4px;
         &:hover{
           background: none;
-          color: @secondColor;
-          border-color: @sixthColor;
+          color: @mainColor;
+          // border-color: @sixthColor;
         }
       }
     }

@@ -3,7 +3,7 @@
     <div class="mainInfo" @click="showVolunteer">
       <div class="name"><p>{{volunteer.name}}</p></div>
       <div class="require">
-        <span>{{volunteer.educationName}}</span>
+        学历:<span>{{volunteer.educationName}}</span>
         <!-- <span>{{volunteer.during}}</span> -->
         <!-- <span>{{volunteer.teacherCert?"要求教资":"不要求教资"}}</span> -->
       </div>
@@ -125,7 +125,6 @@ export default {
   border-top:none;
   background-color: #fff;
   padding: 1vh 0;
-  cursor: pointer;
   .name{
     text-align: left;
     padding-left: 0.6vw;
@@ -154,6 +153,7 @@ export default {
     }
   }
   .mainInfo{
+    cursor: pointer;
     width: 29%;
     overflow: hidden;
     padding: 1vh;
@@ -214,8 +214,8 @@ export default {
 }
 .volunteer:hover{
   box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-  .mainInfo .name{
-    color:@thirthColor;
+  .mainInfo .name p{
+    color:coral;
   }
   .contactInfo .change{
     display: none;

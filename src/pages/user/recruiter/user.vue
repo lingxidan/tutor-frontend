@@ -102,7 +102,7 @@ export default {
     // background-color: @thirthColor;
     .el-menu-item.is-active{
       background-color: @thirthColor;
-      color: @sixthColor;
+      color: #fff;
     }
     span{
       font-size: inherit;
@@ -118,14 +118,14 @@ export default {
     }
     .el-menu-item:focus, .el-menu-item:hover{
       background-color: @thirthColor;
-      color: @sixthColor;
+      color: #fff;
       i{
-        color: @sixthColor;
+        color: #fff;
       }
     }
     .el-menu-item:hover{
       background-color: @thirthColor;
-      color: @sixthColor;
+      color: #fff;
     }
     .el-menu-item [class^=el-icon-] {
       margin-right: 0;

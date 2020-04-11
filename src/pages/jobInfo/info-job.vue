@@ -43,7 +43,7 @@
         <p><label for="">发布学校:</label>{{recruiter.schoolCnt}}</p>
         <p><label for="">发布岗位:</label>{{recruiter.jobCnt}}</p>
       </div>
-      <el-button v-if="user.id&&user.userType=='2'" type="primary" class="contactBtn" @click="addContact">立即沟通</el-button>
+      <el-button v-if="user.id&&user.userType=='1'" type="primary" class="contactBtn" @click="addContact">立即沟通</el-button>
     </div>
   </div>
 </template>

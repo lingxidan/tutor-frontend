@@ -138,7 +138,7 @@ export default {
     letter-spacing: 5px;
     font-weight: bolder;
     text-shadow: 3px 3px 2px @fourthColor;
-    background-color: @thirthColor;
+    background-color: @mainColor;
   }
   .form-out-cont {
     display:flex;
@@ -175,7 +175,7 @@ export default {
         text-decoration: underline;
         font-weight: bold;
         &:hover{
-          color: #fff;
+          color: @mainColor;
         }
       }
     }
@@ -227,7 +227,7 @@ export default {
         letter-spacing: 2px;
         border: none;
         &:hover{
-          background-color: @thirthColor;
+          background-color: @secondColor;
         }
       }
       .el-form-item__error{

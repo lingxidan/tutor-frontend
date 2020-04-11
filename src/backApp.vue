@@ -35,6 +35,9 @@
             <span slot="title">帖子</span>
           </el-menu-item>
         </el-menu>
+        <div class="logout">
+          <el-button @click="cancelLogin" icon="el-icon-switch-button" circle></el-button>
+        </div>
       </div>
       <div class="content">
         <div class="content-view">
@@ -68,6 +71,9 @@ export default {
   methods:{
     toPath(path){
       this.$router.push(path)
+    },
+    cancelLogin(){
+      this.$router.push("/back")
     }
   },
   watch:{
@@ -89,13 +95,14 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   div.main{
     display: flex;
     min-height: 100vh;
     .top {
       width: 10%;
-      background: @mainColor;
+      background: @fifthColor;
+      display: flex;
+      flex-direction: column;
       .title{
         font-size: 4vh;
         margin-top: 2vh;
@@ -107,6 +114,7 @@ export default {
         margin-top: 3vh;
         background: none;
         border-right: none;
+        height: 80%;
 
       }
       .el-menu-item{
@@ -140,6 +148,10 @@ export default {
           top: 0;
           left: 0;
         }
+      }
+      .logout{
+        // position: absolute;
+        // bottom: 20vh;
       }
     }
     .content{
